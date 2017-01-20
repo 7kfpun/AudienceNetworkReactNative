@@ -31,6 +31,8 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   row: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: 'white',
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -38,8 +40,6 @@ const styles = StyleSheet.create({
     borderTopColor: '#E0E0E0',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E0E0E0',
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   image: {
     width: 40,
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 15,
-    lineHeight: 24,
+    lineHeight: 22,
   },
 });
 

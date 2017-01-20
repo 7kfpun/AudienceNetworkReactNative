@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Platform,
   View,
 } from 'react-native';
 
@@ -160,9 +161,14 @@ export default class AddView extends Component {
             <Text style={styles.text}>You can find your Facebook App IDs at</Text>
             <TouchableOpacity
               onPress={() => {
-                SafariView.isAvailable()
-                  .then(SafariView.show({ url: 'https://developers.facebook.com/apps/' }))
-                  .catch(() => Linking.openURL('https://developers.facebook.com/apps/'));
+                const url = 'https://developers.facebook.com/apps/';
+                if (Platform.OS === 'ios') {
+                  SafariView.isAvailable()
+                    .then(SafariView.show({ url }))
+                    .catch(error => console.log(error));
+                } else {
+                  Linking.openURL(url);
+                }
                 AppEventsLogger.logEvent('open-fb-apps-link');
               }}
             >
