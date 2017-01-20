@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import {
   ActionSheetIOS,
+  Alert,
   Image,
   ListView,
+  Platform,
   RefreshControl,
   StyleSheet,
   Text,
@@ -80,6 +82,47 @@ export default class Main extends Component {
     this.prepareRows();
   }
 
+  onPressDelete(appId) {
+    const deleteApp = (appId) => {
+      const apps = this.state.apps.filter(item => item.id !== appId);
+      store.save('APPS', apps);
+      this.setState({
+        apps,
+        dataSource: this.dataSource.cloneWithRows(apps),
+      });
+      AppEventsLogger.logEvent('delete-a-new-app');
+    };
+
+    if (Platform.OS === 'ios') {
+      const BUTTONS = [
+        'Delete',
+        'Cancel',
+      ];
+      const DESTRUCTIVE_INDEX = 0;
+      const CANCEL_INDEX = 1;
+
+      ActionSheetIOS.showActionSheetWithOptions({
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+      },
+      (buttonIndex) => {
+        if (buttonIndex === 0) {
+          deleteApp(appId);
+        }
+      });
+    } else {
+      Alert.alert(
+        'Do you want to delete this App?',
+        null,
+        [
+          { text: 'Cancel', onPress: () => console.log('Cancel Pressed!') },
+          { text: 'OK', onPress: () => deleteApp(appId) },
+        ],
+      );
+    }
+  }
+
   prepareRows() {
     const that = this;
     store.get('APPS').then((apps) => {
@@ -91,32 +134,6 @@ export default class Main extends Component {
         apps: tempApps,
         dataSource: that.dataSource.cloneWithRows(tempApps),
       });
-    });
-  }
-
-  delete(appId) {
-    const BUTTONS = [
-      'Delete',
-      'Cancel',
-    ];
-    const DESTRUCTIVE_INDEX = 0;
-    const CANCEL_INDEX = 1;
-
-    ActionSheetIOS.showActionSheetWithOptions({
-      options: BUTTONS,
-      cancelButtonIndex: CANCEL_INDEX,
-      destructiveButtonIndex: DESTRUCTIVE_INDEX,
-    },
-    (buttonIndex) => {
-      if (buttonIndex === 0) {
-        const apps = this.state.apps.filter(item => item.id !== appId);
-        store.save('APPS', apps);
-        this.setState({
-          apps,
-          dataSource: this.dataSource.cloneWithRows(apps),
-        });
-        AppEventsLogger.logEvent('delete-a-new-app');
-      }
     });
   }
 
@@ -183,7 +200,7 @@ export default class Main extends Component {
                 Actions.overview({ appId: item.id, appName: item.name });
                 AppEventsLogger.logEvent('check-overview');
               }}
-              onLongPress={() => this.delete(item.id)}
+              onLongPress={() => this.onPressDelete(item.id)}
             >
               <View style={styles.row}>
                 <Image style={styles.image} source={{ uri: item.logo_url }} />
