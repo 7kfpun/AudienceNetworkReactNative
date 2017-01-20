@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import {
+  DatePickerAndroid,
   DatePickerIOS,
-  Platform,
   ListView,
+  Platform,
   RefreshControl,
-  StyleSheet,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableHighlight,
   View,
@@ -381,6 +382,30 @@ export default class OverviewView extends Component {
     );
   }
 
+  showDatePickerAndroid = async (date, startOrEnd = 'START') => {
+    try {
+      const {action, year, month, day} = await DatePickerAndroid.open({ date });
+      if (action !== DatePickerAndroid.dismissedAction) {
+        const date = new Date(year, month, day + 1, -8);
+        if (startOrEnd === 'START') {
+          this.setState({
+            startDate: date,
+            isChanged: true,
+          });
+          AppEventsLogger.logEvent('change-start-date', 0, { startDate: date.toString() });
+        } else {
+          this.setState({
+            endDate: date,
+            isChanged: true,
+          });
+          AppEventsLogger.logEvent('change-end-date', 0, { endDate: date.toString() });
+        }
+      }
+    } catch ({code, message}) {
+      console.warn('Cannot open date picker', message);
+    }
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -409,6 +434,9 @@ export default class OverviewView extends Component {
               underlayColor="#F4F4F4"
               onPress={() => {
                 this.setState({ isStartDatePickerShow: !this.state.isStartDatePickerShow, isEndDatePickerShow: false });
+                if (Platform.OS === 'android') {
+                  this.showDatePickerAndroid(this.state.startDate, 'START');
+                }
                 AppEventsLogger.logEvent('press-change-start-date');
               }}
             >
@@ -417,7 +445,7 @@ export default class OverviewView extends Component {
                 <Text style={[styles.text, { color: this.state.isStartDatePickerShow ? 'red' : 'black' }]}>{Moment(this.state.startDate).format('MMM D, YYYY')}</Text>
               </View>
             </TouchableHighlight>
-            {this.state.isStartDatePickerShow && <DatePickerIOS
+            {this.state.isStartDatePickerShow && Platform.OS === 'ios' && <DatePickerIOS
               style={styles.datePicker}
               date={this.state.startDate}
               mode="date"
@@ -432,6 +460,9 @@ export default class OverviewView extends Component {
               underlayColor="#F4F4F4"
               onPress={() => {
                 this.setState({ isEndDatePickerShow: !this.state.isEndDatePickerShow, isStartDatePickerShow: false });
+                if (Platform.OS === 'android') {
+                  this.showDatePickerAndroid(this.state.endDate, 'END');
+                }
                 AppEventsLogger.logEvent('press-change-end-date');
               }}
             >
@@ -440,7 +471,7 @@ export default class OverviewView extends Component {
                 <Text style={[styles.text, { color: this.state.isEndDatePickerShow ? 'red' : 'black' }]}>{Moment(this.state.endDate).format('MMM D, YYYY')}</Text>
               </View>
             </TouchableHighlight>
-            {this.state.isEndDatePickerShow && <DatePickerIOS
+            {this.state.isEndDatePickerShow && Platform.OS === 'ios' && <DatePickerIOS
               style={styles.datePicker}
               date={this.state.endDate}
               mode="date"
