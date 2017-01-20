@@ -18,8 +18,8 @@ import Moment from 'moment';
 import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
 import { Actions } from 'react-native-router-flux';
 import { NativeAdsManager } from 'react-native-fbads';
-import NavigationBar from 'react-native-navbar';
 import { SegmentedControls } from 'react-native-radio-buttons';
+import NavigationBar from 'react-native-navbar';
 
 import * as Facebook from './utils/facebook';
 import FbAds from './components/fbads';
@@ -312,6 +312,54 @@ export default class OverviewView extends Component {
     }
   }
 
+  showDatePickerAndroid = async (date, startOrEnd = 'START') => {
+    try {
+      const {action, year, month, day} = await DatePickerAndroid.open({ date });
+      if (action !== DatePickerAndroid.dismissedAction) {
+        const date = new Date(year, month, day + 1, -8);
+        if (startOrEnd === 'START') {
+          this.setState({
+            startDate: date,
+            isChanged: true,
+          });
+          AppEventsLogger.logEvent('change-start-date', 0, { startDate: date.toString() });
+        } else {
+          this.setState({
+            endDate: date,
+            isChanged: true,
+          });
+          AppEventsLogger.logEvent('change-end-date', 0, { endDate: date.toString() });
+        }
+      }
+    } catch ({code, message}) {
+      console.warn('Cannot open date picker', message);
+    }
+  }
+
+  openStartDatePicker() {
+    if (Platform.OS === 'ios') {
+      this.setState({
+        isStartDatePickerShow: !this.state.isStartDatePickerShow,
+        isEndDatePickerShow: false,
+      });
+    } else {
+      this.showDatePickerAndroid(this.state.startDate, 'START');
+    }
+    AppEventsLogger.logEvent('press-change-start-date');
+  }
+
+  openEndDatePicker() {
+    if (Platform.OS === 'ios') {
+      this.setState({
+        isEndDatePickerShow: !this.state.isEndDatePickerShow,
+        isStartDatePickerShow: false,
+      });
+    } else {
+      this.showDatePickerAndroid(this.state.endDate, 'END');
+    }
+    AppEventsLogger.logEvent('press-change-end-date');
+  }
+
   renderNav() {
     return (
       <NavigationBar
@@ -350,7 +398,7 @@ export default class OverviewView extends Component {
           scrollEnabled={false}
           dataSource={this.state.dataSource}
           renderHeader={() => <View style={[styles.row, { padding: 0 }]}>
-            <View style={[styles.cell, { flex: 1.3 }]} />
+            <View style={[styles.cell, { flex: 1.2 }]} />
             <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
@@ -362,9 +410,9 @@ export default class OverviewView extends Component {
             <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
           </View>}
           renderRow={(item, sectionID, rowID) => <View style={[styles.row, { padding: 0 }]}>
-            <View style={[styles.cell, { flex: 1.3 }]}>
+            <View style={[styles.cell, { flex: 1.2 }]}>
               <Text style={styles.cellText}>{item.country || item.placement || Moment(item.time).format('MMM D, YYYY')}</Text>
-              {item.breakdowns && <Text style={styles.cellText}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
+              {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
             </View>
 
             <View style={styles.cell}><Text style={styles.cellText}>{item.value}</Text></View>
@@ -380,54 +428,6 @@ export default class OverviewView extends Component {
         />
       </ScrollView>
     );
-  }
-
-  showDatePickerAndroid = async (date, startOrEnd = 'START') => {
-    try {
-      const {action, year, month, day} = await DatePickerAndroid.open({ date });
-      if (action !== DatePickerAndroid.dismissedAction) {
-        const date = new Date(year, month, day + 1, -8);
-        if (startOrEnd === 'START') {
-          this.setState({
-            startDate: date,
-            isChanged: true,
-          });
-          AppEventsLogger.logEvent('change-start-date', 0, { startDate: date.toString() });
-        } else {
-          this.setState({
-            endDate: date,
-            isChanged: true,
-          });
-          AppEventsLogger.logEvent('change-end-date', 0, { endDate: date.toString() });
-        }
-      }
-    } catch ({code, message}) {
-      console.warn('Cannot open date picker', message);
-    }
-  }
-
-  openStartDatePicker() {
-    if (Platform.OS === 'android') {
-      this.showDatePickerAndroid(this.state.startDate, 'START');
-    } else {
-      this.setState({
-        isStartDatePickerShow: !this.state.isStartDatePickerShow,
-        isEndDatePickerShow: false,
-      });
-    }
-    AppEventsLogger.logEvent('press-change-start-date');
-  }
-
-  openEndDatePicker() {
-    if (Platform.OS === 'android') {
-      this.showDatePickerAndroid(this.state.endDate, 'END');
-    } else {
-      this.setState({
-        isEndDatePickerShow: !this.state.isEndDatePickerShow,
-        isStartDatePickerShow: false,
-      });
-    }
-    AppEventsLogger.logEvent('press-change-end-date');
   }
 
   render() {
@@ -494,7 +494,7 @@ export default class OverviewView extends Component {
               }}
             />}
 
-            <View style={[styles.row, { paddingVertical: 12 }]}>
+            {/* <View style={[styles.row, { paddingVertical: 12 }]}>
               <SegmentedControls
                 options={['Placement', 'Country']}
                 onSelection={(breakdown) => {
@@ -508,7 +508,7 @@ export default class OverviewView extends Component {
                 }}
                 selectedOption={this.state.breakdown}
               />
-            </View>
+            </View> */}
           </View>
 
           <FbAds adsManager={adsManager} />
