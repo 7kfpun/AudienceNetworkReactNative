@@ -19,7 +19,7 @@ import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
 import { Actions } from 'react-native-router-flux';
 import { NativeAdsManager } from 'react-native-fbads';
 import NavigationBar from 'react-native-navbar';
-// import { SegmentedControls } from 'react-native-radio-buttons';
+import { SegmentedControls } from 'react-native-radio-buttons';
 
 import * as Facebook from './utils/facebook';
 import FbAds from './components/fbads';
@@ -177,23 +177,23 @@ export default class OverviewView extends Component {
         isChanged: false,
       });
 
-      if (this.state.breakdown) {
-        const data = _(result.data).map((item) => {
-          if (item.breakdowns && item.breakdowns.country) {
-            return Object.assign({ country: item.breakdowns.country }, item);
-          } else if (item.breakdowns && item.breakdowns.placement) {
-            return Object.assign({ placement: item.breakdowns.placement }, item);
-          }
-          return item;
-        });
-
-        console.log(data);
-        this.setState({
-          requests: this.aggregateData(data, this.state.breakdown),
-          dataSource: this.dataSource.cloneWithRows(this.aggregateData(data, this.state.breakdown)),
-          refreshing: false,
-        });
-      }
+      // if (this.state.breakdown) {
+      //   const data = _(result.data).map((item) => {
+      //     if (item.breakdowns && item.breakdowns.country) {
+      //       return Object.assign({ country: item.breakdowns.country }, item);
+      //     } else if (item.breakdowns && item.breakdowns.placement) {
+      //       return Object.assign({ placement: item.breakdowns.placement }, item);
+      //     }
+      //     return item;
+      //   });
+      //
+      //   console.log(data);
+      //   this.setState({
+      //     requests: this.aggregateData(data, this.state.breakdown),
+      //     dataSource: this.dataSource.cloneWithRows(this.aggregateData(data, this.state.breakdown)),
+      //     refreshing: false,
+      //   });
+      // }
     }
   }
 
@@ -202,19 +202,19 @@ export default class OverviewView extends Component {
       console.log('Error insights:', error);
     } else {
       console.log('Success insights:', result);
-      if (this.state.breakdown) {
-        const data = _(result.data).map((item) => {
-          if (item.breakdowns && item.breakdowns.country) {
-            return Object.assign({ country: item.breakdowns.country }, item);
-          } else if (item.breakdowns && item.breakdowns.placement) {
-            return Object.assign({ placement: item.breakdowns.placement }, item);
-          }
-          return item;
-        });
-
-        console.log(data);
-        this.setState({ filled: this.aggregateData(data, this.state.breakdown) });
-      }
+      // if (this.state.breakdown) {
+      //   const data = _(result.data).map((item) => {
+      //     if (item.breakdowns && item.breakdowns.country) {
+      //       return Object.assign({ country: item.breakdowns.country }, item);
+      //     } else if (item.breakdowns && item.breakdowns.placement) {
+      //       return Object.assign({ placement: item.breakdowns.placement }, item);
+      //     }
+      //     return item;
+      //   });
+      //
+      //   console.log(data);
+      //   this.setState({ filled: this.aggregateData(data, this.state.breakdown) });
+      // }
 
       this.setState({ filled: result.data });
     }
@@ -225,19 +225,19 @@ export default class OverviewView extends Component {
       console.log('Error insights:', error);
     } else {
       console.log('Success insights:', result);
-      if (this.state.breakdown) {
-        const data = _(result.data).map((item) => {
-          if (item.breakdowns && item.breakdowns.country) {
-            return Object.assign({ country: item.breakdowns.country }, item);
-          } else if (item.breakdowns && item.breakdowns.placement) {
-            return Object.assign({ placement: item.breakdowns.placement }, item);
-          }
-          return item;
-        });
-
-        console.log(data);
-        this.setState({ impressions: this.aggregateData(data, this.state.breakdown) });
-      }
+      // if (this.state.breakdown) {
+      //   const data = _(result.data).map((item) => {
+      //     if (item.breakdowns && item.breakdowns.country) {
+      //       return Object.assign({ country: item.breakdowns.country }, item);
+      //     } else if (item.breakdowns && item.breakdowns.placement) {
+      //       return Object.assign({ placement: item.breakdowns.placement }, item);
+      //     }
+      //     return item;
+      //   });
+      //
+      //   console.log(data);
+      //   this.setState({ impressions: this.aggregateData(data, this.state.breakdown) });
+      // }
 
       this.setState({ impressions: result.data });
     }
@@ -248,19 +248,19 @@ export default class OverviewView extends Component {
       console.log('Error insights:', error);
     } else {
       console.log('Success insights:', result);
-      if (this.state.breakdown) {
-        const data = _(result.data).map((item) => {
-          if (item.breakdowns && item.breakdowns.country) {
-            return Object.assign({ country: item.breakdowns.country }, item);
-          } else if (item.breakdowns && item.breakdowns.placement) {
-            return Object.assign({ placement: item.breakdowns.placement }, item);
-          }
-          return item;
-        });
-
-        console.log(data);
-        this.setState({ clicks: this.aggregateData(data, this.state.breakdown) });
-      }
+      // if (this.state.breakdown) {
+      //   const data = _(result.data).map((item) => {
+      //     if (item.breakdowns && item.breakdowns.country) {
+      //       return Object.assign({ country: item.breakdowns.country }, item);
+      //     } else if (item.breakdowns && item.breakdowns.placement) {
+      //       return Object.assign({ placement: item.breakdowns.placement }, item);
+      //     }
+      //     return item;
+      //   });
+      //
+      //   console.log(data);
+      //   this.setState({ clicks: this.aggregateData(data, this.state.breakdown) });
+      // }
 
       this.setState({ clicks: result.data });
     }
@@ -271,19 +271,19 @@ export default class OverviewView extends Component {
       console.log('Error insights:', error);
     } else {
       console.log('Success insights:', result);
-      if (this.state.breakdown) {
-        const data = _(result.data).map((item) => {
-          if (item.breakdowns && item.breakdowns.country) {
-            return Object.assign({ country: item.breakdowns.country }, item);
-          } else if (item.breakdowns && item.breakdowns.placement) {
-            return Object.assign({ placement: item.breakdowns.placement }, item);
-          }
-          return item;
-        });
-
-        console.log(data);
-        this.setState({ videoViews: this.aggregateData(data, this.state.breakdown) });
-      }
+      // if (this.state.breakdown) {
+      //   const data = _(result.data).map((item) => {
+      //     if (item.breakdowns && item.breakdowns.country) {
+      //       return Object.assign({ country: item.breakdowns.country }, item);
+      //     } else if (item.breakdowns && item.breakdowns.placement) {
+      //       return Object.assign({ placement: item.breakdowns.placement }, item);
+      //     }
+      //     return item;
+      //   });
+      //
+      //   console.log(data);
+      //   this.setState({ videoViews: this.aggregateData(data, this.state.breakdown) });
+      // }
 
       this.setState({ videoViews: result.data });
     }
@@ -406,6 +406,30 @@ export default class OverviewView extends Component {
     }
   }
 
+  openStartDatePicker() {
+    if (Platform.OS === 'android') {
+      this.showDatePickerAndroid(this.state.startDate, 'START');
+    } else {
+      this.setState({
+        isStartDatePickerShow: !this.state.isStartDatePickerShow,
+        isEndDatePickerShow: false,
+      });
+    }
+    AppEventsLogger.logEvent('press-change-start-date');
+  }
+
+  openEndDatePicker() {
+    if (Platform.OS === 'android') {
+      this.showDatePickerAndroid(this.state.endDate, 'END');
+    } else {
+      this.setState({
+        isEndDatePickerShow: !this.state.isEndDatePickerShow,
+        isStartDatePickerShow: false,
+      });
+    }
+    AppEventsLogger.logEvent('press-change-end-date');
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -432,13 +456,7 @@ export default class OverviewView extends Component {
 
             <TouchableHighlight
               underlayColor="#F4F4F4"
-              onPress={() => {
-                this.setState({ isStartDatePickerShow: !this.state.isStartDatePickerShow, isEndDatePickerShow: false });
-                if (Platform.OS === 'android') {
-                  this.showDatePickerAndroid(this.state.startDate, 'START');
-                }
-                AppEventsLogger.logEvent('press-change-start-date');
-              }}
+              onPress={() => this.openStartDatePicker()}
             >
               <View style={styles.row}>
                 <Text style={styles.text}>Starts</Text>
@@ -458,13 +476,7 @@ export default class OverviewView extends Component {
 
             <TouchableHighlight
               underlayColor="#F4F4F4"
-              onPress={() => {
-                this.setState({ isEndDatePickerShow: !this.state.isEndDatePickerShow, isStartDatePickerShow: false });
-                if (Platform.OS === 'android') {
-                  this.showDatePickerAndroid(this.state.endDate, 'END');
-                }
-                AppEventsLogger.logEvent('press-change-end-date');
-              }}
+              onPress={() => this.openEndDatePicker()}
             >
               <View style={styles.row}>
                 <Text style={styles.text}>Ends</Text>
@@ -482,7 +494,7 @@ export default class OverviewView extends Component {
               }}
             />}
 
-            {/* <View style={[styles.row, { paddingVertical: 12 }]}>
+            <View style={[styles.row, { paddingVertical: 12 }]}>
               <SegmentedControls
                 options={['Placement', 'Country']}
                 onSelection={(breakdown) => {
@@ -496,7 +508,7 @@ export default class OverviewView extends Component {
                 }}
                 selectedOption={this.state.breakdown}
               />
-            </View> */}
+            </View>
           </View>
 
           <FbAds adsManager={adsManager} />
