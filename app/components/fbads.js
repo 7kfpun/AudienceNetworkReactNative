@@ -19,12 +19,15 @@ const styles = StyleSheet.create({
     borderBottomColor: '#CCCCCC',
     backgroundColor: 'white',
   },
+  iconAction: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   icon: {
     width: 50,
     height: 50,
     borderRadius: 10,
     overflow: 'hidden',
-    marginRight: 10,
     marginTop: 5,
   },
   button: {
@@ -34,6 +37,10 @@ const styles = StyleSheet.create({
   },
   action: {
     color: 'white',
+  },
+  textBlock: {
+    flex: 1,
+    padding: 8,
   },
   title: {
     fontWeight: 'bold',
@@ -52,19 +59,14 @@ const styles = StyleSheet.create({
 const FullNativeAd = withNativeAd(({ nativeAd }) => (
   <View style={styles.container}>
     {nativeAd.icon && (
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <Image style={styles.icon} source={{ uri: nativeAd.icon }} />
+      <View style={styles.iconAction}>
+        {nativeAd.icon && <Image style={styles.icon} source={{ uri: nativeAd.icon }} />}
         <View style={styles.button}>
           <Text style={styles.action}>{nativeAd.callToActionText}</Text>
         </View>
       </View>
     )}
-    {!nativeAd.icon && (
-      <View style={styles.button}>
-        <Text style={styles.action}>{nativeAd.callToActionText}</Text>
-      </View>
-    )}
-    <View style={{ flex: 1, padding: 8 }}>
+    <View style={styles.textBlock}>
       <Text style={styles.title}>{nativeAd.title}</Text>
       {nativeAd.subtitle && (
         <Text style={styles.subtitle}>{nativeAd.subtitle}</Text>

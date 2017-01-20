@@ -147,7 +147,7 @@ export default class AddView extends Component {
           {this.state.result && this.state.result.name && <View style={styles.appBlock}>
             <Image style={styles.image} source={{ uri: this.state.result.logo_url }} />
             <View style={{ paddingLeft: 10 }}>
-              <Text>{this.state.result.name} <Text style={{ color: 'gray' }}>{this.state.result.id}</Text></Text>
+              <Text>{this.state.result.name} <Text style={{ fontSize: 12, color: 'gray' }}>{this.state.result.id}</Text></Text>
               {this.state.result.category && <Text>{this.state.result.category}</Text>}
             </View>
           </View>}

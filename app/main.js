@@ -152,8 +152,8 @@ export default class Main extends Component {
         <View style={styles.container}>
           {this.renderNav()}
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={styles.text}>{'You have no Apps added yet.'}</Text>
-            <Text style={styles.text}>{'Tap the + to add one and get the performance.'}</Text>
+            <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'You have no Apps added yet.'}</Text>
+            <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'Tap the + to add one and get the performance.'}</Text>
           </View>
         </View>
       );
@@ -162,7 +162,6 @@ export default class Main extends Component {
     return (
       <View style={styles.container}>
         {this.renderNav()}
-
         <View style={{ flex: 1, marginVertical: 10 }}>
           <ListView
             refreshControl={

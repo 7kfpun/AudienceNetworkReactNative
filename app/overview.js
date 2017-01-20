@@ -62,7 +62,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderLeftColor: '#EEEEEE',
     borderLeftWidth: StyleSheet.hairlineWidth,
-    padding: 15,
+    paddingHorizontal: 6,
+    paddingVertical: 15,
   },
   text: {
     fontSize: 15,
@@ -111,6 +112,7 @@ export default class OverviewView extends Component {
     Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_request', 'SUM', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseFilledInfoCallback(error, result));
     Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_imp', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseImpressionsInfoCallback(error, result));
     Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_click', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseClicksInfoCallback(error, result));
+    Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_video_view', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseVideoViewsInfoCallback(error, result));
     Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_revenue', 'SUM', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseRevenueInfoCallback(error, result));
   }
 
@@ -263,6 +265,29 @@ export default class OverviewView extends Component {
     }
   }
 
+  responseVideoViewsInfoCallback(error, result) {
+    if (error) {
+      console.log('Error insights:', error);
+    } else {
+      console.log('Success insights:', result);
+      if (this.state.breakdown) {
+        const data = _(result.data).map((item) => {
+          if (item.breakdowns && item.breakdowns.country) {
+            return Object.assign({ country: item.breakdowns.country }, item);
+          } else if (item.breakdowns && item.breakdowns.placement) {
+            return Object.assign({ placement: item.breakdowns.placement }, item);
+          }
+          return item;
+        });
+
+        console.log(data);
+        this.setState({ videoViews: this.aggregateData(data, this.state.breakdown) });
+      }
+
+      this.setState({ videoViews: result.data });
+    }
+  }
+
   responseRevenueInfoCallback(error, result) {
     if (error) {
       console.log('Error insights:', error);
@@ -310,11 +335,12 @@ export default class OverviewView extends Component {
   renderInsights() {
     if (this.state.requests && this.state.requests.length === 0) {
       return (
-        <View>
-          <Text style={styles.text}>No performance data available. Please check if the ads are running and get some impressions.</Text>
+        <View style={{ padding: 10 }}>
+          <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
         </View>
       );
     }
+
     return (
       <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
         <ListView
@@ -328,6 +354,7 @@ export default class OverviewView extends Component {
             <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{'Clicks'}</Text></View>
+            <View style={styles.cell}><Text style={styles.cellText}>{'10s Video'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{'Fill Rate'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{'CTR'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
@@ -343,6 +370,7 @@ export default class OverviewView extends Component {
             <View style={styles.cell}><Text style={styles.cellText}>{(this.state.filled && this.state.filled[rowID] && this.state.filled[rowID].value) || '*'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.impressions[rowID] && this.state.impressions[rowID].value) || '*'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.clicks[rowID] && this.state.clicks[rowID].value) || '*'}</Text></View>
+            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.videoViews && this.state.videoViews[rowID] && this.state.videoViews[rowID].value) || '*'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{(this.state.requests && this.state.filled && this.state.requests[rowID] && this.state.filled[rowID] && `${((this.state.filled[rowID].value / this.state.requests[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.impressions && this.state.clicks[rowID] && this.state.impressions[rowID] && `${((this.state.clicks[rowID].value / this.state.impressions[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
             <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.revenue && this.state.impressions[rowID] && this.state.revenue[rowID] && `$${((this.state.revenue[rowID].value / this.state.impressions[rowID].value) * 1000).toFixed(2)}`) || '*'}</Text></View>
