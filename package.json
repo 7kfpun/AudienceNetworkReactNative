@@ -23,8 +23,7 @@
     "react-native-router-flux": "^3.37.0",
     "react-native-safari-view": "^2.0.0",
     "react-native-simple-store": "^1.1.0",
-    "react-native-vector-icons": "^4.0.0",
-    "underscore": "^1.8.3"
+    "react-native-vector-icons": "^4.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",

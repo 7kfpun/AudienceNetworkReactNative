@@ -12,7 +12,6 @@ import {
   View,
 } from 'react-native';
 
-import _ from 'underscore';
 import Moment from 'moment';
 
 import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
