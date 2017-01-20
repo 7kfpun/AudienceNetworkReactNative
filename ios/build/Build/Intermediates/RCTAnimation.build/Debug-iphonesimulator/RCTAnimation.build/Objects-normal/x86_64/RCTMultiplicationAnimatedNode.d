@@ -1,0 +1,5 @@
+dependencies: \
+  /Users/kf/Workspace/own/AppReview/node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTMultiplicationAnimatedNode.m \
+  /Users/kf/Workspace/own/AppReview/node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTMultiplicationAnimatedNode.h \
+  /Users/kf/Workspace/own/AppReview/node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTValueAnimatedNode.h \
+  /Users/kf/Workspace/own/AppReview/node_modules/react-native/Libraries/NativeAnimation/Nodes/RCTAnimatedNode.h
