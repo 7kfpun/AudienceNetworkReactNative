@@ -54,6 +54,13 @@ const styles = StyleSheet.create({
   datePicker: {
     backgroundColor: 'white',
   },
+  overviewBlock: {
+    marginBottom: 5,
+  },
+  overviewCell: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   insightsBlock: {
     marginTop: 5,
     width: 1024,
@@ -73,6 +80,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 });
+
+Array.prototype.sum = function (prop) {
+  let total = 0;
+  for ( let i = 0, _len = this.length; i < _len; i++ ) {
+    if (parseInt(this[i][prop]) === this[i][prop]) {
+      total += parseInt(this[i][prop]);
+    } else {
+      total += parseFloat(this[i][prop]);
+    }
+  }
+  return total;
+}
 
 export default class OverviewView extends Component {
   constructor(props) {
@@ -168,10 +187,11 @@ export default class OverviewView extends Component {
       });
     } else {
       console.log('Success insights:', result);
-
+      const data = result.data.reverse();
       this.setState({
-        requests: result.data,
-        dataSource: this.dataSource.cloneWithRows(result.data),
+        requests: data,
+        allRequests: data.sum('value'),
+        dataSource: this.dataSource.cloneWithRows(data),
         refreshing: false,
         isChanged: false,
       });
@@ -215,7 +235,11 @@ export default class OverviewView extends Component {
       //   this.setState({ filled: this.aggregateData(data, this.state.breakdown) });
       // }
 
-      this.setState({ filled: result.data });
+      const data = result.data.reverse();
+      this.setState({
+        filled: data,
+        allFilled: data.sum('value'),
+      });
     }
   }
 
@@ -238,7 +262,11 @@ export default class OverviewView extends Component {
       //   this.setState({ impressions: this.aggregateData(data, this.state.breakdown) });
       // }
 
-      this.setState({ impressions: result.data });
+      const data = result.data.reverse();
+      this.setState({
+        impressions: data,
+        allImpressions: data.sum('value'),
+      });
     }
   }
 
@@ -261,7 +289,11 @@ export default class OverviewView extends Component {
       //   this.setState({ clicks: this.aggregateData(data, this.state.breakdown) });
       // }
 
-      this.setState({ clicks: result.data });
+      const data = result.data.reverse();
+      this.setState({
+        clicks: data,
+        allClicks: data.sum('value'),
+      });
     }
   }
 
@@ -284,7 +316,11 @@ export default class OverviewView extends Component {
       //   this.setState({ videoViews: this.aggregateData(data, this.state.breakdown) });
       // }
 
-      this.setState({ videoViews: result.data });
+      const data = result.data.reverse();
+      this.setState({
+        videoViews: data,
+        allVideoViews: data.sum('value'),
+      });
     }
   }
 
@@ -293,21 +329,25 @@ export default class OverviewView extends Component {
       console.log('Error insights:', error);
     } else {
       console.log('Success insights:', result);
-      if (this.state.breakdown) {
-        const data = _(result.data).map((item) => {
-          if (item.breakdowns && item.breakdowns.country) {
-            return Object.assign({ country: item.breakdowns.country }, item);
-          } else if (item.breakdowns && item.breakdowns.placement) {
-            return Object.assign({ placement: item.breakdowns.placement }, item);
-          }
-          return item;
-        });
+      // if (this.state.breakdown) {
+      //   const data = _(result.data).map((item) => {
+      //     if (item.breakdowns && item.breakdowns.country) {
+      //       return Object.assign({ country: item.breakdowns.country }, item);
+      //     } else if (item.breakdowns && item.breakdowns.placement) {
+      //       return Object.assign({ placement: item.breakdowns.placement }, item);
+      //     }
+      //     return item;
+      //   });
+      //
+      //   console.log(data);
+      //   this.setState({ revenue: this.aggregateData(data, this.state.breakdown) });
+      // }
 
-        console.log(data);
-        this.setState({ revenue: this.aggregateData(data, this.state.breakdown) });
-      }
-
-      this.setState({ revenue: result.data });
+      const data = result.data.reverse();
+      this.setState({
+        revenue: data,
+        allRevenue: data.sum('value'),
+      });
     }
   }
 
@@ -384,48 +424,80 @@ export default class OverviewView extends Component {
     if (this.state.requests && this.state.requests.length === 0) {
       return (
         <View style={{ padding: 10 }}>
+          <FbAds adsManager={adsManager} />
           <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
         </View>
       );
     }
 
     return (
-      <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
-        <ListView
-          style={{ marginBottom: 10 }}
-          enableEmptySections={true}
-          scrollEnabled={false}
-          dataSource={this.state.dataSource}
-          renderHeader={() => <View style={[styles.row, { padding: 0 }]}>
-            <View style={[styles.cell, { flex: 1.2 }]} />
-            <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{'Clicks'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{'10s Video'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{'Fill Rate'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{'CTR'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
-          </View>}
-          renderRow={(item, sectionID, rowID) => <View style={[styles.row, { padding: 0 }]}>
-            <View style={[styles.cell, { flex: 1.2 }]}>
-              <Text style={styles.cellText}>{item.country || item.placement || Moment(item.time).format('MMM D, YYYY')}</Text>
-              {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
-            </View>
+      <View>
+        <View style={[styles.overviewBlock, styles.row]}>
+          <View style={styles.overviewCell}>
+            <Text style={styles.cellText}>{'Requests'}</Text>
+            <Text style={styles.cellText}>{this.state.allRequests || '*'}</Text>
+          </View>
 
-            <View style={styles.cell}><Text style={styles.cellText}>{item.value}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.filled && this.state.filled[rowID] && this.state.filled[rowID].value) || '*'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.impressions[rowID] && this.state.impressions[rowID].value) || '*'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.clicks[rowID] && this.state.clicks[rowID].value) || '*'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.videoViews && this.state.videoViews[rowID] && this.state.videoViews[rowID].value) || '*'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.requests && this.state.filled && this.state.requests[rowID] && this.state.filled[rowID] && `${((this.state.filled[rowID].value / this.state.requests[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.impressions && this.state.clicks[rowID] && this.state.impressions[rowID] && `${((this.state.clicks[rowID].value / this.state.impressions[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.revenue && this.state.impressions[rowID] && this.state.revenue[rowID] && `$${((this.state.revenue[rowID].value / this.state.impressions[rowID].value) * 1000).toFixed(2)}`) || '*'}</Text></View>
-            <View style={styles.cell}><Text style={styles.cellText}>{(this.state.revenue && this.state.revenue[rowID] && `$${(this.state.revenue[rowID].value * 1).toFixed(2)}`) || '*'}</Text></View>
-          </View>}
-        />
-      </ScrollView>
+          <View style={styles.overviewCell}>
+            <Text style={styles.cellText}>{'Filled'}</Text>
+            <Text style={styles.cellText}>{this.state.allFilled || '*'}</Text>
+          </View>
+
+          <View style={styles.overviewCell}>
+            <Text style={styles.cellText}>{'Clicks'}</Text>
+            <Text style={styles.cellText}>{this.state.allClicks || '*'}</Text>
+          </View>
+
+          <View style={styles.overviewCell}>
+            <Text style={styles.cellText}>{'VideoViews'}</Text>
+            <Text style={styles.cellText}>{this.state.allVideoViews || '*'}</Text>
+          </View>
+
+          <View style={styles.overviewCell}>
+            <Text style={styles.cellText}>{'Revenue'}</Text>
+            <Text style={styles.cellText}>{this.state.allRevenue && `$${this.state.allRevenue.toFixed(2)}` || '*'}</Text>
+          </View>
+        </View>
+
+        <FbAds adsManager={adsManager} />
+
+        <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
+          <ListView
+            style={{ marginBottom: 10 }}
+            enableEmptySections={true}
+            scrollEnabled={false}
+            dataSource={this.state.dataSource}
+            renderHeader={() => <View style={[styles.row, { padding: 0 }]}>
+              <View style={[styles.cell, { flex: 1.2 }]} />
+              <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{'Clicks'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{'10s Video'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{'Fill Rate'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{'CTR'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
+            </View>}
+            renderRow={(item, sectionID, rowID) => <View style={[styles.row, { padding: 0 }]}>
+              <View style={[styles.cell, { flex: 1.2 }]}>
+                <Text style={styles.cellText}>{item.country || item.placement || Moment(item.time).format('MMM D, YYYY')}</Text>
+                {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
+              </View>
+
+              <View style={styles.cell}><Text style={styles.cellText}>{item.value}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.filled && this.state.filled[rowID] && this.state.filled[rowID].value) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.impressions[rowID] && this.state.impressions[rowID].value) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.clicks[rowID] && this.state.clicks[rowID].value) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.videoViews && this.state.videoViews[rowID] && this.state.videoViews[rowID].value) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.requests && this.state.filled && this.state.requests[rowID] && this.state.filled[rowID] && `${((this.state.filled[rowID].value / this.state.requests[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.impressions && this.state.clicks[rowID] && this.state.impressions[rowID] && `${((this.state.clicks[rowID].value / this.state.impressions[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.revenue && this.state.impressions[rowID] && this.state.revenue[rowID] && `$${((this.state.revenue[rowID].value / this.state.impressions[rowID].value) * 1000).toFixed(2)}`) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.revenue && this.state.revenue[rowID] && `$${(this.state.revenue[rowID].value * 1).toFixed(2)}`) || '*'}</Text></View>
+            </View>}
+          />
+        </ScrollView>
+      </View>
     );
   }
 
@@ -509,8 +581,6 @@ export default class OverviewView extends Component {
               />
             </View> */}
           </View>
-
-          <FbAds adsManager={adsManager} />
 
           {this.renderInsights()}
         </ScrollView>
