@@ -19,9 +19,11 @@ import { Actions } from 'react-native-router-flux';
 import { NativeAdsManager } from 'react-native-fbads';
 import { SegmentedControls } from 'react-native-radio-buttons';
 import NavigationBar from 'react-native-navbar';
+import {PagerTabIndicator, IndicatorViewPager, PagerDotIndicator} from 'rn-viewpager';
 
 import * as Facebook from './utils/facebook';
 import FbAds from './components/fbads';
+import LineChart from './components/lineChart';
 
 import { config } from '../config';
 
@@ -70,6 +72,18 @@ const styles = StyleSheet.create({
   overviewCell: {
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  chartBlock: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginTop: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E0E0E0',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E0E0E0',
   },
   insightsBlock: {
     marginTop: 5,
@@ -433,11 +447,8 @@ export default class OverviewView extends Component {
   renderInsights() {
     if (this.state.requests && this.state.requests.length === 0) {
       return (
-        <View>
-          <FbAds adsManager={adsManager} />
-          <View style={{ padding: 30 }}>
-            <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
-          </View>
+        <View style={{ padding: 30 }}>
+          <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
         </View>
       );
     }
@@ -451,19 +462,24 @@ export default class OverviewView extends Component {
           </View>
 
           <View style={styles.overviewCell}>
+            <Text style={styles.cellText}>{'Impressions'}</Text>
+            <Text style={styles.cellText}>{this.state.allImpressions || '*'}</Text>
+          </View>
+
+          {/* <View style={styles.overviewCell}>
             <Text style={styles.cellText}>{'Filled'}</Text>
             <Text style={styles.cellText}>{this.state.allFilled || '*'}</Text>
-          </View>
+          </View> */}
 
           <View style={styles.overviewCell}>
             <Text style={styles.cellText}>{'Clicks'}</Text>
             <Text style={styles.cellText}>{this.state.allClicks || '*'}</Text>
           </View>
 
-          <View style={styles.overviewCell}>
+          {/* <View style={styles.overviewCell}>
             <Text style={styles.cellText}>{'10s Video'}</Text>
             <Text style={styles.cellText}>{this.state.allVideoViews || '*'}</Text>
-          </View>
+          </View> */}
 
           <View style={styles.overviewCell}>
             <Text style={styles.cellText}>{'Est. Rev'}</Text>
@@ -473,6 +489,28 @@ export default class OverviewView extends Component {
 
         <FbAds adsManager={adsManager} />
 
+        <IndicatorViewPager
+          style={{ height: 220, marginBottom: 5 }}
+          indicator={() => <PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
+        >
+          <View style={styles.chartBlock}>
+            {this.state.requests && this.state.requests.length > 1 && <LineChart data={this.state.requests} />}
+            <Text style={styles.cellText}>{'Requests'}</Text>
+          </View>
+          <View style={styles.chartBlock}>
+            {this.state.impressions && this.state.impressions.length > 1 && <LineChart data={this.state.impressions} />}
+            <Text style={styles.cellText}>{'Impressions'}</Text>
+          </View>
+          <View style={styles.chartBlock}>
+            {this.state.clicks && this.state.clicks.length > 1 && <LineChart data={this.state.clicks} />}
+            <Text style={styles.cellText}>{'Clicks'}</Text>
+          </View>
+          <View style={styles.chartBlock}>
+            {this.state.revenue && this.state.revenue.length > 1 && <LineChart data={this.state.revenue} />}
+            <Text style={styles.cellText}>{'Estimated Revenue'}</Text>
+          </View>
+        </IndicatorViewPager>
+
         <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
           <ListView
             style={{ marginBottom: 10 }}
@@ -480,7 +518,7 @@ export default class OverviewView extends Component {
             scrollEnabled={false}
             dataSource={this.state.dataSource}
             renderHeader={() => <View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.3 }]} />
+              <View style={[styles.cell, { flex: 1.35 }]} />
               <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
@@ -492,7 +530,7 @@ export default class OverviewView extends Component {
               <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
             </View>}
             renderRow={(item, sectionID, rowID) => <View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.3 }]}>
+              <View style={[styles.cell, { flex: 1.35 }]}>
                 <Text style={styles.cellText}>{item.country || item.placement || Moment(item.time).format('ddd MMM D, YYYY')}</Text>
                 {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
               </View>

@@ -19,11 +19,14 @@
     "react-native-fbads": "github:7kfpun/react-native-fbads",
     "react-native-fbsdk": "^0.5.0",
     "react-native-navbar": "^1.5.4",
+    "react-native-pathjs-charts": "0.0.23",
     "react-native-radio-buttons": "^0.13.0",
     "react-native-router-flux": "^3.37.0",
     "react-native-safari-view": "^2.0.0",
     "react-native-simple-store": "^1.1.0",
-    "react-native-vector-icons": "^4.0.0"
+    "react-native-svg": "github:react-native-community/react-native-svg",
+    "react-native-vector-icons": "^4.0.0",
+    "rn-viewpager": "^1.1.4"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",

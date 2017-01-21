@@ -2,9 +2,17 @@
 
 [![Dependency Status](https://david-dm.org/7kfpun/AudienceNetworkReactNative.svg)](https://david-dm.org/7kfpun/AudienceNetworkReactNative) [![devDependency Status](https://david-dm.org/7kfpun/AudienceNetworkReactNative/dev-status.svg)](https://david-dm.org/7kfpun/AudienceNetworkReactNative?type=dev)
 
-Check your Facebook Audience Network performance quickly with the app. It shows number of ad requests, filled ad requests, impressions, clicks, 10 seconds video views and estimated revenue.
+Check your Facebook Audience Network performance quickly with the app. It shows number of ad requests, filled ad requests, impressions, clicks, 10 seconds video views and estimated revenue, charts and many more.
 
-This app is build with [React Native](https://github.com/facebook/react-native) (available both iOS and Android).
+The application is built using the following products from [Facebook](https://developers.facebook.com/)
+
+* [**Facebook Login**](https://developers.facebook.com/docs/facebook-login) - Facebook Login is a secure, fast and convenient way for people to log into your app or website.
+* [**Graph API**](https://developers.facebook.com/docs/graph-api) - The primary way for apps to read and write to the Facebook social graph.
+  * [Audience Network Reporting API](https://developers.facebook.com/docs/audience-network/reporting-api) - The Audience Network Reporting API lets you automate downloading performance data for your apps.
+* [**Facebook Audience Network**](https://developers.facebook.com/docs/marketing-api/audience-network) - With Facebook's Audience Network you can serve your ads on other publishers' iOS and Android apps and mobile websites. Then you can use all of Facebook's targeting options to find your audience within those mobile apps and mobile websites.
+* [**Facebook Analytics for Apps**](https://developers.facebook.com/docs/analytics) - Understand and reach the people using your apps.
+
+The application is build with [React Native](https://github.com/facebook/react-native) (available both iOS and Android).
 
 ## Demo
 

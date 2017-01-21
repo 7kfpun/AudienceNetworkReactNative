@@ -14,7 +14,7 @@ console.ignoredYellowBox = [
 
 const scenes = Actions.create(
   <Scene key="root">
-    <Scene key="main" title={'Audience Network'} component={Main} hideNavBar={true} initial={true} />
+    <Scene key="main" title={'Ads Reports'} component={Main} hideNavBar={true} initial={true} />
     <Scene key="add" title={'Add'} component={Add} hideNavBar={true} direction="vertical" />
     <Scene key="login" title={'Login'} component={Login} hideNavBar={true} direction="vertical" panHandlers={null} />
     <Scene key="overview" title={'Overview'} component={Overview} hideNavBar={true} />

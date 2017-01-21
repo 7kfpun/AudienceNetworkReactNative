@@ -90,7 +90,7 @@ android {
         applicationId "com.kfpun.audiencenetwork"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
+        versionCode 3
         versionName "1.0.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
@@ -135,6 +135,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-svg')
     compile project(':react-native-vector-icons')
     compile project(':react-native-fbsdk')
     compile project(':react-native-fbads')

@@ -87,8 +87,8 @@ export default class Login extends Component {
           </View>}
           {!this.state.isLogged && <View style={styles.textBlock}>
             <Text style={styles.text}>{'Welcome to'}</Text>
-            <Text style={styles.text}>{'Audience Network'}</Text>
-            <Text style={[styles.text, { fontSize: 16 }]}>{'Your Facebook Ads Performance Tool'}</Text>
+            <Text style={[styles.text, { fontSize: 50, lineHeight: 80 }]}>{'Ads Reports'}</Text>
+            <Text style={[styles.text, { fontSize: 16 }]}>{'Your Ads Performance Tool'}</Text>
           </View>}
           <View style={styles.loginButton}>
             <LoginButton
@@ -126,6 +126,7 @@ export default class Login extends Component {
           </View>}
           <View style={styles.informationBlock}>
             <Text style={styles.informationText}>{'Made with <3 by KF'}</Text>
+            <Text style={[styles.informationText, { fontSize: 11 }]}>{'The application is in no way affiliated with Facebook'}</Text>
           </View>
         </View>
       </View>
