@@ -38,14 +38,14 @@ const styles = StyleSheet.create({
   },
   row: {
     padding: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: 'white',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: '#E0E0E0',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E0E0E0',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   optionsBlock: {
     marginTop: 10,
@@ -55,7 +55,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   overviewBlock: {
+    height: 80,
+    padding: 15,
     marginBottom: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'stretch',
+    backgroundColor: 'white',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E0E0E0',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E0E0E0',
   },
   overviewCell: {
     justifyContent: 'space-between',
@@ -102,9 +112,9 @@ export default class OverviewView extends Component {
     this.state = {
       refreshing: false,
       dataSource: this.dataSource.cloneWithRows([]),
-      startDate: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate() + 1, -8),
-      endDate: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, -8),
-      timeZoneOffsetInHours: (-8) * ((new Date()).getTimezoneOffset() / 60),
+      startDate: new Date(Date.UTC(today.getFullYear(), today.getMonth() - 3, today.getDate() - 1, 8)),
+      endDate: new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate() - 1, 8)),
+      timeZoneOffsetInHours: (new Date()).getTimezoneOffset() / 60,
       isStartDatePickerShow: false,
       isEndDatePickerShow: false,
       isChanged: false,
@@ -355,7 +365,7 @@ export default class OverviewView extends Component {
     try {
       const {action, year, month, day} = await DatePickerAndroid.open({ date });
       if (action !== DatePickerAndroid.dismissedAction) {
-        const date = new Date(year, month, day + 1, -8);
+        const date = new Date(Date.UTC(year, month, day, 8));
         if (startOrEnd === 'START') {
           this.setState({
             startDate: date,
@@ -423,16 +433,18 @@ export default class OverviewView extends Component {
   renderInsights() {
     if (this.state.requests && this.state.requests.length === 0) {
       return (
-        <View style={{ padding: 10 }}>
+        <View>
           <FbAds adsManager={adsManager} />
-          <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
+          <View style={{ padding: 30 }}>
+            <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
+          </View>
         </View>
       );
     }
 
     return (
       <View>
-        <View style={[styles.overviewBlock, styles.row]}>
+        <View style={styles.overviewBlock}>
           <View style={styles.overviewCell}>
             <Text style={styles.cellText}>{'Requests'}</Text>
             <Text style={styles.cellText}>{this.state.allRequests || '*'}</Text>
@@ -449,12 +461,12 @@ export default class OverviewView extends Component {
           </View>
 
           <View style={styles.overviewCell}>
-            <Text style={styles.cellText}>{'VideoViews'}</Text>
+            <Text style={styles.cellText}>{'10s Video'}</Text>
             <Text style={styles.cellText}>{this.state.allVideoViews || '*'}</Text>
           </View>
 
           <View style={styles.overviewCell}>
-            <Text style={styles.cellText}>{'Revenue'}</Text>
+            <Text style={styles.cellText}>{'Est. Rev'}</Text>
             <Text style={styles.cellText}>{this.state.allRevenue && `$${this.state.allRevenue.toFixed(2)}` || '*'}</Text>
           </View>
         </View>
@@ -468,7 +480,7 @@ export default class OverviewView extends Component {
             scrollEnabled={false}
             dataSource={this.state.dataSource}
             renderHeader={() => <View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.2 }]} />
+              <View style={[styles.cell, { flex: 1.3 }]} />
               <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
@@ -480,8 +492,8 @@ export default class OverviewView extends Component {
               <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
             </View>}
             renderRow={(item, sectionID, rowID) => <View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.2 }]}>
-                <Text style={styles.cellText}>{item.country || item.placement || Moment(item.time).format('MMM D, YYYY')}</Text>
+              <View style={[styles.cell, { flex: 1.3 }]}>
+                <Text style={styles.cellText}>{item.country || item.placement || Moment(item.time).format('ddd MMM D, YYYY')}</Text>
                 {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
               </View>
 
@@ -540,7 +552,7 @@ export default class OverviewView extends Component {
               mode="date"
               timeZoneOffsetInHours={this.state.timeZoneOffsetInHours * 60}
               onDateChange={(date) => {
-                this.setState({ startDate: date, isChanged: true });
+                this.setState({ startDate: new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 8)), isChanged: true });
                 AppEventsLogger.logEvent('change-start-date', 0, { startDate: date.toString() });
               }}
             />}
@@ -560,7 +572,8 @@ export default class OverviewView extends Component {
               mode="date"
               timeZoneOffsetInHours={this.state.timeZoneOffsetInHours * 60}
               onDateChange={(date) => {
-                this.setState({ endDate: date, isChanged: true });
+                this.setState({ endDate: new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 8)), isChanged: true });
+                console.log(this.state.endDate);
                 AppEventsLogger.logEvent('change-end-date', 0, { endDate: date.toString() });
               }}
             />}
