@@ -17,15 +17,15 @@ import Moment from 'moment';
 import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
 import { Actions } from 'react-native-router-flux';
 import { NativeAdsManager } from 'react-native-fbads';
+import { PagerTabIndicator, IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
 import { SegmentedControls } from 'react-native-radio-buttons';
 import NavigationBar from 'react-native-navbar';
-import {PagerTabIndicator, IndicatorViewPager, PagerDotIndicator} from 'rn-viewpager';
 
 import * as Facebook from './utils/facebook';
 import FbAds from './components/fbads';
 import LineChart from './components/lineChart';
 
-import { config } from '../config';
+import { config } from './config';
 
 const adsManager = new NativeAdsManager(config.fbads[Platform.OS].native);
 

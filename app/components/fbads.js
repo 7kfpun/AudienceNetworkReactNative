@@ -5,6 +5,7 @@ import {
   Text,
   View,
 } from 'react-native';
+
 import { withNativeAd } from 'react-native-fbads';
 
 const styles = StyleSheet.create({

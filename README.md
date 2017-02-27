@@ -74,6 +74,7 @@ The application is build with [React Native](https://github.com/facebook/react-n
 
 * Clone this repo `git clone git@github.com:7kfpun/AudienceNetworkReactNative.git`
 * `cd AudienceNetworkReactNative`
+* `cp app/config.example.js app/config.js`  // and config it
 * run `npm install` || run `yarn install`
 
 #### iOS
