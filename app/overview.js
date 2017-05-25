@@ -491,7 +491,7 @@ export default class OverviewView extends Component {
 
         <IndicatorViewPager
           style={{ height: 220, marginBottom: 5 }}
-          indicator={() => <PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
+          indicator={<PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
         >
           <View style={styles.chartBlock}>
             {this.state.requests && this.state.requests.length > 1 && <LineChart data={this.state.requests} />}
