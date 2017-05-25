@@ -1,4 +1,4 @@
-// Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+// Copyright 2004-present Facebook. All Rights Reserved.
 //
 // You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
 // copy, modify, and distribute this software in source code or binary form for use
@@ -18,34 +18,114 @@
 
 #import <UIKit/UIKit.h>
 
+#import <FBAudienceNetwork/FBAdDefines.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol FBInstreamAdViewDelegate;
 
+/**
+ A customized UIView to display an instream video ad by Facebook.
+ */
+FB_CLASS_EXPORT FB_SUBCLASSING_RESTRICTED
 @interface FBInstreamAdView : UIView
 
+/**
+ Returns YES if the instream ad has been successfully loaded.
+
+ Note that the `adView:didFailWithError:` delegate method will be also be called
+ instead of `adViewDidLoad:` if the ad fails to load for any reason.
+ */
 @property (nonatomic, getter=isAdValid, readonly) BOOL adValid;
+
+/**
+ This property must be set prior to calling `loadAd`, so that delegate method calls
+ are received and handled.
+ */
 @property (nonatomic, weak, nullable) id<FBInstreamAdViewDelegate> delegate;
-@property (nonatomic, copy, readonly, nonnull) NSString *placementID;
 
-- (nullable instancetype)initWithPlacementID:(nonnull NSString *)placementID NS_DESIGNATED_INITIALIZER;
+/**
+ Typed access to the id of the ad placement.
+ */
+@property (nonatomic, copy, readonly) NSString *placementID;
 
+/**
+ Initializes and returns a newly allocated FBInstreamAdView object with the
+ given placement id.
+
+ - Parameter placementID: The id of the ad placement. You can create your placement id from Facebook developers page.
+ */
+- (nullable instancetype)initWithPlacementID:(NSString *)placementID NS_DESIGNATED_INITIALIZER;
+
+/**
+ Begins loading ad content.
+
+ You should implement `adViewDidLoad:` and `adView:didFailWithError:` methods
+ of `FBInstreamAdViewDelegate` to be notified when loading succeeds or fails.
+ */
 - (void)loadAd;
 
+/**
+ Begins ad playback.  This method should only be called after an `adViewDidLoad:` call
+ has been received.
+
+ - Parameter rootViewController: The view controller that will be used to modally
+   present additional view controllers, to render the ad's landing page for example.
+ */
 - (BOOL)showAdFromRootViewController:(nullable UIViewController *)rootViewController;
 
 @end
 
+/**
+ The FBInstreamAdViewDelegate protocol defines methods that allow the owner of an
+ FBInstreamAdView to respond to various stages of ad operation.
+ */
 @protocol FBInstreamAdViewDelegate <NSObject>
 
-- (void)adViewDidLoad:(nonnull FBInstreamAdView *)adView;
+/**
+ Sent when an FBInstreamAdView instance successfully loads an ad.
 
-- (void)adViewDidEnd:(nonnull FBInstreamAdView *)adView;
+ - Parameter adView: The FBInstreamAdView object sending the message.
+ */
+- (void)adViewDidLoad:(FBInstreamAdView *)adView;
 
-- (void)adView:(nonnull FBInstreamAdView *)adView didFailWithError:(nonnull NSError *)error;
+/**
+ Sent when ad playback has completed and the FBInstreamAdView is ready to be
+ deallocated. This method is mutually exclusive to `adView:didFailWithError:`, and
+ it is impossible for both methods to be received for a single ad session.
+
+ - Parameter adView: The FBInstreamAdView object sending the message.
+ */
+- (void)adViewDidEnd:(FBInstreamAdView *)adView;
+
+/**
+ Sent when ad playback has failed to load or play an ad, and the FBInstreamAdView
+ is ready to be deallocated. It is possible for this method to be called after
+ `loadAd` (if they ad fails to load) or after `showAdFromRootViewController:`
+ (if the ad has a playback failure).
+
+ - Parameter adView: The FBInstreamAdView object sending the message.
+ - Parameter error: An NSError object containing details of the error.
+ */
+- (void)adView:(FBInstreamAdView *)adView didFailWithError:(NSError *)error;
 
 @optional
 
-- (void)adViewDidClick:(nonnull FBInstreamAdView *)adView;
+/**
+ Sent when the user has touched the click-through interface element. The ad's
+ landing page will be shown.
 
-- (void)adViewWillLogImpression:(nonnull FBInstreamAdView *)adView;
+ - Parameter adView: The FBInstreamAdView object sending the message.
+ */
+- (void)adViewDidClick:(FBInstreamAdView *)adView;
+
+/**
+ Sent immediately before the impression of an FBInstreamAdView object will be logged.
+
+ - Parameter adView: The FBInstreamAdView object sending the message.
+ */
+- (void)adViewWillLogImpression:(FBInstreamAdView *)adView;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -1,4 +1,4 @@
-// Copyright (c) 2014-present, Facebook, Inc. All rights reserved.
+// Copyright 2004-present Facebook. All Rights Reserved.
 //
 // You are hereby granted a non-exclusive, worldwide, royalty-free license to use,
 // copy, modify, and distribute this software in source code or binary form for use
@@ -38,4 +38,4 @@
 // NOTE: Any changes should also be made to the module.modulemap
 // to ensure comptability with Swift apps using Cocoapods
 
-#define FB_AD_SDK_VERSION @"4.18.0"
+#define FB_AD_SDK_VERSION @"4.22.1"
