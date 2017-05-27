@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   ActionSheetIOS,
   Alert,
@@ -9,28 +10,20 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
 import { AccessToken, AppEventsLogger } from 'react-native-fbsdk';
-import { Actions } from 'react-native-router-flux';
+import { bindActionCreators } from 'redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import NavigationBar from 'react-native-navbar';
-import store from 'react-native-simple-store';
+
+import * as fbappActions from '../actions/fbapp';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
-  },
-  navigatorBar: {
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomColor: '#E0E0E0',
-  },
-  navigatorRightButton: {
-    paddingTop: 10,
-    paddingLeft: 50,
-    paddingRight: 10,
   },
   row: {
     flexDirection: 'row',
@@ -53,43 +46,68 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class Main extends Component {
-  constructor(props) {
-    super(props);
-    this.dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
-
-    this.state = {
-      refreshing: false,
-      dataSource: this.dataSource.cloneWithRows([]),
-      apps: [],
+class MainView extends Component {
+  static navigationOptions = ({ navigation }) => {
+    const isLoggedIn = navigation.state && navigation.state.params && navigation.state.params.isLoggedIn;
+    return {
+      title: 'F.A.N Report',
+      headerLeft: <TouchableOpacity
+        underlayColor="white"
+        onPress={() => {
+          navigation.navigate('Login');
+          AppEventsLogger.logEvent('press-logout-button');
+        }}
+      >
+        <Text style={{ marginLeft: 6, fontSize: 16, color: '#0076FF' }}>{isLoggedIn ? 'Logout' : 'Login'}</Text>
+      </TouchableOpacity>,
+      headerRight: isLoggedIn && <TouchableOpacity
+        underlayColor="white"
+        onPress={() => {
+          navigation.navigate('Add');
+          AppEventsLogger.logEvent('press-add-button');
+        }}
+      >
+        <Icon name="add" size={30} color="#0076FF" />
+      </TouchableOpacity>,
+      headerStyle: {
+        backgroundColor: 'white',
+      },
     };
-  }
+  };
+
+  state = {
+    refreshing: false,
+  };
 
   componentDidMount() {
+    const { dispatch, navigate } = this.props.navigation;
+
     AccessToken.getCurrentAccessToken().then(
       (data) => {
         console.log('getCurrentAccessToken', data);
-        if (!data || !data.permissions) {
-          Actions.login();
+        if (data && data.permissions) {
+          dispatch({ type: 'Login' });
+        } else {
+          dispatch({ type: 'Logout' });
+          navigate('Login');
         }
       },
     );
 
-    this.prepareRows();
+    this.props.fetchFbapps().then(() => {
+      this.initDataSource(this.props.fbapps);
+    });
   }
 
-  componentWillReceiveProps() {
-    this.prepareRows();
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isLoggedIn !== this.props.isLoggedIn) {
+      this.props.navigation.setParams({ isLoggedIn: nextProps.isLoggedIn });
+    }
   }
 
-  onPressDelete(rowId) {
-    const deleteApp = (rowId) => {
-      const apps = this.state.apps.splice(rowId, 1);
-      store.save('APPS', apps);
-      this.setState({
-        apps,
-        dataSource: this.dataSource.cloneWithRows(apps),
-      });
+  onPressDelete(appId) {
+    const deleteApp = (id) => {
+      this.props.deleteFbapp(id);
       AppEventsLogger.logEvent('delete-a-new-app');
     };
 
@@ -108,7 +126,7 @@ export default class Main extends Component {
       },
       (buttonIndex) => {
         if (buttonIndex === 0) {
-          deleteApp(rowId);
+          deleteApp(appId);
         }
       });
     } else {
@@ -117,58 +135,28 @@ export default class Main extends Component {
         null,
         [
           { text: 'Cancel', onPress: () => console.log('Cancel Pressed!') },
-          { text: 'OK', onPress: () => deleteApp(rowId) },
+          { text: 'OK', onPress: () => deleteApp(appId) },
         ],
       );
     }
   }
 
-  prepareRows() {
-    const that = this;
-    store.get('APPS').then((apps) => {
-      let tempApps = apps;
-      if (!tempApps || !Array.isArray(tempApps)) {
-        tempApps = [];
-      }
-      that.setState({
-        apps: tempApps,
-        dataSource: that.dataSource.cloneWithRows(tempApps),
-      });
-    });
-  }
+  initDataSource(rows) {
+    const dataSource = new ListView.DataSource({
+      rowHasChanged: (row1, row2) => row1 !== row2,
+    }).cloneWithRows(rows);
 
-  renderNav() {
-    return (
-      <NavigationBar
-        title={{ title: this.props.title }}
-        style={styles.navigatorBar}
-        leftButton={{
-          title: 'Logout',
-          handler: () => {
-            Actions.login();
-            AppEventsLogger.logEvent('press-logout-button');
-          },
-        }}
-        rightButton={<TouchableHighlight
-          style={styles.navigatorRightButton}
-          underlayColor="white"
-          onPress={() => {
-            Actions.add();
-            AppEventsLogger.logEvent('press-add-button');
-          }}
-        >
-          <Icon name="add" size={30} color="#0076FF" />
-        </TouchableHighlight>}
-      />
-    );
+    this.setState({ dataSource });
   }
 
   render() {
-    if (this.state.apps.length === 0) {
+    const { navigation, isLoggedIn, fbapps } = this.props;
+
+    if (fbapps.length === 0 || !this.state.dataSource) {
       return (
         <View style={styles.container}>
-          {this.renderNav()}
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{isLoggedIn ? 'yes' : 'no'}</Text>
             <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'You have no Apps added yet.'}</Text>
             <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'Tap the + to add one and get the performance.'}</Text>
           </View>
@@ -178,29 +166,23 @@ export default class Main extends Component {
 
     return (
       <View style={styles.container}>
-        {this.renderNav()}
         <View style={{ flex: 1, marginVertical: 10 }}>
           <ListView
             refreshControl={
               <RefreshControl
                 refreshing={this.state.refreshing}
-                onRefresh={() => this.prepareRows()}
+                onRefresh={() => this.initDataSource(fbapps)}
               />
             }
-
             enableEmptySections={true}
-            onEndReached={() => {
-              console.log('onEndReached');
-              // this.onPagingRequest();
-            }}
             dataSource={this.state.dataSource}
 
-            renderRow={(item, secId, rowId) => <TouchableHighlight
+            renderRow={item => (<TouchableHighlight
               onPress={() => {
-                Actions.overview({ appId: item.id, appName: item.name });
+                navigation.navigate('Overview', { appId: item.id, appName: item.name });
                 AppEventsLogger.logEvent('check-overview');
               }}
-              onLongPress={() => this.onPressDelete(rowId)}
+              onLongPress={() => this.onPressDelete(item.id)}
             >
               <View style={styles.row}>
                 <Image style={styles.image} source={{ uri: item.logo_url }} />
@@ -209,7 +191,7 @@ export default class Main extends Component {
                   {item.category && <Text style={styles.text}>{item.category}</Text>}
                 </View>
               </View>
-            </TouchableHighlight>}
+            </TouchableHighlight>)}
           />
         </View>
       </View>
@@ -217,6 +199,20 @@ export default class Main extends Component {
   }
 }
 
-Main.propTypes = {
-  title: React.PropTypes.string,
+MainView.propTypes = {
+  navigation: React.PropTypes.object.isRequired,
+  isLoggedIn: React.PropTypes.bool.isRequired,
+  fbapps: React.PropTypes.array.isRequired,
+  fetchFbapps: React.PropTypes.func.isRequired,
+  deleteFbapp: React.PropTypes.func.isRequired,
 };
+
+const mapStateToProps = state => ({
+  isLoggedIn: state.auth.isLoggedIn,
+  fbapps: state.fbapps,
+});
+
+export default connect(
+  mapStateToProps,
+  dispatch => bindActionCreators(fbappActions, dispatch),
+)(MainView);

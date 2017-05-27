@@ -10,23 +10,21 @@ import {
   View,
 } from 'react-native';
 
-import { Actions } from 'react-native-router-flux';
 import { AppEventsLogger } from 'react-native-fbsdk';
+import { bindActionCreators } from 'redux';
 import { Button, FormInput } from 'react-native-elements';
-import NavigationBar from 'react-native-navbar';
+import { connect } from 'react-redux';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import SafariView from 'react-native-safari-view';
-import store from 'react-native-simple-store';
 
-import * as Facebook from './utils/facebook';
+import * as fbappActions from '../actions/fbapp';
+
+import * as Facebook from '../utils/facebook';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
-  },
-  navigatorBar: {
-    borderBottomWidth: StyleSheet.hairlineWidth * 2,
-    borderBottomColor: '#E0E0E0',
   },
   row: {
     backgroundColor: 'white',
@@ -55,22 +53,41 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class AddView extends Component {
-  constructor(props) {
-    super(props);
-    this.dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
+const dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
 
-    this.state = {
-      isLoading: false,
-      dataSource: this.dataSource.cloneWithRows([]),
-    };
-  }
+class AddView extends Component {
+  static navigationOptions = ({ navigation }) => ({
+    title: 'Add',
+    headerLeft: <TouchableOpacity
+      underlayColor="white"
+      onPress={() => {
+        navigation.goBack();
+        AppEventsLogger.logEvent('press-logout-button');
+      }}
+    >
+      <Text style={{ marginLeft: 6, fontSize: 16, color: '#0076FF' }}>Cancel</Text>
+    </TouchableOpacity>,
+    headerStyle: {
+      backgroundColor: 'white',
+    },
+  });
+
+  state = {
+    isLoading: false,
+    dataSource: dataSource.cloneWithRows([]),
+  };
 
   onRequest() {
     console.log('onRequest accounts');
     this.setState({ isLoading: true });
     Facebook.checkAppId(this.state.text, (error, result) => this.responseInfoCallback(error, result));
     AppEventsLogger.logEvent('search-app');
+  }
+
+  addApp(app) {
+    this.props.addFbapp(app);
+    AppEventsLogger.logEvent('add-a-new-app');
+    this.props.navigation.goBack();
   }
 
   responseInfoCallback(error, result) {
@@ -91,43 +108,42 @@ export default class AddView extends Component {
     }
   }
 
-  renderNav() {
-    const addApp = (app) => {
-      store.get('APPS').then((apps) => {
-        let tempApps = apps;
-        if (!tempApps || !Array.isArray(tempApps)) {
-          tempApps = [];
-        }
-
-        tempApps.push(app);
-        store.save('APPS', tempApps);
-
-        Actions.pop();
-        Actions.refresh({});
-        AppEventsLogger.logEvent('add-a-new-app');
-      });
-    };
-
-    return (
-      <NavigationBar
-        title={{ title: this.props.title }}
-        style={styles.navigatorBar}
-        leftButton={{
-          title: 'Cancel',
-          handler: Actions.pop,
-        }}
-        rightButton={{
-          title: this.state.result && this.state.result.name ? 'Add' : '',
-          handler: () => addApp(this.state.result),
-        }}
-      />
-    );
-  }
+  // renderNav() {
+  //   const addApp = (app) => {
+  //     store.get('APPS').then((apps) => {
+  //       let tempApps = apps;
+  //       if (!tempApps || !Array.isArray(tempApps)) {
+  //         tempApps = [];
+  //       }
+  //
+  //       tempApps.push(app);
+  //       store.save('APPS', tempApps);
+  //
+  //       Actions.pop();
+  //       Actions.refresh({});
+  //       AppEventsLogger.logEvent('add-a-new-app');
+  //     });
+  //   };
+  //
+  //   return (
+  //     <NavigationBar
+  //       title={{ title: this.props.title }}
+  //       style={styles.navigatorBar}
+  //       leftButton={{
+  //         title: 'Cancel',
+  //         handler: Actions.pop,
+  //       }}
+  //       rightButton={{
+  //         title: this.state.result && this.state.result.name ? 'Add' : '',
+  //         handler: () => addApp(this.state.result),
+  //       }}
+  //     />
+  //   );
+  // }
 
   render() {
     return (
       <View style={styles.container}>
-        {this.renderNav()}
         <View>
           <View style={{ marginVertical: 10 }}>
             <FormInput
@@ -151,6 +167,12 @@ export default class AddView extends Component {
               <Text>{this.state.result.name} <Text style={{ fontSize: 12, color: 'gray' }}>{this.state.result.id}</Text></Text>
               {this.state.result.category && <Text>{this.state.result.category}</Text>}
             </View>
+            <TouchableOpacity
+              underlayColor="white"
+              onPress={() => this.addApp(this.state.result)}
+            >
+              <Icon name="add-circle-outline" size={30} color="gray" />
+            </TouchableOpacity>
           </View>}
 
           {this.state.isInvalid && <View style={{ alignItems: 'center', paddingTop: 30 }}>
@@ -182,5 +204,11 @@ export default class AddView extends Component {
 }
 
 AddView.propTypes = {
-  title: React.PropTypes.string,
+  navigation: React.PropTypes.object.isRequired,
+  addFbapp: React.PropTypes.func.isRequired,
 };
+
+export default connect(
+  null,
+  dispatch => bindActionCreators(fbappActions, dispatch),
+)(AddView);

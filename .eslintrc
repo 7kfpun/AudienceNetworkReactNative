@@ -1,10 +1,12 @@
 {
   "extends": "airbnb",
+  "parser": "babel-eslint",
 
   "rules": {
     "max-len": ["error", 300, 4],
     "react/jsx-boolean-value": 0,
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "react/forbid-prop-types": [0, { "forbid": ["object"] }],
     "no-console": 0,
     "no-alert": 0,
     "no-undef": 0,

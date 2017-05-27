@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -17,15 +18,13 @@ import Moment from 'moment';
 import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
 import { Actions } from 'react-native-router-flux';
 import { NativeAdsManager } from 'react-native-fbads';
-import { PagerTabIndicator, IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
-import { SegmentedControls } from 'react-native-radio-buttons';
-import NavigationBar from 'react-native-navbar';
+import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
 
-import * as Facebook from './utils/facebook';
-import FbAds from './components/fbads';
-import LineChart from './components/lineChart';
+import * as Facebook from '../utils/facebook';
+import FbAds from '../components/fbads';
+import LineChart from '../components/lineChart';
 
-import { config } from './config';
+import { config } from '../config';
 
 const adsManager = new NativeAdsManager(config.fbads[Platform.OS].native);
 
@@ -105,35 +104,55 @@ const styles = StyleSheet.create({
   },
 });
 
-Array.prototype.sum = function (prop) {
+Array.prototype.sum = function sum(prop) {
   let total = 0;
-  for ( let i = 0, _len = this.length; i < _len; i++ ) {
-    if (parseInt(this[i][prop]) === this[i][prop]) {
-      total += parseInt(this[i][prop]);
+  for (let i = 0, _len = this.length; i < _len; i++) {
+    if (parseInt(this[i][prop], 10) === this[i][prop]) {
+      total += parseInt(this[i][prop], 10);
     } else {
       total += parseFloat(this[i][prop]);
     }
   }
   return total;
-}
+};
+
+const dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
+const today = new Date();
 
 export default class OverviewView extends Component {
-  constructor(props) {
-    super(props);
-    this.dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
+  static navigationOptions = ({ navigation }) => ({
+    title: 'Overview',
+    headerLeft: <TouchableOpacity
+      underlayColor="white"
+      onPress={() => {
+        navigation.goBack();
+        AppEventsLogger.logEvent('press-apply-button');
+      }}
+    >
+      <Text style={{ marginLeft: 6, fontSize: 16, color: '#0076FF' }}>Back</Text>
+    </TouchableOpacity>,
+    // rightButton={{
+    //   title: this.state.isChanged ? 'Apply' : '',
+    //   tintColor: 'red',
+    //   handler: () => {
+    //     this.onRequest();
+    //   },
+    // }}
+    headerStyle: {
+      backgroundColor: 'white',
+    },
+  });
 
-    const today = new Date();
-    this.state = {
-      refreshing: false,
-      dataSource: this.dataSource.cloneWithRows([]),
-      startDate: new Date(Date.UTC(today.getFullYear(), today.getMonth() - 3, today.getDate() - 1, 8)),
-      endDate: new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate() - 1, 8)),
-      timeZoneOffsetInHours: (new Date()).getTimezoneOffset() / 60,
-      isStartDatePickerShow: false,
-      isEndDatePickerShow: false,
-      isChanged: false,
-    };
-  }
+  state = {
+    refreshing: false,
+    dataSource: dataSource.cloneWithRows([]),
+    startDate: new Date(Date.UTC(today.getFullYear(), today.getMonth() - 3, today.getDate() - 1, 8)),
+    endDate: new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate() - 1, 8)),
+    timeZoneOffsetInHours: (new Date()).getTimezoneOffset() / 60,
+    isStartDatePickerShow: false,
+    isEndDatePickerShow: false,
+    isChanged: false,
+  };
 
   componentDidMount() {
     this.checkPermissions();
@@ -145,17 +164,19 @@ export default class OverviewView extends Component {
   }
 
   onRequest() {
+    const { params } = this.props.navigation.state;
+
     console.log('onRequest');
     this.setState({
       refreshing: true,
       isStartDatePickerShow: false,
       isEndDatePickerShow: false,
     });
-    Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_request', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseInfoCallback(error, result));
-    Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_request', 'SUM', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseFilledInfoCallback(error, result));
-    Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_imp', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseImpressionsInfoCallback(error, result));
-    Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_click', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseClicksInfoCallback(error, result));
-    Facebook.audienceNetwork(this.props.appId, 'fb_ad_network_revenue', 'SUM', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseRevenueInfoCallback(error, result));
+    Facebook.audienceNetwork(params.appId, 'fb_ad_network_request', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseInfoCallback(error, result));
+    Facebook.audienceNetwork(params.appId, 'fb_ad_network_request', 'SUM', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseFilledInfoCallback(error, result));
+    Facebook.audienceNetwork(params.appId, 'fb_ad_network_imp', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseImpressionsInfoCallback(error, result));
+    Facebook.audienceNetwork(params.appId, 'fb_ad_network_click', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseClicksInfoCallback(error, result));
+    Facebook.audienceNetwork(params.appId, 'fb_ad_network_revenue', 'SUM', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseRevenueInfoCallback(error, result));
   }
 
   checkPermissions() {
@@ -188,12 +209,12 @@ export default class OverviewView extends Component {
     if (breakdown === 'Country') {
       const groups = _(data).groupBy('country');
       out = _(groups).map((g, key) => {
-        return { country: key, value: _(g).reduce((m, x) => m + parseInt(x.value), 0) };
+        return { country: key, value: _(g).reduce((m, x) => m + parseInt(x.value, 10), 0) };
       });
     } else if (breakdown === 'Placement') {
       const groups = _(data).groupBy('placement');
       out = _(groups).map((g, key) => {
-        return { placement: key, value: _(g).reduce((m, x) => m + parseInt(x.value), 0) };
+        return { placement: key, value: _(g).reduce((m, x) => m + parseInt(x.value, 10), 0) };
       });
     }
 
@@ -214,7 +235,7 @@ export default class OverviewView extends Component {
       this.setState({
         requests: data,
         allRequests: data.sum('value'),
-        dataSource: this.dataSource.cloneWithRows(data),
+        dataSource: dataSource.cloneWithRows(data),
         refreshing: false,
         isChanged: false,
       });
@@ -349,7 +370,7 @@ export default class OverviewView extends Component {
 
   showDatePickerAndroid = async (date, startOrEnd = 'START') => {
     try {
-      const {action, year, month, day} = await DatePickerAndroid.open({ date });
+      const { action, year, month, day } = await DatePickerAndroid.open({ date });
       if (action !== DatePickerAndroid.dismissedAction) {
         const date = new Date(Date.UTC(year, month, day, 8));
         if (startOrEnd === 'START') {
@@ -366,7 +387,7 @@ export default class OverviewView extends Component {
           AppEventsLogger.logEvent('change-end-date', 0, { endDate: date.toString() });
         }
       }
-    } catch ({code, message}) {
+    } catch ({ code, message }) {
       console.warn('Cannot open date picker', message);
     }
   }
@@ -393,27 +414,6 @@ export default class OverviewView extends Component {
       this.showDatePickerAndroid(this.state.endDate, 'END');
     }
     AppEventsLogger.logEvent('press-change-end-date');
-  }
-
-  renderNav() {
-    return (
-      <NavigationBar
-        title={{ title: this.props.title }}
-        style={styles.navigatorBar}
-        leftButton={{
-          title: 'Back',
-          handler: Actions.pop,
-        }}
-        rightButton={{
-          title: this.state.isChanged ? 'Apply' : '',
-          tintColor: 'red',
-          handler: () => {
-            this.onRequest();
-            AppEventsLogger.logEvent('press-apply-button');
-          },
-        }}
-      />
-    );
   }
 
   renderInsights() {
@@ -450,7 +450,7 @@ export default class OverviewView extends Component {
 
           <View style={styles.overviewCell}>
             <Text style={styles.cellText}>{'Est. Rev'}</Text>
-            <Text style={styles.cellText}>{this.state.allRevenue && `$${this.state.allRevenue.toFixed(2)}` || '*'}</Text>
+            <Text style={styles.cellText}>{(this.state.allRevenue && `$${this.state.allRevenue.toFixed(2)}`) || '*'}</Text>
           </View>
         </View>
 
@@ -484,8 +484,8 @@ export default class OverviewView extends Component {
             enableEmptySections={true}
             scrollEnabled={false}
             dataSource={this.state.dataSource}
-            renderHeader={() => <View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.35 }]} />
+            renderHeader={() => (<View style={[styles.row, { padding: 0 }]}>
+              <View style={[styles.cell, { flex: 1.4 }]} />
               <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
@@ -494,9 +494,9 @@ export default class OverviewView extends Component {
               <View style={styles.cell}><Text style={styles.cellText}>{'CTR'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
-            </View>}
-            renderRow={(item, sectionID, rowID) => <View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.35 }]}>
+            </View>)}
+            renderRow={(item, sectionID, rowID) => (<View style={[styles.row, { padding: 0 }]}>
+              <View style={[styles.cell, { flex: 1.4 }]}>
                 <Text style={styles.cellText}>{item.country || item.placement || Moment(item.time).format('ddd MMM D, YYYY')}</Text>
                 {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
               </View>
@@ -509,7 +509,7 @@ export default class OverviewView extends Component {
               <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.impressions && this.state.clicks[rowID] && this.state.impressions[rowID] && `${((this.state.clicks[rowID].value / this.state.impressions[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.revenue && this.state.impressions[rowID] && this.state.revenue[rowID] && `$${((this.state.revenue[rowID].value / this.state.impressions[rowID].value) * 1000).toFixed(2)}`) || '*'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{(this.state.revenue && this.state.revenue[rowID] && `$${(this.state.revenue[rowID].value * 1).toFixed(2)}`) || '*'}</Text></View>
-            </View>}
+            </View>)}
           />
         </ScrollView>
       </View>
@@ -517,9 +517,10 @@ export default class OverviewView extends Component {
   }
 
   render() {
+    const { params } = this.props.navigation.state;
+
     return (
       <View style={styles.container}>
-        {this.renderNav()}
         <ScrollView
           refreshControl={
             <RefreshControl
@@ -535,8 +536,8 @@ export default class OverviewView extends Component {
             <View style={[styles.row, { paddingVertical: 8 }]}>
               <Text style={styles.text}>App</Text>
               <View style={{ alignItems: 'flex-end' }}>
-                <Text style={[styles.text, { lineHeight: 20 }]}>{this.props.appName}</Text>
-                <Text style={[styles.text, { lineHeight: 20, fontSize: 12, color: 'gray' }]}>{this.props.appId}</Text>
+                <Text style={[styles.text, { lineHeight: 20 }]}>{params.appName}</Text>
+                <Text style={[styles.text, { lineHeight: 20, fontSize: 12, color: 'gray' }]}>{params.appId}</Text>
               </View>
             </View>
 
@@ -605,8 +606,11 @@ export default class OverviewView extends Component {
   }
 }
 
+OverviewView.defaultProps = {
+  title: '',
+};
+
 OverviewView.propTypes = {
   title: React.PropTypes.string,
-  appId: React.PropTypes.string,
-  appName: React.PropTypes.string,
+  navigation: React.PropTypes.object.isRequired,
 };
