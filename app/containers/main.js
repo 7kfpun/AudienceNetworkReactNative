@@ -20,11 +20,13 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SwipeListView } from 'react-native-swipe-list-view';
 
 import * as fbappActions from '../actions/fbapp';
+import AdBanner from '../components/fbadbanner';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
+    paddingTop: 10,
   },
   row: {
     flexDirection: 'row',
@@ -169,54 +171,53 @@ class MainView extends Component {
 
     return (
       <View style={styles.container}>
-        <View style={{ flex: 1, marginVertical: 10 }}>
-          <SwipeListView
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.refreshing}
-                onRefresh={() => {
-                  this.props.fetchFbapps();
-                  AppEventsLogger.logEvent('refresh-addlist');
-                }}
-              />
-            }
-            enableEmptySections={true}
-            dataSource={dataSource}
+        <SwipeListView
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                this.props.fetchFbapps();
+                AppEventsLogger.logEvent('refresh-addlist');
+              }}
+            />
+          }
+          enableEmptySections={true}
+          dataSource={dataSource}
 
-            renderRow={item => (<TouchableHighlight
+          renderRow={item => (<TouchableHighlight
+            onPress={() => {
+              navigation.navigate('Overview', { appId: item.id, appName: item.name });
+              AppEventsLogger.logEvent('check-overview');
+            }}
+          >
+            <View style={styles.row}>
+              <Image style={styles.image} source={{ uri: item.logo_url }} />
+              <View style={{ paddingLeft: 10 }}>
+                <Text style={styles.text}>{item.name} <Text style={{ fontSize: 12, color: 'grey' }}>{item.id}</Text></Text>
+                {item.category && <Text style={styles.text}>{item.category}</Text>}
+              </View>
+            </View>
+          </TouchableHighlight>)}
+
+          renderHiddenRow={item => (
+            <TouchableOpacity
+              style={{ flex: 1 }}
               onPress={() => {
-                navigation.navigate('Overview', { appId: item.id, appName: item.name });
-                AppEventsLogger.logEvent('check-overview');
+                AppEventsLogger.logEvent('remove-an-app');
+                this.onPressDelete(item.id);
               }}
             >
-              <View style={styles.row}>
-                <Image style={styles.image} source={{ uri: item.logo_url }} />
-                <View style={{ paddingLeft: 10 }}>
-                  <Text style={styles.text}>{item.name} <Text style={{ fontSize: 12, color: 'grey' }}>{item.id}</Text></Text>
-                  {item.category && <Text style={styles.text}>{item.category}</Text>}
-                </View>
+              <View style={styles.removeButton}>
+                <Text />
+                <Text style={{ color: 'white' }}>Remove</Text>
               </View>
-            </TouchableHighlight>)}
+            </TouchableOpacity>
+          )}
 
-            renderHiddenRow={item => (
-              <TouchableOpacity
-                style={{ flex: 1 }}
-                onPress={() => {
-                  AppEventsLogger.logEvent('remove-an-app');
-                  this.onPressDelete(item.id);
-                }}
-              >
-                <View style={styles.removeButton}>
-                  <Text />
-                  <Text style={{ color: 'white' }}>Remove</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-
-            rightOpenValue={-75}
-            disableRightSwipe={true}
-          />
-        </View>
+          rightOpenValue={-75}
+          disableRightSwipe={true}
+        />
+        <AdBanner />
       </View>
     );
   }

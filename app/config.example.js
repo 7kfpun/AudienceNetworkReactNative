@@ -3,10 +3,12 @@ exports.config = {
     ios: {
       native: '',
       interstitial: '',
+      banner: '',
     },
     android: {
       native: '',
       interstitial: '',
+      banner: '',
     },
   },
 };
