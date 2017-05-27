@@ -46,6 +46,7 @@ const styles = StyleSheet.create({
   },
 });
 
+
 class MainView extends Component {
   static navigationOptions = ({ navigation }) => {
     const isLoggedIn = navigation.state && navigation.state.params && navigation.state.params.isLoggedIn;
@@ -94,9 +95,7 @@ class MainView extends Component {
       },
     );
 
-    this.props.fetchFbapps().then(() => {
-      this.initDataSource(this.props.fbapps);
-    });
+    this.props.fetchFbapps();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -141,18 +140,13 @@ class MainView extends Component {
     }
   }
 
-  initDataSource(rows) {
-    const dataSource = new ListView.DataSource({
-      rowHasChanged: (row1, row2) => row1 !== row2,
-    }).cloneWithRows(rows);
-
-    this.setState({ dataSource });
-  }
+  dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
 
   render() {
     const { navigation, isLoggedIn, fbapps } = this.props;
+    const dataSource = this.dataSource.cloneWithRows(fbapps);
 
-    if (fbapps.length === 0 || !this.state.dataSource) {
+    if (fbapps.length === 0) {
       return (
         <View style={styles.container}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -175,7 +169,7 @@ class MainView extends Component {
               />
             }
             enableEmptySections={true}
-            dataSource={this.state.dataSource}
+            dataSource={dataSource}
 
             renderRow={item => (<TouchableHighlight
               onPress={() => {

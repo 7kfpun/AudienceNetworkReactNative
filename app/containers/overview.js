@@ -16,7 +16,6 @@ import {
 import Moment from 'moment';
 
 import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
-import { Actions } from 'react-native-router-flux';
 import { NativeAdsManager } from 'react-native-fbads';
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
 
@@ -180,11 +179,14 @@ export default class OverviewView extends Component {
   }
 
   checkPermissions() {
+    const { dispatch, navigate } = this.props.navigation;
+
     AccessToken.getCurrentAccessToken().then(
       (data) => {
         console.log('getCurrentAccessToken', data);
         if (!data || !data.permissions) {
-          Actions.login();
+          dispatch({ type: 'Logout' });
+          navigate('Login');
         }
 
         if (data && data.permissions && data.permissions.indexOf('read_audience_network_insights') === -1) {
