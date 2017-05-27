@@ -17,6 +17,7 @@ import {
 import { AccessToken, AppEventsLogger } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 import * as fbappActions from '../actions/fbapp';
 
@@ -35,6 +36,14 @@ const styles = StyleSheet.create({
     borderTopColor: '#E0E0E0',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E0E0E0',
+  },
+  removeButton: {
+    alignItems: 'center',
+    backgroundColor: '#ff3b30',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
   },
   image: {
     width: 40,
@@ -161,11 +170,14 @@ class MainView extends Component {
     return (
       <View style={styles.container}>
         <View style={{ flex: 1, marginVertical: 10 }}>
-          <ListView
+          <SwipeListView
             refreshControl={
               <RefreshControl
                 refreshing={this.state.refreshing}
-                onRefresh={() => this.initDataSource(fbapps)}
+                onRefresh={() => {
+                  this.props.fetchFbapps();
+                  AppEventsLogger.logEvent('refresh-addlist');
+                }}
               />
             }
             enableEmptySections={true}
@@ -176,7 +188,6 @@ class MainView extends Component {
                 navigation.navigate('Overview', { appId: item.id, appName: item.name });
                 AppEventsLogger.logEvent('check-overview');
               }}
-              onLongPress={() => this.onPressDelete(item.id)}
             >
               <View style={styles.row}>
                 <Image style={styles.image} source={{ uri: item.logo_url }} />
@@ -186,6 +197,24 @@ class MainView extends Component {
                 </View>
               </View>
             </TouchableHighlight>)}
+
+            renderHiddenRow={item => (
+              <TouchableOpacity
+                style={{ flex: 1 }}
+                onPress={() => {
+                  AppEventsLogger.logEvent('remove-an-app');
+                  this.onPressDelete(item.id);
+                }}
+              >
+                <View style={styles.removeButton}>
+                  <Text />
+                  <Text style={{ color: 'white' }}>Remove</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+
+            rightOpenValue={-75}
+            disableRightSwipe={true}
           />
         </View>
       </View>

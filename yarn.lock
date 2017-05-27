@@ -3688,10 +3688,6 @@ react-native-fbsdk@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/react-native-fbsdk/-/react-native-fbsdk-0.6.0.tgz#08fdc00e9ca777f724a70029a5b1c3794b49b882"
 
-react-native-navbar@^1.5.4:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/react-native-navbar/-/react-native-navbar-1.7.1.tgz#de0e6f8c2156c7e984bb43c76732bd2437b7df0f"
-
 react-native-pathjs-charts@0.0.28:
   version "0.0.28"
   resolved "https://registry.yarnpkg.com/react-native-pathjs-charts/-/react-native-pathjs-charts-0.0.28.tgz#7c928f55f9ddfa2b27e0cde936645ead74e8c09e"
@@ -3700,10 +3696,6 @@ react-native-pathjs-charts@0.0.28:
     lodash "^4.12.0"
     paths-js "^0.4.5"
     react-native-svg "~5.1.8"
-
-react-native-radio-buttons@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/react-native-radio-buttons/-/react-native-radio-buttons-0.14.0.tgz#df8b2417eecc63f65704acd20144fdd169b2c4a4"
 
 react-native-safari-view@^2.0.0:
   version "2.0.0"
@@ -3725,6 +3717,10 @@ react-native-simple-store@^1.1.0:
   dependencies:
     color "^0.11.1"
     lodash "^4.16.6"
+
+react-native-swipe-list-view@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-swipe-list-view/-/react-native-swipe-list-view-0.4.1.tgz#f4b0288e090fc86f743bc30b45df829de729bcd7"
 
 react-native-tab-navigator@^0.3.3:
   version "0.3.3"
