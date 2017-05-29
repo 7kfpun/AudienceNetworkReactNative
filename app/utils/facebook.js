@@ -5,6 +5,7 @@ function graphRequest(path, parameters, accessToken, callback) {
   if (accessToken) {
     fields.accessToken = accessToken;
   }
+  console.log('parameters', parameters);
   const infoRequest = new GraphRequest(
     path,
     fields,
@@ -25,8 +26,8 @@ export const audienceNetwork = (appId, eventName, aggregateBy, breakdown, startD
     // breakdowns: { string: '["placement"]' },
     // breakdowns: { string: '["country"]' },
     summary: { string: 'true' },
-    since: { string: (startDate.getTime() / 1000).toString() },
-    until: { string: (endDate.getTime() / 1000).toString() },
+    since: { string: parseInt(startDate.getTime() / 1000, 10).toString() },
+    until: { string: parseInt(endDate.getTime() / 1000, 10).toString() },
   },
   null,
   callback,

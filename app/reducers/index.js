@@ -3,6 +3,8 @@ import { combineReducers } from 'redux';
 import { AppNavigator } from '../navigators/AppNavigator';
 import authReducer from './auth';
 import fbappsReducer from './fbapps';
+import dateRangeReducer from './dateRange';
+import insightReducer from './insights';
 
 const initialNavState = AppNavigator.router.getStateForAction(
   AppNavigator.router.getActionForPathAndParams('Main'),
@@ -18,6 +20,8 @@ const AppReducer = combineReducers({
   nav: navReducer,
   auth: authReducer,
   fbapps: fbappsReducer,
+  dateRange: dateRangeReducer,
+  insights: insightReducer,
 });
 
 export default AppReducer;

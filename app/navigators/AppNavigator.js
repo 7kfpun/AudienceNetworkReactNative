@@ -7,12 +7,14 @@ import LoginView from '../containers/login';
 import MainView from '../containers/main';
 import OverviewView from '../containers/overview';
 import AddView from '../containers/add';
+import DateSettingsView from '../containers/DateSettings';
 
 export const AppNavigator = StackNavigator({
   Login: { screen: LoginView },
   Main: { screen: MainView },
   Overview: { screen: OverviewView },
   Add: { screen: AddView },
+  DateSettings: { screen: DateSettingsView },
 }, {
   mode: 'modal',
   headerMode: 'screen',

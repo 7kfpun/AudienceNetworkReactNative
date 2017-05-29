@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import {
   ActionSheetIOS,
   Alert,
@@ -16,17 +15,19 @@ import {
 
 import { AccessToken, AppEventsLogger } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { connect } from 'react-redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as fbappActions from '../actions/fbapp';
+import * as dateRangeActions from '../actions/dateRange';
 import AdBanner from '../components/fbadbanner';
+import RangePicker from '../components/RangePicker';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
-    paddingTop: 10,
   },
   row: {
     flexDirection: 'row',
@@ -93,6 +94,7 @@ class MainView extends Component {
 
   componentDidMount() {
     const { dispatch, navigate } = this.props.navigation;
+    const { fetchRangeType } = this.props;
 
     AccessToken.getCurrentAccessToken().then(
       (data) => {
@@ -107,6 +109,7 @@ class MainView extends Component {
     );
 
     this.props.fetchFbapps();
+    fetchRangeType();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -171,6 +174,8 @@ class MainView extends Component {
 
     return (
       <View style={styles.container}>
+        <RangePicker navigation={navigation} />
+
         <SwipeListView
           refreshControl={
             <RefreshControl
@@ -229,6 +234,7 @@ MainView.propTypes = {
   fbapps: React.PropTypes.array.isRequired,
   fetchFbapps: React.PropTypes.func.isRequired,
   deleteFbapp: React.PropTypes.func.isRequired,
+  fetchRangeType: React.PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -238,5 +244,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  dispatch => bindActionCreators(fbappActions, dispatch),
+  dispatch => bindActionCreators(Object.assign({}, fbappActions, dateRangeActions), dispatch),
 )(MainView);

@@ -1,27 +1,30 @@
 import React, { Component } from 'react';
 import {
-  DatePickerAndroid,
-  DatePickerIOS,
   ListView,
   Platform,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableHighlight,
   TouchableOpacity,
   View,
 } from 'react-native';
 
-import Moment from 'moment';
+import moment from 'moment';
 
 import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
-import { NativeAdsManager } from 'react-native-fbads';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
+import { NativeAdsManager } from 'react-native-fbads';
 
 import * as Facebook from '../utils/facebook';
+import * as dateRangeActions from '../actions/dateRange';
+import * as insightActions from '../actions/insights';
+
 import FbAds from '../components/fbads';
 import LineChart from '../components/lineChart';
+import RangePicker from '../components/RangePicker';
 
 import { config } from '../config';
 
@@ -46,10 +49,6 @@ const styles = StyleSheet.create({
     borderTopColor: '#E0E0E0',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E0E0E0',
-  },
-  optionsBlock: {
-    marginTop: 10,
-    marginBottom: 5,
   },
   datePicker: {
     backgroundColor: 'white',
@@ -103,24 +102,11 @@ const styles = StyleSheet.create({
   },
 });
 
-Array.prototype.sum = function sum(prop) {
-  let total = 0;
-  for (let i = 0, _len = this.length; i < _len; i++) {
-    if (parseInt(this[i][prop], 10) === this[i][prop]) {
-      total += parseInt(this[i][prop], 10);
-    } else {
-      total += parseFloat(this[i][prop]);
-    }
-  }
-  return total;
-};
-
 const dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
-const today = new Date();
 
-export default class OverviewView extends Component {
+class OverviewView extends Component {
   static navigationOptions = ({ navigation }) => ({
-    title: 'Overview',
+    title: `${navigation.state.params.appName} (${navigation.state.params.appId})`,
     headerLeft: <TouchableOpacity
       underlayColor="white"
       onPress={() => {
@@ -140,16 +126,14 @@ export default class OverviewView extends Component {
     headerStyle: {
       backgroundColor: 'white',
     },
+    headerTitleStyle: {
+      fontSize: 12,
+    },
   });
 
   state = {
     refreshing: false,
     dataSource: dataSource.cloneWithRows([]),
-    startDate: new Date(Date.UTC(today.getFullYear(), today.getMonth() - 3, today.getDate() - 1, 8)),
-    endDate: new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate() - 1, 8)),
-    timeZoneOffsetInHours: (new Date()).getTimezoneOffset() / 60,
-    isStartDatePickerShow: false,
-    isEndDatePickerShow: false,
     isChanged: false,
   };
 
@@ -158,24 +142,21 @@ export default class OverviewView extends Component {
     this.onRequest();
   }
 
-  componentWillReceiveProps() {
-    this.onRequest();
-  }
-
   onRequest() {
     const { params } = this.props.navigation.state;
+    const { startDate, endDate } = this.props;
 
-    console.log('onRequest');
+    const { fetchRequests, fetchFilledRequests, fetchImpressions, fetchClicks, fetchRevenue } = this.props;
+
     this.setState({
       refreshing: true,
-      isStartDatePickerShow: false,
-      isEndDatePickerShow: false,
     });
-    Facebook.audienceNetwork(params.appId, 'fb_ad_network_request', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseInfoCallback(error, result));
-    Facebook.audienceNetwork(params.appId, 'fb_ad_network_request', 'SUM', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseFilledInfoCallback(error, result));
-    Facebook.audienceNetwork(params.appId, 'fb_ad_network_imp', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseImpressionsInfoCallback(error, result));
-    Facebook.audienceNetwork(params.appId, 'fb_ad_network_click', 'COUNT', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseClicksInfoCallback(error, result));
-    Facebook.audienceNetwork(params.appId, 'fb_ad_network_revenue', 'SUM', this.state.breakdown, this.state.startDate, this.state.endDate, (error, result) => this.responseRevenueInfoCallback(error, result));
+
+    fetchRequests(params.appId, startDate, endDate);
+    fetchFilledRequests(params.appId, startDate, endDate);
+    fetchImpressions(params.appId, startDate, endDate);
+    fetchClicks(params.appId, startDate, endDate);
+    fetchRevenue(params.appId, startDate, endDate);
   }
 
   checkPermissions() {
@@ -224,309 +205,120 @@ export default class OverviewView extends Component {
     return out;
   }
 
-  responseInfoCallback(error, result) {
-    if (error) {
-      console.log('Error insights:', error);
-      this.setState({
-        refreshing: false,
-        isChanged: false,
-      });
-    } else {
-      console.log('Success insights:', result);
-      const data = result.data.reverse();
-      this.setState({
-        requests: data,
-        allRequests: data.sum('value'),
-        dataSource: dataSource.cloneWithRows(data),
-        refreshing: false,
-        isChanged: false,
-      });
-
-      // if (this.state.breakdown) {
-      //   const data = _(result.data).map((item) => {
-      //     if (item.breakdowns && item.breakdowns.country) {
-      //       return Object.assign({ country: item.breakdowns.country }, item);
-      //     } else if (item.breakdowns && item.breakdowns.placement) {
-      //       return Object.assign({ placement: item.breakdowns.placement }, item);
-      //     }
-      //     return item;
-      //   });
-      //
-      //   console.log(data);
-      //   this.setState({
-      //     requests: this.aggregateData(data, this.state.breakdown),
-      //     dataSource: this.dataSource.cloneWithRows(this.aggregateData(data, this.state.breakdown)),
-      //     refreshing: false,
-      //   });
-      // }
-    }
-  }
-
-  responseFilledInfoCallback(error, result) {
-    if (error) {
-      console.log('Error insights:', error);
-    } else {
-      console.log('Success insights:', result);
-      // if (this.state.breakdown) {
-      //   const data = _(result.data).map((item) => {
-      //     if (item.breakdowns && item.breakdowns.country) {
-      //       return Object.assign({ country: item.breakdowns.country }, item);
-      //     } else if (item.breakdowns && item.breakdowns.placement) {
-      //       return Object.assign({ placement: item.breakdowns.placement }, item);
-      //     }
-      //     return item;
-      //   });
-      //
-      //   console.log(data);
-      //   this.setState({ filled: this.aggregateData(data, this.state.breakdown) });
-      // }
-
-      const data = result.data.reverse();
-      this.setState({
-        filled: data,
-        allFilled: data.sum('value'),
-      });
-    }
-  }
-
-  responseImpressionsInfoCallback(error, result) {
-    if (error) {
-      console.log('Error insights:', error);
-    } else {
-      console.log('Success insights:', result);
-      // if (this.state.breakdown) {
-      //   const data = _(result.data).map((item) => {
-      //     if (item.breakdowns && item.breakdowns.country) {
-      //       return Object.assign({ country: item.breakdowns.country }, item);
-      //     } else if (item.breakdowns && item.breakdowns.placement) {
-      //       return Object.assign({ placement: item.breakdowns.placement }, item);
-      //     }
-      //     return item;
-      //   });
-      //
-      //   console.log(data);
-      //   this.setState({ impressions: this.aggregateData(data, this.state.breakdown) });
-      // }
-
-      const data = result.data.reverse();
-      this.setState({
-        impressions: data,
-        allImpressions: data.sum('value'),
-      });
-    }
-  }
-
-  responseClicksInfoCallback(error, result) {
-    if (error) {
-      console.log('Error insights:', error);
-    } else {
-      console.log('Success insights:', result);
-      // if (this.state.breakdown) {
-      //   const data = _(result.data).map((item) => {
-      //     if (item.breakdowns && item.breakdowns.country) {
-      //       return Object.assign({ country: item.breakdowns.country }, item);
-      //     } else if (item.breakdowns && item.breakdowns.placement) {
-      //       return Object.assign({ placement: item.breakdowns.placement }, item);
-      //     }
-      //     return item;
-      //   });
-      //
-      //   console.log(data);
-      //   this.setState({ clicks: this.aggregateData(data, this.state.breakdown) });
-      // }
-
-      const data = result.data.reverse();
-      this.setState({
-        clicks: data,
-        allClicks: data.sum('value'),
-      });
-    }
-  }
-
-  responseRevenueInfoCallback(error, result) {
-    if (error) {
-      console.log('Error insights:', error);
-    } else {
-      console.log('Success insights:', result);
-      // if (this.state.breakdown) {
-      //   const data = _(result.data).map((item) => {
-      //     if (item.breakdowns && item.breakdowns.country) {
-      //       return Object.assign({ country: item.breakdowns.country }, item);
-      //     } else if (item.breakdowns && item.breakdowns.placement) {
-      //       return Object.assign({ placement: item.breakdowns.placement }, item);
-      //     }
-      //     return item;
-      //   });
-      //
-      //   console.log(data);
-      //   this.setState({ revenue: this.aggregateData(data, this.state.breakdown) });
-      // }
-
-      const data = result.data.reverse();
-      this.setState({
-        revenue: data,
-        allRevenue: data.sum('value'),
-      });
-    }
-  }
-
-  showDatePickerAndroid = async (date, startOrEnd = 'START') => {
-    try {
-      const { action, year, month, day } = await DatePickerAndroid.open({ date });
-      if (action !== DatePickerAndroid.dismissedAction) {
-        const date = new Date(Date.UTC(year, month, day, 8));
-        if (startOrEnd === 'START') {
-          this.setState({
-            startDate: date,
-            isChanged: true,
-          });
-          AppEventsLogger.logEvent('change-start-date', 0, { startDate: date.toString() });
-        } else {
-          this.setState({
-            endDate: date,
-            isChanged: true,
-          });
-          AppEventsLogger.logEvent('change-end-date', 0, { endDate: date.toString() });
-        }
-      }
-    } catch ({ code, message }) {
-      console.warn('Cannot open date picker', message);
-    }
-  }
-
-  openStartDatePicker() {
-    if (Platform.OS === 'ios') {
-      this.setState({
-        isStartDatePickerShow: !this.state.isStartDatePickerShow,
-        isEndDatePickerShow: false,
-      });
-    } else {
-      this.showDatePickerAndroid(this.state.startDate, 'START');
-    }
-    AppEventsLogger.logEvent('press-change-start-date');
-  }
-
-  openEndDatePicker() {
-    if (Platform.OS === 'ios') {
-      this.setState({
-        isEndDatePickerShow: !this.state.isEndDatePickerShow,
-        isStartDatePickerShow: false,
-      });
-    } else {
-      this.showDatePickerAndroid(this.state.endDate, 'END');
-    }
-    AppEventsLogger.logEvent('press-change-end-date');
-  }
-
   renderInsights() {
-    if (this.state.requests && this.state.requests.length === 0) {
+    const { requestsSum, filledRequestsSum, impressionsSum, clicksSum, revenueSum } = this.props;
+    const { requests, filledRequests, impressions, clicks, revenue } = this.props;
+
+    if (requests.length > 0 || filledRequests.length > 0 || impressions.length > 0 || clicks.length > 0 || revenue.length > 0) {
       return (
-        <View style={{ padding: 30 }}>
-          <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
+        <View>
+          <View style={styles.overviewBlock}>
+            <View style={styles.overviewCell}>
+              <Text style={styles.cellText}>{'Requests'}</Text>
+              <Text style={styles.cellText}>{requestsSum}</Text>
+            </View>
+
+            {/* <View style={styles.overviewCell}>
+              <Text style={styles.cellText}>{'Filled'}</Text>
+              <Text style={styles.cellText}>{filledRequestsSum}</Text>
+            </View> */}
+
+            <View style={styles.overviewCell}>
+              <Text style={styles.cellText}>{'Impressions'}</Text>
+              <Text style={styles.cellText}>{impressionsSum}</Text>
+            </View>
+
+            <View style={styles.overviewCell}>
+              <Text style={styles.cellText}>{'Clicks'}</Text>
+              <Text style={styles.cellText}>{clicksSum}</Text>
+            </View>
+
+            <View style={styles.overviewCell}>
+              <Text style={styles.cellText}>{'Est. Rev'}</Text>
+              <Text style={styles.cellText}>{`$${revenueSum.toFixed(2)}`}</Text>
+            </View>
+          </View>
+
+          <FbAds adsManager={adsManager} />
+
+          <IndicatorViewPager
+            style={{ height: 220, marginBottom: 5 }}
+            indicator={<PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
+          >
+            <View style={styles.chartBlock}>
+              {requests.length > 1 && <LineChart data={requests} />}
+              <Text style={styles.cellText}>{'Requests'}</Text>
+            </View>
+            <View style={styles.chartBlock}>
+              {impressions.length > 1 && <LineChart data={impressions} />}
+              <Text style={styles.cellText}>{'Impressions'}</Text>
+            </View>
+            <View style={styles.chartBlock}>
+              {clicks.length > 1 && <LineChart data={clicks} />}
+              <Text style={styles.cellText}>{'Clicks'}</Text>
+            </View>
+            <View style={styles.chartBlock}>
+              {revenue.length > 1 && <LineChart data={revenue} />}
+              <Text style={styles.cellText}>{'Estimated Revenue'}</Text>
+            </View>
+          </IndicatorViewPager>
+
+          <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
+            <ListView
+              style={{ marginBottom: 10 }}
+              enableEmptySections={true}
+              scrollEnabled={false}
+              dataSource={dataSource.cloneWithRows(requests)}
+              renderHeader={() => (<View style={[styles.row, { padding: 0 }]}>
+                <View style={[styles.cell, { flex: 1.4 }]} />
+                <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{'Clicks'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{'Fill Rate'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{'CTR'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
+              </View>)}
+              renderRow={(item, sectionID, rowID) => (<View style={[styles.row, { padding: 0 }]}>
+                <View style={[styles.cell, { flex: 1.4 }]}>
+                  <Text style={styles.cellText}>{item.country || item.placement || moment(item.time).format('ddd MMM D, YYYY')}</Text>
+                  {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
+                </View>
+                <View style={styles.cell}><Text style={styles.cellText}>{item.value}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{(filledRequests && filledRequests[rowID] && filledRequests[rowID].value) || '*'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{(impressions && impressions[rowID] && impressions[rowID].value) || '*'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{(clicks && clicks[rowID] && clicks[rowID].value) || '*'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{(requests && filledRequests[rowID] && requests[rowID] && filledRequests[rowID] && `${((filledRequests[rowID].value / requests[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{(clicks && impressions && clicks[rowID] && impressions[rowID] && `${((clicks[rowID].value / impressions[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{(impressions && revenue && impressions[rowID] && revenue[rowID] && `$${((revenue[rowID].value / impressions[rowID].value) * 1000).toFixed(2)}`) || '*'}</Text></View>
+                <View style={styles.cell}><Text style={styles.cellText}>{(revenue && revenue[rowID] && `$${(revenue[rowID].value * 1).toFixed(2)}`) || '*'}</Text></View>
+              </View>)}
+            />
+          </ScrollView>
         </View>
       );
     }
 
     return (
-      <View>
-        <View style={styles.overviewBlock}>
-          <View style={styles.overviewCell}>
-            <Text style={styles.cellText}>{'Requests'}</Text>
-            <Text style={styles.cellText}>{this.state.allRequests || '*'}</Text>
-          </View>
-
-          <View style={styles.overviewCell}>
-            <Text style={styles.cellText}>{'Impressions'}</Text>
-            <Text style={styles.cellText}>{this.state.allImpressions || '*'}</Text>
-          </View>
-
-          {/* <View style={styles.overviewCell}>
-            <Text style={styles.cellText}>{'Filled'}</Text>
-            <Text style={styles.cellText}>{this.state.allFilled || '*'}</Text>
-          </View> */}
-
-          <View style={styles.overviewCell}>
-            <Text style={styles.cellText}>{'Clicks'}</Text>
-            <Text style={styles.cellText}>{this.state.allClicks || '*'}</Text>
-          </View>
-
-          <View style={styles.overviewCell}>
-            <Text style={styles.cellText}>{'Est. Rev'}</Text>
-            <Text style={styles.cellText}>{(this.state.allRevenue && `$${this.state.allRevenue.toFixed(2)}`) || '*'}</Text>
-          </View>
-        </View>
-
-        <FbAds adsManager={adsManager} />
-
-        <IndicatorViewPager
-          style={{ height: 220, marginBottom: 5 }}
-          indicator={<PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
-        >
-          <View style={styles.chartBlock}>
-            {this.state.requests && this.state.requests.length > 1 && <LineChart data={this.state.requests} />}
-            <Text style={styles.cellText}>{'Requests'}</Text>
-          </View>
-          <View style={styles.chartBlock}>
-            {this.state.impressions && this.state.impressions.length > 1 && <LineChart data={this.state.impressions} />}
-            <Text style={styles.cellText}>{'Impressions'}</Text>
-          </View>
-          <View style={styles.chartBlock}>
-            {this.state.clicks && this.state.clicks.length > 1 && <LineChart data={this.state.clicks} />}
-            <Text style={styles.cellText}>{'Clicks'}</Text>
-          </View>
-          <View style={styles.chartBlock}>
-            {this.state.revenue && this.state.revenue.length > 1 && <LineChart data={this.state.revenue} />}
-            <Text style={styles.cellText}>{'Estimated Revenue'}</Text>
-          </View>
-        </IndicatorViewPager>
-
-        <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
-          <ListView
-            style={{ marginBottom: 10 }}
-            enableEmptySections={true}
-            scrollEnabled={false}
-            dataSource={this.state.dataSource}
-            renderHeader={() => (<View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.4 }]} />
-              <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Clicks'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Fill Rate'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'CTR'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
-            </View>)}
-            renderRow={(item, sectionID, rowID) => (<View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.4 }]}>
-                <Text style={styles.cellText}>{item.country || item.placement || Moment(item.time).format('ddd MMM D, YYYY')}</Text>
-                {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
-              </View>
-
-              <View style={styles.cell}><Text style={styles.cellText}>{item.value}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.filled && this.state.filled[rowID] && this.state.filled[rowID].value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.impressions[rowID] && this.state.impressions[rowID].value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.clicks[rowID] && this.state.clicks[rowID].value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.requests && this.state.filled && this.state.requests[rowID] && this.state.filled[rowID] && `${((this.state.filled[rowID].value / this.state.requests[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.clicks && this.state.impressions && this.state.clicks[rowID] && this.state.impressions[rowID] && `${((this.state.clicks[rowID].value / this.state.impressions[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.impressions && this.state.revenue && this.state.impressions[rowID] && this.state.revenue[rowID] && `$${((this.state.revenue[rowID].value / this.state.impressions[rowID].value) * 1000).toFixed(2)}`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(this.state.revenue && this.state.revenue[rowID] && `$${(this.state.revenue[rowID].value * 1).toFixed(2)}`) || '*'}</Text></View>
-            </View>)}
-          />
-        </ScrollView>
+      <View style={{ padding: 30 }}>
+        <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
       </View>
     );
   }
 
   render() {
-    const { params } = this.props.navigation.state;
+    const { navigation } = this.props;
+    const { requests, filledRequests, impressions, clicks, revenue } = this.props;
 
     return (
       <View style={styles.container}>
+        <RangePicker navigation={navigation} />
+
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={this.state.refreshing}
+              refreshing={requests.length === 0 && filledRequests.length === 0 && impressions.length === 0 && clicks.length === 0 && revenue.length === 0}
               onRefresh={() => {
                 this.onRequest();
                 AppEventsLogger.logEvent('refresh-overview');
@@ -534,73 +326,6 @@ export default class OverviewView extends Component {
             />
           }
         >
-          <View style={styles.optionsBlock}>
-            <View style={[styles.row, { paddingVertical: 8 }]}>
-              <Text style={styles.text}>App</Text>
-              <View style={{ alignItems: 'flex-end' }}>
-                <Text style={[styles.text, { lineHeight: 20 }]}>{params.appName}</Text>
-                <Text style={[styles.text, { lineHeight: 20, fontSize: 12, color: 'gray' }]}>{params.appId}</Text>
-              </View>
-            </View>
-
-            <TouchableHighlight
-              underlayColor="#F4F4F4"
-              onPress={() => this.openStartDatePicker()}
-            >
-              <View style={styles.row}>
-                <Text style={styles.text}>Starts</Text>
-                <Text style={[styles.text, { color: this.state.isStartDatePickerShow ? 'red' : 'black' }]}>{Moment(this.state.startDate).format('MMM D, YYYY')}</Text>
-              </View>
-            </TouchableHighlight>
-            {this.state.isStartDatePickerShow && Platform.OS === 'ios' && <DatePickerIOS
-              style={styles.datePicker}
-              date={this.state.startDate}
-              mode="date"
-              timeZoneOffsetInHours={this.state.timeZoneOffsetInHours * 60}
-              onDateChange={(date) => {
-                this.setState({ startDate: new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 8)), isChanged: true });
-                AppEventsLogger.logEvent('change-start-date', 0, { startDate: date.toString() });
-              }}
-            />}
-
-            <TouchableHighlight
-              underlayColor="#F4F4F4"
-              onPress={() => this.openEndDatePicker()}
-            >
-              <View style={styles.row}>
-                <Text style={styles.text}>Ends</Text>
-                <Text style={[styles.text, { color: this.state.isEndDatePickerShow ? 'red' : 'black' }]}>{Moment(this.state.endDate).format('MMM D, YYYY')}</Text>
-              </View>
-            </TouchableHighlight>
-            {this.state.isEndDatePickerShow && Platform.OS === 'ios' && <DatePickerIOS
-              style={styles.datePicker}
-              date={this.state.endDate}
-              mode="date"
-              timeZoneOffsetInHours={this.state.timeZoneOffsetInHours * 60}
-              onDateChange={(date) => {
-                this.setState({ endDate: new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 8)), isChanged: true });
-                console.log(this.state.endDate);
-                AppEventsLogger.logEvent('change-end-date', 0, { endDate: date.toString() });
-              }}
-            />}
-
-            {/* <View style={[styles.row, { paddingVertical: 12 }]}>
-              <SegmentedControls
-                options={['Placement', 'Country']}
-                onSelection={(breakdown) => {
-                  console.log(breakdown);
-                  if (breakdown === this.state.breakdown) {
-                    breakdown = null;
-                    this.setState({ breakdown: null, isChanged: true, isStartDatePickerShow: false, isEndDatePickerShow: false });
-                  } else {
-                    this.setState({ breakdown, isChanged: true, isStartDatePickerShow: false, isEndDatePickerShow: false });
-                  }
-                }}
-                selectedOption={this.state.breakdown}
-              />
-            </View> */}
-          </View>
-
           {this.renderInsights()}
         </ScrollView>
       </View>
@@ -608,11 +333,33 @@ export default class OverviewView extends Component {
   }
 }
 
-OverviewView.defaultProps = {
-  title: '',
+OverviewView.propTypes = {
+  navigation: React.PropTypes.object.isRequired,
+  startDate: React.PropTypes.object.isRequired,
+  endDate: React.PropTypes.object.isRequired,
+  fetchRequests: React.PropTypes.func.isRequired,
+  fetchFilledRequests: React.PropTypes.func.isRequired,
+  fetchImpressions: React.PropTypes.func.isRequired,
+  fetchClicks: React.PropTypes.func.isRequired,
+  fetchRevenue: React.PropTypes.func.isRequired,
 };
 
-OverviewView.propTypes = {
-  title: React.PropTypes.string,
-  navigation: React.PropTypes.object.isRequired,
-};
+const mapStateToProps = state => ({
+  startDate: state.dateRange.startDate,
+  endDate: state.dateRange.endDate,
+  requests: state.insights.requests,
+  filledRequests: state.insights.filledRequests,
+  impressions: state.insights.impressions,
+  clicks: state.insights.clicks,
+  revenue: state.insights.revenue,
+  requestsSum: state.insights.requestsSum,
+  filledRequestsSum: state.insights.filledRequestsSum,
+  impressionsSum: state.insights.impressionsSum,
+  clicksSum: state.insights.clicksSum,
+  revenueSum: state.insights.revenueSum,
+});
+
+export default connect(
+  mapStateToProps,
+  dispatch => bindActionCreators({ ...dateRangeActions, ...insightActions }, dispatch),
+)(OverviewView);
