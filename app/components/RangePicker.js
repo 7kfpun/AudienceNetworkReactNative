@@ -20,6 +20,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E0E0E0',
   },
   displayBlock: {
     flex: 6,
@@ -41,43 +43,41 @@ const styles = StyleSheet.create({
   },
 });
 
-class RangePicker extends React.Component {
-  render() {
-    const { startDate, endDate, setPreviousDateRange, setNextDateRange, navigation } = this.props;
+const RangePicker = (props) => {
+  const { startDate, endDate, setPreviousDateRange, setNextDateRange, navigation } = props;
 
-    return (<View style={styles.container}>
-      <TouchableOpacity
-        style={styles.displayBlock}
-        onPress={() => {
-          navigation.navigate('DateSettings');
-          AppEventsLogger.logEvent('press-change-date-range');
-        }}
-      >
-        <View style={styles.display}>
-          <Text>{`${moment(startDate).format('MMM DD')} - ${moment(endDate).format('MMM DD')}`}</Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.iconBlock}
-        onPress={() => {
-          setPreviousDateRange();
-          AppEventsLogger.logEvent('press-previous-date-range-button');
-        }}
-      >
-        <Icon style={styles.icon} name="chevron-left" size={20} color="gray" />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.iconBlock}
-        onPress={() => {
-          setNextDateRange();
-          AppEventsLogger.logEvent('press-next-date-range-button');
-        }}
-      >
-        <Icon style={styles.icon} name="chevron-right" size={20} color="gray" />
-      </TouchableOpacity>
-    </View>);
-  }
-}
+  return (<View style={styles.container}>
+    <TouchableOpacity
+      style={styles.displayBlock}
+      onPress={() => {
+        navigation.navigate('DateSettings');
+        AppEventsLogger.logEvent('press-change-date-range');
+      }}
+    >
+      <View style={styles.display}>
+        <Text>{`${moment(startDate).format('MMM DD')} - ${moment(endDate).format('MMM DD')}`}</Text>
+      </View>
+    </TouchableOpacity>
+    <TouchableOpacity
+      style={styles.iconBlock}
+      onPress={() => {
+        setPreviousDateRange();
+        AppEventsLogger.logEvent('press-previous-date-range-button');
+      }}
+    >
+      <Icon style={styles.icon} name="chevron-left" size={20} color="gray" />
+    </TouchableOpacity>
+    <TouchableOpacity
+      style={styles.iconBlock}
+      onPress={() => {
+        setNextDateRange();
+        AppEventsLogger.logEvent('press-next-date-range-button');
+      }}
+    >
+      <Icon style={styles.icon} name="chevron-right" size={20} color="gray" />
+    </TouchableOpacity>
+  </View>);
+};
 
 RangePicker.propTypes = {
   startDate: React.PropTypes.object.isRequired,

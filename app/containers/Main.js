@@ -82,7 +82,7 @@ class MainView extends Component {
           AppEventsLogger.logEvent('press-add-button');
         }}
       >
-        <Icon name="add" size={30} color="#0076FF" />
+        <Icon style={{ marginRight: 4 }} name="add" size={30} color="#0076FF" />
       </TouchableOpacity>,
       headerStyle: {
         backgroundColor: 'white',
@@ -95,17 +95,16 @@ class MainView extends Component {
   };
 
   componentDidMount() {
-    const { dispatch, navigate } = this.props.navigation;
-    const { fetchRangeType } = this.props;
+    const { fetchRangeType, navigation } = this.props;
 
     AccessToken.getCurrentAccessToken().then(
       (data) => {
         console.log('getCurrentAccessToken', data);
         if (data && data.permissions) {
-          dispatch({ type: 'Login' });
+          navigation.dispatch({ type: 'Login' });
         } else {
-          dispatch({ type: 'Logout' });
-          navigate('Login');
+          navigation.dispatch({ type: 'Logout' });
+          navigation.navigate('Login');
         }
       },
     );
@@ -159,15 +158,13 @@ class MainView extends Component {
   dataSource = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
 
   render() {
-    const { navigation, isLoggedIn, fbapps } = this.props;
-    const { startDate, endDate } = this.props;
+    const { navigation, fbapps, startDate, endDate } = this.props;
     const dataSource = this.dataSource.cloneWithRows(fbapps);
 
     if (fbapps.length === 0) {
       return (
         <View style={styles.container}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{isLoggedIn ? 'yes' : 'no'}</Text>
             <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'You have no Apps added yet.'}</Text>
             <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'Tap the + to add one and get the performance.'}</Text>
           </View>
@@ -187,7 +184,7 @@ class MainView extends Component {
               onRefresh={() => {
                 this.props.fetchFbapps();
                 this.setState({ random: Math.random() });
-                AppEventsLogger.logEvent('refresh-addlist');
+                AppEventsLogger.logEvent('refresh-applist');
               }}
             />
           }
@@ -200,8 +197,8 @@ class MainView extends Component {
             <TouchableOpacity
               style={{ flex: 1 }}
               onPress={() => {
-                AppEventsLogger.logEvent('remove-an-app');
                 this.onPressDelete(item.id);
+                AppEventsLogger.logEvent('remove-an-app');
               }}
             >
               <View style={styles.removeButton}>

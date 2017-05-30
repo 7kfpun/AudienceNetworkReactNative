@@ -83,6 +83,7 @@ class LoginView extends Component {
         console.log('getCurrentAccessToken', data);
         if (data && data.expirationTime && data.expirationTime > new Date().getTime()) {
           this.setState({ isLogged: true });
+          this.props.navigation.setParams({ isLoggedIn: true });
         }
       },
     );

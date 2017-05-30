@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const FullNativeAd = withNativeAd(({ nativeAd }) => (
+const FbNativeAd = withNativeAd(({ nativeAd }) => (
   <View style={styles.container}>
     {nativeAd.icon && (
       <View style={styles.iconAction}>
@@ -87,4 +87,4 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
   </View>
 ));
 
-export default FullNativeAd;
+export default FbNativeAd;

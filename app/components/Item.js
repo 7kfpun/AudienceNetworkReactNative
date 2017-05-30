@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 
 import { AppEventsLogger } from 'react-native-fbsdk';
-import { connect } from 'react-redux';
 
 import * as facebook from '../utils/facebook';
 
