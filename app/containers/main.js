@@ -177,6 +177,7 @@ class MainView extends Component {
         <RangePicker navigation={navigation} />
 
         <SwipeListView
+          style={{ paddingVertical: 6 }}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}
@@ -222,7 +223,7 @@ class MainView extends Component {
           rightOpenValue={-75}
           disableRightSwipe={true}
         />
-        <AdBanner />
+        <AdBanner withPopUp={true} />
       </View>
     );
   }

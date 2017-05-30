@@ -9,13 +9,15 @@ import { config } from '../config';
 
 export default class AdBanner extends React.Component {
   componentDidMount() {
-    InterstitialAdManager.showAd(config.fbads[Platform.OS].interstitial)
-      .then((didClick) => {
-        console.log('Facebook Interstitial Ad', didClick);
-      })
-      .catch((error) => {
-        console.log('Facebook Interstitial Ad Failed', error);
-      });
+    if (this.props.withPopUp) {
+      InterstitialAdManager.showAd(config.fbads[Platform.OS].interstitial)
+        .then((didClick) => {
+          console.log('Facebook Interstitial Ad', didClick);
+        })
+        .catch((error) => {
+          console.log('Facebook Interstitial Ad Failed', error);
+        });
+    }
   }
 
   render() {
@@ -27,3 +29,11 @@ export default class AdBanner extends React.Component {
     />);
   }
 }
+
+AdBanner.defaultProps = {
+  withPopUp: false,
+};
+
+AdBanner.propTypes = {
+  withPopUp: React.PropTypes.bool,
+};

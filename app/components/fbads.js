@@ -55,6 +55,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     opacity: 0.8,
   },
+  adText: {
+    fontSize: 10,
+    fontWeight: '200',
+  },
 });
 
 const FullNativeAd = withNativeAd(({ nativeAd }) => (
@@ -76,6 +80,7 @@ const FullNativeAd = withNativeAd(({ nativeAd }) => (
         <Text style={styles.description}>{nativeAd.description}</Text>
       )}
     </View>
+    <Text style={styles.adText}>Ad</Text>
     {/* <TouchableOpacity style={{ position: 'absolute', top: 5, right: 5, backgroundColor: '#E0E0E0' }} onPress={() => this.setState({ isFbAdsHided: true })} >
       <Icon name="close" size={14} color="#424242" />
     </TouchableOpacity> */}

@@ -20,7 +20,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
-    marginBottom: 5,
   },
   displayBlock: {
     flex: 6,

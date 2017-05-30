@@ -1,5 +1,15 @@
 import * as facebook from '../utils/facebook';
 
+export const showLoading = () => ({
+  type: 'SHOW_LOADING',
+  isLoading: true,
+});
+
+export const hideLoading = () => ({
+  type: 'HIDE_LOADING',
+  isLoading: false,
+});
+
 export const receiveRequests = data => ({
   type: 'RECEIVE_REQUESTS',
   data,
@@ -26,7 +36,9 @@ export const receiveRevenue = data => ({
 });
 
 function fetchData(appId, startDate, endDate, dataType, name, aggregation) {
-  return function dp(dispatch) {
+  return function dp(dispatch, getState) {
+    dispatch(showLoading(), getState);
+
     return facebook.audienceNetwork(
       appId, name, aggregation, null, startDate, endDate,
       (error, result) => {
@@ -36,19 +48,25 @@ function fetchData(appId, startDate, endDate, dataType, name, aggregation) {
           console.log('Success insights:', result);
           switch (dataType) {
             case 'REQUESTS':
-              return dispatch(receiveRequests(result.data));
+              dispatch(receiveRequests(result.data), getState);
+              break;
             case 'FILLED_REQUESTS':
-              return dispatch(receiveFilledRequests(result.data));
+              dispatch(receiveFilledRequests(result.data), getState);
+              break;
             case 'IMPRESSIONS':
-              return dispatch(receiveImpressions(result.data));
+              dispatch(receiveImpressions(result.data), getState);
+              break;
             case 'CLICKS':
-              return dispatch(receiveClicks(result.data));
+              dispatch(receiveClicks(result.data), getState);
+              break;
             case 'REVENUE':
-              return dispatch(receiveRevenue(result.data));
+              dispatch(receiveRevenue(result.data), getState);
+              break;
             default:
               return null;
           }
         }
+        return dispatch(hideLoading(), getState);
       });
   };
 }

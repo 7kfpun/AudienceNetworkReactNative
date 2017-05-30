@@ -3,7 +3,7 @@ import {
   Dimensions,
 } from 'react-native';
 
-import Moment from 'moment';
+import moment from 'moment';
 
 import { StockLine } from 'react-native-pathjs-charts';
 
@@ -11,9 +11,10 @@ const window = Dimensions.get('window');
 
 export default class LineChart extends Component {
   render() {
-    const data = [this.props.data.map((item) => {
-      return { x: Moment(item.time), y: parseInt(item.value) == item.value ? parseInt(item.value) : parseFloat(item.value).toFixed(2) };
-    })];
+    const data = [this.props.data.map(item => ({
+      x: moment(item.time),
+      y: parseInt(item.value, 10) === item.value ? parseInt(item.value, 10) : parseFloat(item.value).toFixed(2),
+    }))];
 
     const options = {
       width: window.width - 30,
@@ -64,3 +65,7 @@ export default class LineChart extends Component {
     return <StockLine data={data} options={options} xKey="x" yKey="y" />;
   }
 }
+
+LineChart.propTypes = {
+  data: React.PropTypes.array.isRequired,
+};
