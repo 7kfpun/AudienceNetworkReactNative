@@ -1,19 +1,17 @@
 package com.kfpun.audiencenetwork;
 
 import android.app.Application;
-import android.util.Log;
 
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
 import com.facebook.react.ReactApplication;
-import com.horcrux.svg.SvgPackage;
-import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.facebook.soloader.SoLoader;
+import com.horcrux.svg.SvgPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import io.callstack.react.fbads.FBAdsPackage;
 
@@ -29,7 +27,7 @@ public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
-    protected boolean getUseDeveloperSupport() {
+    public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
     }
 
