@@ -16,7 +16,7 @@ import * as dateRangeActions from '../actions/dateRange';
 
 const styles = StyleSheet.create({
   container: {
-    height: 45,
+    height: 50,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',

@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   insightsBlock: {
     marginTop: 5,
-    width: 1024,
+    width: 960,
   },
   cell: {
     flex: 1,
@@ -275,7 +275,7 @@ class OverviewView extends Component {
             scrollEnabled={false}
             dataSource={this.state.dataSource}
             renderHeader={() => (<View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.4 }]} />
+              <View style={[styles.cell, { flex: 1.6 }]} />
               <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
@@ -286,7 +286,7 @@ class OverviewView extends Component {
               <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
             </View>)}
             renderRow={(item, sectionID, rowID) => (<View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.4 }]}>
+              <View style={[styles.cell, { flex: 1.6 }]}>
                 <Text style={styles.cellText}>{item.country || item.placement || moment(item.time).format('ddd MMM D, YYYY')}</Text>
                 {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
               </View>

@@ -186,6 +186,7 @@ class MainView extends Component {
               refreshing={this.state.refreshing}
               onRefresh={() => {
                 this.props.fetchFbapps();
+                this.setState({ random: Math.random() });
                 AppEventsLogger.logEvent('refresh-addlist');
               }}
             />
@@ -193,7 +194,7 @@ class MainView extends Component {
           enableEmptySections={true}
           dataSource={dataSource}
 
-          renderRow={item => <Item navigation={navigation} item={item} startDate={startDate} endDate={endDate} />}
+          renderRow={item => <Item key={this.state.random} navigation={navigation} item={item} startDate={startDate} endDate={endDate} />}
 
           renderHiddenRow={item => (
             <TouchableOpacity
