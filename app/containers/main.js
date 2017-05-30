@@ -23,6 +23,7 @@ import * as fbappActions from '../actions/fbapp';
 import * as dateRangeActions from '../actions/dateRange';
 import AdBanner from '../components/fbadbanner';
 import RangePicker from '../components/RangePicker';
+import Item from '../components/Item';
 
 const styles = StyleSheet.create({
   container: {
@@ -158,6 +159,7 @@ class MainView extends Component {
 
   render() {
     const { navigation, isLoggedIn, fbapps } = this.props;
+    const { startDate, endDate } = this.props;
     const dataSource = this.dataSource.cloneWithRows(fbapps);
 
     if (fbapps.length === 0) {
@@ -190,20 +192,7 @@ class MainView extends Component {
           enableEmptySections={true}
           dataSource={dataSource}
 
-          renderRow={item => (<TouchableHighlight
-            onPress={() => {
-              navigation.navigate('Overview', { appId: item.id, appName: item.name });
-              AppEventsLogger.logEvent('check-overview');
-            }}
-          >
-            <View style={styles.row}>
-              <Image style={styles.image} source={{ uri: item.logo_url }} />
-              <View style={{ paddingLeft: 10 }}>
-                <Text style={styles.text}>{item.name} <Text style={{ fontSize: 12, color: 'grey' }}>{item.id}</Text></Text>
-                {item.category && <Text style={styles.text}>{item.category}</Text>}
-              </View>
-            </View>
-          </TouchableHighlight>)}
+          renderRow={item => <Item navigation={navigation} item={item} startDate={startDate} endDate={endDate} />}
 
           renderHiddenRow={item => (
             <TouchableOpacity
@@ -236,11 +225,15 @@ MainView.propTypes = {
   fetchFbapps: React.PropTypes.func.isRequired,
   deleteFbapp: React.PropTypes.func.isRequired,
   fetchRangeType: React.PropTypes.func.isRequired,
+  startDate: React.PropTypes.object.isRequired,
+  endDate: React.PropTypes.object.isRequired,
 };
 
 const mapStateToProps = state => ({
   isLoggedIn: state.auth.isLoggedIn,
   fbapps: state.fbapps,
+  startDate: state.dateRange.startDate,
+  endDate: state.dateRange.endDate,
 });
 
 export default connect(

@@ -24,6 +24,7 @@ import AdBanner from '../components/fbadbanner';
 
 import FbAds from '../components/fbads';
 import LineChart from '../components/lineChart';
+import OverviewSummary from '../components/OverviewSummary';
 import RangePicker from '../components/RangePicker';
 
 import { config } from '../config';
@@ -227,37 +228,11 @@ class OverviewView extends Component {
   // }
 
   renderInsights() {
-    const { requestsSum, filledRequestsSum, impressionsSum, clicksSum, revenueSum } = this.props;
     const { requests, filledRequests, impressions, clicks, revenue } = this.props;
 
     return (
       <View>
-        <View style={styles.overviewBlock}>
-          <View style={styles.overviewCell}>
-            <Text style={styles.sumTitleCellText}>{'Requests'}</Text>
-            <Text style={styles.sumCellText}>{requestsSum || '*'}</Text>
-          </View>
-
-          <View style={styles.overviewCell}>
-            <Text style={styles.sumTitleCellText}>{'Fill Rate'}</Text>
-            <Text style={styles.sumCellText}>{(filledRequestsSum && requestsSum && `${((filledRequestsSum / requestsSum) * 100).toFixed(2)}%`) || '*'}</Text>
-          </View>
-
-          <View style={styles.overviewCell}>
-            <Text style={styles.sumTitleCellText}>{'Impressions'}</Text>
-            <Text style={styles.sumCellText}>{impressionsSum || '*'}</Text>
-          </View>
-
-          <View style={styles.overviewCell}>
-            <Text style={styles.sumTitleCellText}>{'Clicks'}</Text>
-            <Text style={styles.sumCellText}>{clicksSum || '*'}</Text>
-          </View>
-
-          <View style={styles.overviewCell}>
-            <Text style={styles.sumTitleCellText}>{'Est. Rev'}</Text>
-            <Text style={styles.sumCellText}>{(revenueSum && `$${revenueSum.toFixed(2)}`) || '*'}</Text>
-          </View>
-        </View>
+        <OverviewSummary />
 
         <FbAds adsManager={adsManager} />
 
@@ -385,12 +360,6 @@ OverviewView.propTypes = {
     value: React.PropTypes.string.isRequired,
     time: React.PropTypes.string.isRequired,
   }).isRequired).isRequired,
-
-  requestsSum: React.PropTypes.number.isRequired,
-  filledRequestsSum: React.PropTypes.number.isRequired,
-  impressionsSum: React.PropTypes.number.isRequired,
-  clicksSum: React.PropTypes.number.isRequired,
-  revenueSum: React.PropTypes.number.isRequired,
 
   fetchRequests: React.PropTypes.func.isRequired,
   fetchFilledRequests: React.PropTypes.func.isRequired,
