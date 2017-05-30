@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import {
   ActionSheetIOS,
   Alert,
-  Image,
   ListView,
   Platform,
   RefreshControl,
   StyleSheet,
   Text,
-  TouchableHighlight,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -29,6 +27,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
+  },
+  body: {
+    paddingVertical: 6,
   },
   row: {
     flexDirection: 'row',
@@ -179,7 +180,7 @@ class MainView extends Component {
         <RangePicker navigation={navigation} />
 
         <SwipeListView
-          style={{ paddingVertical: 6 }}
+          style={styles.body}
           refreshControl={
             <RefreshControl
               refreshing={this.state.refreshing}

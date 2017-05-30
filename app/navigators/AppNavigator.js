@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { addNavigationHelpers, StackNavigator } from 'react-navigation';
 
-import LoginView from '../containers/login';
-import MainView from '../containers/main';
-import OverviewView from '../containers/overview';
-import AddView from '../containers/add';
+import LoginView from '../containers/Login';
+import MainView from '../containers/Main';
+import OverviewView from '../containers/Overview';
+import AddView from '../containers/Add';
 import DateSettingsView from '../containers/DateSettings';
 
 export const AppNavigator = StackNavigator({

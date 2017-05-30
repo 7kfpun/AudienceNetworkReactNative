@@ -23,7 +23,7 @@ import * as insightActions from '../actions/insights';
 import AdBanner from '../components/fbadbanner';
 
 import FbAds from '../components/fbads';
-import LineChart from '../components/lineChart';
+import LineChart from '../components/LineChart';
 import OverviewSummary from '../components/OverviewSummary';
 import RangePicker from '../components/RangePicker';
 
@@ -35,6 +35,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
+  },
+  body: {
+    paddingVertical: 6,
   },
   navigatorBar: {
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
@@ -166,9 +169,16 @@ class OverviewView extends Component {
       || nextProps.clicks !== this.props.clicks
       || nextProps.revenue !== this.props.revenue
     ) {
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(nextProps.requests),
-      });
+      if (nextProps.requests.length > 0
+        && nextProps.filledRequests.length > 0
+        && nextProps.impressions.length > 0
+        && nextProps.clicks.length > 0
+        && nextProps.revenue.length > 0
+      ) {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(nextProps.requests),
+        });
+      }
     }
   }
 
@@ -303,6 +313,8 @@ class OverviewView extends Component {
 
     if (!isLoading && requests.length === 0 && filledRequests.length === 0 && impressions.length === 0 && clicks.length === 0 && revenue.length === 0) {
       return (<View style={styles.container}>
+        <RangePicker navigation={navigation} />
+
         <View style={{ padding: 30 }}>
           <Text style={[styles.text, { textAlign: 'center', fontSize: 12 }]}>No performance data available. Please check if the ads are running and get some requests.</Text>
         </View>
@@ -314,7 +326,7 @@ class OverviewView extends Component {
         <RangePicker navigation={navigation} />
 
         <ScrollView
-          style={{ paddingVertical: 6 }}
+          style={styles.body}
           refreshControl={
             <RefreshControl
               refreshing={isLoading}
