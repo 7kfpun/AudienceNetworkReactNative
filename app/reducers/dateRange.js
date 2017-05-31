@@ -5,9 +5,11 @@ const initialDateRangeState = {
   startDate: new Date(moment().subtract(1, 'months')),
   endDate: new Date(),
   rangeType: 'days',
+  rangeTypeOrder: 0,
 };
 
 function insight(state = initialDateRangeState, action) {
+  let diff;
   switch (action.type) {
     case 'SET_START_DATE':
       return { ...state, startDate: action.date };
@@ -24,10 +26,12 @@ function insight(state = initialDateRangeState, action) {
         };
       }
 
+      diff = moment(state.endDate).diff(moment(state.startDate), 'days');
+
       return {
         ...state,
-        startDate: new Date(moment(state.startDate).subtract(1, 'days')),
-        endDate: new Date(moment(state.endDate).subtract(1, 'days')),
+        startDate: new Date(moment(state.startDate).subtract(diff, 'days')),
+        endDate: new Date(moment(state.endDate).subtract(diff, 'days')),
       };
 
     case 'SET_NEXT_DATE_RANGE':
@@ -39,14 +43,16 @@ function insight(state = initialDateRangeState, action) {
         };
       }
 
+      diff = moment(state.endDate).diff(moment(state.startDate), 'days');
+
       return {
         ...state,
-        startDate: new Date(moment(state.startDate).add(1, 'days')),
-        endDate: new Date(moment(state.endDate).add(1, 'days')),
+        startDate: new Date(moment(state.startDate).add(diff, 'days')),
+        endDate: new Date(moment(state.endDate).add(diff, 'days')),
       };
 
     case 'SET_RANGE_TYPE':
-      if (['days', 'weeks', 'months'].includes(action.rangeType)) {
+      if (['days', 'weeks', 'months', 'custom'].includes(action.rangeType)) {
         store.save('RANGE_TYPE', action.rangeType);
         return {
           ...state,
@@ -58,6 +64,13 @@ function insight(state = initialDateRangeState, action) {
       return {
         ...state,
         rangeType: 'days',
+      };
+
+    case 'SET_RANGE_TYPE_ORDER':
+      store.save('RANGE_TYPE_ORDER', action.rangeTypeOrder);
+      return {
+        ...state,
+        rangeTypeOrder: action.rangeTypeOrder,
       };
 
     default:

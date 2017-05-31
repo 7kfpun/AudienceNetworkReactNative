@@ -95,7 +95,7 @@ class MainView extends Component {
   };
 
   componentDidMount() {
-    const { fetchRangeType, navigation } = this.props;
+    const { fetchRangeType, fetchRangeTypeOrder, fetchDateRange, navigation } = this.props;
 
     AccessToken.getCurrentAccessToken().then(
       (data) => {
@@ -110,7 +110,9 @@ class MainView extends Component {
     );
 
     this.props.fetchFbapps();
-    fetchRangeType();
+    // fetchRangeType();
+    // fetchRangeTypeOrder();
+    fetchDateRange();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -211,7 +213,7 @@ class MainView extends Component {
           rightOpenValue={-75}
           disableRightSwipe={true}
         />
-        <AdBanner withPopUp={true} />
+        <AdBanner withPopUp={false} />
       </View>
     );
   }
@@ -224,6 +226,7 @@ MainView.propTypes = {
   fetchFbapps: React.PropTypes.func.isRequired,
   deleteFbapp: React.PropTypes.func.isRequired,
   fetchRangeType: React.PropTypes.func.isRequired,
+  fetchRangeTypeOrder: React.PropTypes.func.isRequired,
   startDate: React.PropTypes.object.isRequired,
   endDate: React.PropTypes.object.isRequired,
 };

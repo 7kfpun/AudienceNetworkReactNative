@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  DatePickerAndroid,
   DatePickerIOS,
   Platform,
   StyleSheet,
@@ -17,6 +18,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment-timezone';
 
 import * as dateRangeActions from '../actions/dateRange';
+
+import dateRangeOptions from '../utils/dateRangeOptions';
 
 const styles = StyleSheet.create({
   container: {
@@ -44,55 +47,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const rangeOptions = {
-  DAY: [{
-    id: 0,
-    name: 'Today',
-    startDate: new Date(moment().subtract(1, 'days')),
-    endDate: new Date(moment()),
-  }, {
-    id: 1,
-    name: 'Yesterday',
-    startDate: new Date(moment().subtract(2, 'days')),
-    endDate: new Date(moment().subtract(1, 'days')),
-  }],
-  WEEK: [{
-    id: 0,
-    name: 'Last 7 days',
-    startDate: new Date(moment().subtract(7, 'days')),
-    endDate: new Date(moment().subtract(1, 'days')),
-  }, {
-    id: 1,
-    name: 'This week',
-    startDate: new Date(moment().startOf('week')),
-    endDate: new Date(moment().endOf('week')),
-  }, {
-    id: 2,
-    name: 'Last week',
-    startDate: new Date(moment().startOf('week').subtract(7, 'days')),
-    endDate: new Date(moment().endOf('week').subtract(7, 'days')),
-  }],
-  MONTH: [{
-    id: 0,
-    name: 'Last 30 days',
-    startDate: new Date(moment().subtract(30, 'days')),
-    endDate: new Date(moment().subtract(1, 'days')),
-    display: `${moment().subtract(30, 'days').format('DD MMMM')} - ${moment().subtract(1, 'days').format('DD MMMM')}`,
-  }, {
-    id: 1,
-    name: 'This month',
-    startDate: new Date(moment().startOf('month')),
-    endDate: new Date(moment().endOf('month')),
-    display: moment().startOf('month').format('MMMM'),
-  }, {
-    id: 2,
-    name: 'Last month',
-    startDate: new Date(moment().subtract(1, 'months').startOf('month')),
-    endDate: new Date(moment().subtract(1, 'months').endOf('month')),
-    display: moment().startOf('month').subtract(1, 'months').format('MMMM'),
-  }],
-};
-
 class DateSettingsView extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Date Settings',
@@ -109,20 +63,23 @@ class DateSettingsView extends Component {
       underlayColor="white"
       onPress={() => {
         const { index, checkDay, checkWeek, checkMonth } = navigation.state.params;
-        const { setRangeType, setStartDate, setEndDate } = navigation.state.params;
+        const { setStartDate, setEndDate, setRangeType, setRangeTypeOrder } = navigation.state.params;
 
         if (index === 0) {
           setRangeType('days');
-          setStartDate(rangeOptions.DAY[checkDay].startDate);
-          setEndDate(rangeOptions.DAY[checkDay].endDate);
+          setStartDate(dateRangeOptions.days[checkDay].startDate);
+          setEndDate(dateRangeOptions.days[checkDay].endDate);
+          setRangeTypeOrder(checkDay);
         } else if (index === 1) {
           setRangeType('weeks');
-          setStartDate(rangeOptions.WEEK[checkWeek].startDate);
-          setEndDate(rangeOptions.WEEK[checkWeek].endDate);
+          setStartDate(dateRangeOptions.weeks[checkWeek].startDate);
+          setEndDate(dateRangeOptions.weeks[checkWeek].endDate);
+          setRangeTypeOrder(checkWeek);
         } else if (index === 2) {
           setRangeType('months');
-          setStartDate(rangeOptions.MONTH[checkMonth].startDate);
-          setEndDate(rangeOptions.MONTH[checkMonth].endDate);
+          setStartDate(dateRangeOptions.months[checkMonth].startDate);
+          setEndDate(dateRangeOptions.months[checkMonth].endDate);
+          setRangeTypeOrder(checkMonth);
         } else if (index === 3) {
           setRangeType('custom');
         }
@@ -144,25 +101,29 @@ class DateSettingsView extends Component {
   state = {
     index: 0,
     routes: [
-      { key: 'DAY', title: 'DAY' },
-      { key: 'WEEK', title: 'WEEK' },
-      { key: 'MONTH', title: 'MONTH' },
-      { key: 'CUSTOM', title: 'CUSTOM' },
+      { key: 'days', title: 'DAY' },
+      { key: 'weeks', title: 'WEEK' },
+      { key: 'months', title: 'MONTH' },
+      { key: 'custom', title: 'CUSTOM' },
     ],
     startDate: new Date(moment()),
     endDate: new Date(moment().subtract(1, 'days')),
     checkDay: 0,
     checkWeek: 0,
     checkMonth: 0,
-    checkCustom: 0,
     isStartDatePickerShow: false,
     isEndDatePickerShow: false,
   };
+
+  componentWillMount() {
+    this.setInitalTab();
+  }
 
   componentDidMount() {
     this.props.navigation.setParams({
       index: this.state.index,
       setRangeType: this.props.setRangeType,
+      setRangeTypeOrder: this.props.setRangeTypeOrder,
       setStartDate: this.props.setStartDate,
       setEndDate: this.props.setEndDate,
       startDate: this.state.startDate,
@@ -170,7 +131,23 @@ class DateSettingsView extends Component {
       checkDay: this.state.checkDay,
       checkWeek: this.state.checkWeek,
       checkMonth: this.state.checkMonth,
-      checkCustom: this.state.checkCustom,
+    });
+  }
+
+  setInitalTab() {
+    const { rangeType, rangeTypeOrder } = this.props;
+    const TYPE = {
+      days: 0,
+      weeks: 1,
+      months: 2,
+      custom: 3,
+    };
+
+    this.setState({
+      checkDay: rangeType === 'days' ? rangeTypeOrder : 0,
+      checkWeek: rangeType === 'weeks' ? rangeTypeOrder : 0,
+      checkMonth: rangeType === 'months' ? rangeTypeOrder : 0,
+      index: TYPE[rangeType],
     });
   }
 
@@ -238,9 +215,9 @@ class DateSettingsView extends Component {
 
     const that = this;
     switch (route.key) {
-      case 'DAY':
+      case 'days':
         return (<View style={styles.container}>
-          {rangeOptions.DAY.map(option => (<TouchableOpacity
+          {dateRangeOptions.days.map(option => (<TouchableOpacity
             key={option.id}
             onPress={() => {
               that.props.navigation.setParams({
@@ -266,9 +243,9 @@ class DateSettingsView extends Component {
           </TouchableOpacity>))}
         </View>);
 
-      case 'WEEK':
+      case 'weeks':
         return (<View style={styles.container}>
-          {rangeOptions.WEEK.map(option => (<TouchableOpacity
+          {dateRangeOptions.weeks.map(option => (<TouchableOpacity
             key={option.id}
             onPress={() => {
               that.props.navigation.setParams({
@@ -294,9 +271,9 @@ class DateSettingsView extends Component {
           </TouchableOpacity>))}
         </View>);
 
-      case 'MONTH':
+      case 'months':
         return (<View style={styles.container}>
-          {rangeOptions.MONTH.map(option => (<TouchableOpacity
+          {dateRangeOptions.months.map(option => (<TouchableOpacity
             key={option.id}
             onPress={() => {
               that.props.navigation.setParams({
@@ -322,7 +299,7 @@ class DateSettingsView extends Component {
           </TouchableOpacity>))}
         </View>);
 
-      case 'CUSTOM':
+      case 'custom':
         return (<View style={styles.container}>
           <TouchableOpacity
             onPress={() => this.openStartDatePicker()}
@@ -392,15 +369,20 @@ class DateSettingsView extends Component {
 DateSettingsView.propTypes = {
   navigation: React.PropTypes.object.isRequired,
   setRangeType: React.PropTypes.func.isRequired,
+  setRangeTypeOrder: React.PropTypes.func.isRequired,
   setStartDate: React.PropTypes.func.isRequired,
   setEndDate: React.PropTypes.func.isRequired,
   startDate: React.PropTypes.object.isRequired,
   endDate: React.PropTypes.object.isRequired,
+  rangeType: React.PropTypes.string.isRequired,
+  rangeTypeOrder: React.PropTypes.number.isRequired,
 };
 
 const mapStateToProps = state => ({
   startDate: state.dateRange.startDate,
   endDate: state.dateRange.endDate,
+  rangeType: state.dateRange.rangeType,
+  rangeTypeOrder: state.dateRange.rangeTypeOrder,
 });
 
 export default connect(

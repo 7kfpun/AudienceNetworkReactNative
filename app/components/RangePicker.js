@@ -46,6 +46,14 @@ const styles = StyleSheet.create({
 const RangePicker = (props) => {
   const { startDate, endDate, setPreviousDateRange, setNextDateRange, navigation } = props;
 
+  let startYearShowAs = '';
+  let endYearShowAs = '';
+
+  if (!(moment(startDate).year() === moment(endDate).year() && moment(startDate).year() === moment().year())) {
+    startYearShowAs = `, ${moment(startDate).year()}`;
+    endYearShowAs = `, ${moment(endDate).year()}`;
+  }
+
   return (<View style={styles.container}>
     <TouchableOpacity
       style={styles.displayBlock}
@@ -55,7 +63,7 @@ const RangePicker = (props) => {
       }}
     >
       <View style={styles.display}>
-        <Text>{`${moment(startDate).format('MMM DD')} - ${moment(endDate).format('MMM DD')}`}</Text>
+        <Text>{`${moment(startDate).format('MMM DD')}${startYearShowAs} - ${moment(endDate).format('MMM DD')}${endYearShowAs}`}</Text>
       </View>
     </TouchableOpacity>
     <TouchableOpacity

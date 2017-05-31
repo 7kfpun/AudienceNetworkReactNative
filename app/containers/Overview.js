@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
   },
   cell: {
     flex: 1,
+    alignItems: 'flex-end',
     borderLeftColor: '#EEEEEE',
     borderLeftWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 6,
@@ -339,7 +340,7 @@ class OverviewView extends Component {
         >
           {this.renderInsights()}
         </ScrollView>
-        <AdBanner />
+        <AdBanner withPopUp={false} />
       </View>
     );
   }
