@@ -11,7 +11,7 @@ import { withNativeAd } from 'react-native-fbads';
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 12,
+    padding: 10,
     marginHorizontal: 8,
     justifyContent: 'center',
     borderRightWidth: StyleSheet.hairlineWidth * 2,
@@ -50,14 +50,15 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 13,
     fontStyle: 'italic',
+    lineHeight: 28,
   },
   description: {
     fontSize: 12,
     opacity: 0.8,
   },
-  adText: {
-    fontSize: 10,
-    fontWeight: '200',
+  adChoices: {
+    width: 14,
+    height: 14,
   },
 });
 
@@ -73,6 +74,7 @@ const FbNativeAd = withNativeAd(({ nativeAd }) => (
     )}
     <View style={styles.textBlock}>
       <Text style={styles.title}>{nativeAd.title}</Text>
+      <Text style={styles.description}>{'Sponsored Ad'}</Text>
       {nativeAd.subtitle && (
         <Text style={styles.subtitle}>{nativeAd.subtitle}</Text>
       )}
@@ -80,7 +82,7 @@ const FbNativeAd = withNativeAd(({ nativeAd }) => (
         <Text style={styles.description}>{nativeAd.description}</Text>
       )}
     </View>
-    <Text style={styles.adText}>Ad</Text>
+    <Image source={require('./../../assets/AdChoices.png')} style={styles.adChoices} />
     {/* <TouchableOpacity style={{ position: 'absolute', top: 5, right: 5, backgroundColor: '#E0E0E0' }} onPress={() => this.setState({ isFbAdsHided: true })} >
       <Icon name="close" size={14} color="#424242" />
     </TouchableOpacity> */}

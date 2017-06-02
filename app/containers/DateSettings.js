@@ -21,6 +21,8 @@ import * as dateRangeActions from '../actions/dateRange';
 
 import dateRangeOptions from '../utils/dateRangeOptions';
 
+moment.tz.setDefault('America/Los_Angeles');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

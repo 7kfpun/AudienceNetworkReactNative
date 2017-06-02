@@ -31,6 +31,8 @@ import { config } from '../config';
 
 const adsManager = new NativeAdsManager(config.fbads[Platform.OS].native);
 
+moment.tz.setDefault('America/Los_Angeles');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -164,7 +166,7 @@ class OverviewView extends Component {
       this.onRequest(appId, nextProps.startDate, nextProps.endDate);
     }
 
-    if (nextProps.all !== this.props.all && nextProps.all.length > 0) {
+    if (nextProps.all !== this.props.all && nextProps.all && nextProps.all.length > 0) {
       console.log('nextProps.all', nextProps.all);
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(nextProps.all),
@@ -278,7 +280,7 @@ class OverviewView extends Component {
             </View>)}
             renderRow={item => (<View style={[styles.row, { padding: 0 }]}>
               <View style={[styles.cell, { flex: 1.6 }]}>
-                <Text style={styles.cellText}>{item.country || item.placement || (item.requests && item.requests.value && moment(item.requests.time).format('ddd MMM D, YYYY HH:mm'))}</Text>
+                <Text style={styles.cellText}>{item.requests && item.requests.time && moment(item.requests.time).format('ddd MMM D, YYYY')}</Text>
                 {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
               </View>
               <View style={styles.cell}><Text style={styles.cellText}>{(item.requests && item.requests.value) || '*'}</Text></View>

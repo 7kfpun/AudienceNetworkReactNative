@@ -1,15 +1,19 @@
 import moment from 'moment-timezone';
 
+moment.tz.setDefault('America/Los_Angeles');
+
 const dateRangeOptions = {
   days: [{
     id: 0,
     name: 'Today',
-    startDate: new Date(moment().subtract(1, 'days')),
+    // startDate: new Date(moment().subtract(1, 'days')),
+    startDate: new Date(moment()),
     endDate: new Date(moment()),
   }, {
     id: 1,
     name: 'Yesterday',
-    startDate: new Date(moment().subtract(2, 'days')),
+    // startDate: new Date(moment().subtract(2, 'days')),
+    startDate: new Date(moment().subtract(1, 'days')),
     endDate: new Date(moment().subtract(1, 'days')),
   }],
   weeks: [{

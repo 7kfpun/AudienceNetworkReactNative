@@ -1,9 +1,10 @@
 import React from 'react';
 import {
   StyleSheet,
-  View,
-  TouchableOpacity,
   Text,
+  TouchableHighlight,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 import { AppEventsLogger } from 'react-native-fbsdk';
@@ -13,6 +14,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment-timezone';
 
 import * as dateRangeActions from '../actions/dateRange';
+
+moment.tz.setDefault('America/Los_Angeles');
 
 const styles = StyleSheet.create({
   container: {
@@ -31,27 +34,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 10,
   },
-  iconBlock: {
-    flex: 1,
-    flexDirection: 'row',
-  },
   icon: {
-    flex: 1,
-    padding: 10,
+    marginHorizontal: 4,
+    height: 40,
+    width: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
 
 const RangePicker = (props) => {
-  const { startDate, endDate, setPreviousDateRange, setNextDateRange, navigation } = props;
+  const { startDate, endDate, rangeType, setPreviousDateRange, setNextDateRange, navigation } = props;
 
-  let startYearShowAs = '';
-  let endYearShowAs = '';
+  let startYearShowAs = `, ${moment(startDate).year()}`;
+  let endYearShowAs = `, ${moment(endDate).year()}`;
+  let rangeShowAs;
 
-  if (!(moment(startDate).year() === moment(endDate).year() && moment(startDate).year() === moment().year())) {
-    startYearShowAs = `, ${moment(startDate).year()}`;
-    endYearShowAs = `, ${moment(endDate).year()}`;
+  if (moment(startDate).year() === moment().year() || moment(startDate).year() === moment(endDate).year()) {
+    startYearShowAs = '';
+  }
+
+  if (moment(endDate).year() === moment().year()) {
+    endYearShowAs = '';
+  }
+
+  if (moment(startDate).format('MMM DD YYYY') === moment(endDate).format('MMM DD YYYY')) {
+    rangeShowAs = `${moment(endDate).format('dddd, MMM DD')}${endYearShowAs}`;
+  } else {
+    rangeShowAs = `${moment(startDate).format('MMM DD')}${startYearShowAs} - ${moment(endDate).format('MMM DD')}${endYearShowAs}`;
   }
 
   return (<View style={styles.container}>
@@ -59,37 +70,39 @@ const RangePicker = (props) => {
       style={styles.displayBlock}
       onPress={() => {
         navigation.navigate('DateSettings');
-        AppEventsLogger.logEvent('press-change-date-range');
       }}
     >
       <View style={styles.display}>
-        <Text>{`${moment(startDate).format('MMM DD')}${startYearShowAs} - ${moment(endDate).format('MMM DD')}${endYearShowAs}`}</Text>
+        <Text>{rangeShowAs}</Text>
       </View>
     </TouchableOpacity>
-    <TouchableOpacity
-      style={styles.iconBlock}
+    <TouchableHighlight
+      underlayColor="#EEEEEE"
+      style={styles.icon}
       onPress={() => {
         setPreviousDateRange();
         AppEventsLogger.logEvent('press-previous-date-range-button');
       }}
     >
-      <Icon style={styles.icon} name="chevron-left" size={20} color="gray" />
-    </TouchableOpacity>
-    <TouchableOpacity
-      style={styles.iconBlock}
+      <Icon name="chevron-left" size={20} color="gray" />
+    </TouchableHighlight>
+    <TouchableHighlight
+      underlayColor="#EEEEEE"
+      style={styles.icon}
       onPress={() => {
         setNextDateRange();
         AppEventsLogger.logEvent('press-next-date-range-button');
       }}
     >
-      <Icon style={styles.icon} name="chevron-right" size={20} color="gray" />
-    </TouchableOpacity>
+      <Icon name="chevron-right" size={20} color="gray" />
+    </TouchableHighlight>
   </View>);
 };
 
 RangePicker.propTypes = {
   startDate: React.PropTypes.object.isRequired,
   endDate: React.PropTypes.object.isRequired,
+  rangeType: React.PropTypes.string.isRequired,
   setPreviousDateRange: React.PropTypes.func.isRequired,
   setNextDateRange: React.PropTypes.func.isRequired,
   navigation: React.PropTypes.object.isRequired,
@@ -98,6 +111,7 @@ RangePicker.propTypes = {
 const mapStateToProps = state => ({
   startDate: state.dateRange.startDate,
   endDate: state.dateRange.endDate,
+  rangeType: state.dateRange.rangeType,
 });
 
 export default connect(

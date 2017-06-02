@@ -1,5 +1,4 @@
 import store from 'react-native-simple-store';
-import moment from 'moment-timezone';
 
 import dateRangeOptions from '../utils/dateRangeOptions';
 

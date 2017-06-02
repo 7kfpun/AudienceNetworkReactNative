@@ -13,6 +13,7 @@ import * as facebook from '../utils/facebook';
 
 const styles = StyleSheet.create({
   container: {
+    height: 70,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
@@ -31,8 +32,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   image: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
   },
   titleText: {
     fontSize: 15,

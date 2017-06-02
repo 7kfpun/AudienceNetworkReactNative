@@ -1,6 +1,8 @@
 import moment from 'moment-timezone';
 import store from 'react-native-simple-store';
 
+moment.tz.setDefault('America/Los_Angeles');
+
 const initialDateRangeState = {
   startDate: new Date(moment().subtract(1, 'months')),
   endDate: new Date(),

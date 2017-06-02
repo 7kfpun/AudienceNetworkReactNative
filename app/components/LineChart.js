@@ -3,16 +3,18 @@ import {
   Dimensions,
 } from 'react-native';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { StockLine } from 'react-native-pathjs-charts';
+
+moment.tz.setDefault('America/Los_Angeles');
 
 const window = Dimensions.get('window');
 
 const LineChart = (props) => {
   const data = [props.data.map(item => ({
     x: moment(item.time),
-    y: parseInt(item.value, 10) === item.value ? parseInt(item.value, 10) : parseFloat(item.value).toFixed(2),
+    y: parseInt(item.value, 10) == item.value ? parseInt(item.value, 10) : parseFloat(item.value).toFixed(2),  // eslint-disable-line eqeqeq
   }))];
 
   const options = {

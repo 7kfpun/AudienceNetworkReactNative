@@ -12,7 +12,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "moment": "^2.17.1",
     "moment-timezone": "^0.5.13",
     "prop-types": "^15.5.10",
     "react": "16.0.0-alpha.6",
@@ -25,7 +24,7 @@
     "react-native-simple-store": "^1.1.0",
     "react-native-svg": "github:react-native-community/react-native-svg",
     "react-native-swipe-list-view": "^0.4.1",
-    "react-native-tab-view": "^0.0.65",
+    "react-native-tab-view": "^0.0.66",
     "react-native-vector-icons": "^4.0.0",
     "react-navigation": "^1.0.0-beta.11",
     "react-redux": "^5.0.5",
