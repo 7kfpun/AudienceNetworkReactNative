@@ -35,6 +35,10 @@ export const receiveRevenue = data => ({
   data,
 });
 
+export const receiveAllInsights = () => ({
+  type: 'RECEIVE_ALL_INSIGHTS',
+});
+
 function fetchData(appId, startDate, endDate, dataType, name, aggregation) {
   return function dp(dispatch, getState) {
     dispatch(showLoading(), getState);
@@ -66,6 +70,7 @@ function fetchData(appId, startDate, endDate, dataType, name, aggregation) {
               return null;
           }
         }
+        dispatch(receiveAllInsights(), getState);
         return dispatch(hideLoading(), getState);
       });
   };
@@ -89,4 +94,16 @@ export function fetchClicks(appId, startDate, endDate) {
 
 export function fetchRevenue(appId, startDate, endDate) {
   return fetchData(appId, startDate, endDate, 'REVENUE', 'fb_ad_network_revenue', 'SUM');
+}
+
+export function fetchAll(appId, startDate, endDate) {
+  return function dp(dispatch, getState) {
+    dispatch(fetchRequests(appId, startDate, endDate), getState);
+    dispatch(fetchRequests(appId, startDate, endDate), getState);
+    dispatch(fetchImpressions(appId, startDate, endDate), getState);
+    dispatch(fetchClicks(appId, startDate, endDate), getState);
+    dispatch(fetchRevenue(appId, startDate, endDate), getState);
+
+    return dispatch(receiveAllInsights(), getState);
+  };
 }

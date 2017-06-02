@@ -95,7 +95,7 @@ class MainView extends Component {
   };
 
   componentDidMount() {
-    const { fetchRangeType, fetchRangeTypeOrder, fetchDateRange, navigation } = this.props;
+    const { fetchDateRange, navigation } = this.props;
 
     AccessToken.getCurrentAccessToken().then(
       (data) => {
@@ -110,8 +110,6 @@ class MainView extends Component {
     );
 
     this.props.fetchFbapps();
-    // fetchRangeType();
-    // fetchRangeTypeOrder();
     fetchDateRange();
   }
 
@@ -225,8 +223,7 @@ MainView.propTypes = {
   fbapps: React.PropTypes.array.isRequired,
   fetchFbapps: React.PropTypes.func.isRequired,
   deleteFbapp: React.PropTypes.func.isRequired,
-  fetchRangeType: React.PropTypes.func.isRequired,
-  fetchRangeTypeOrder: React.PropTypes.func.isRequired,
+  fetchDateRange: React.PropTypes.func.isRequired,
   startDate: React.PropTypes.object.isRequired,
   endDate: React.PropTypes.object.isRequired,
 };

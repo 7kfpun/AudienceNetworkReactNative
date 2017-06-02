@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const initialInsightState = {
   setAppID: null,
   isLoading: false,
@@ -27,7 +29,8 @@ Array.prototype.sum = function sum(prop) {
   return total;
 };
 
-function auth(state = initialInsightState, action) {
+function insights(state = initialInsightState, action) {
+  let data;
   switch (action.type) {
     case 'SHOW_LOADING':
       return { ...state, isLoading: action.isLoading };
@@ -43,9 +46,19 @@ function auth(state = initialInsightState, action) {
       return { ...state, clicks: action.data.slice().reverse(), clicksSum: action.data.sum('value') };
     case 'RECEIVE_REVENUE':
       return { ...state, revenue: action.data.slice().reverse(), revenueSum: action.data.sum('value') };
+    case 'RECEIVE_ALL_INSIGHTS':
+      data = _.zipWith(
+        state.requests,
+        state.filledRequests,
+        state.impressions,
+        state.clicks,
+        state.revenue,
+        (requests, filledRequests, impressions, clicks, revenue) => ({ requests, filledRequests, impressions, clicks, revenue }),
+      );
+      return { ...state, all: data };
     default:
       return state;
   }
 }
 
-export default auth;
+export default insights;

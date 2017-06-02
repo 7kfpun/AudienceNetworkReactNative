@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
@@ -149,7 +149,7 @@ class OverviewView extends Component {
     isChanged: false,
   };
 
-  componentDidMount() {
+  componentWillMount() {
     const { appId } = this.props.navigation.state.params;
     const { startDate, endDate } = this.props;
 
@@ -164,22 +164,11 @@ class OverviewView extends Component {
       this.onRequest(appId, nextProps.startDate, nextProps.endDate);
     }
 
-    if (nextProps.requests !== this.props.requests
-      || nextProps.filledRequests !== this.props.filledRequests
-      || nextProps.impressions !== this.props.impressions
-      || nextProps.clicks !== this.props.clicks
-      || nextProps.revenue !== this.props.revenue
-    ) {
-      if (nextProps.requests.length > 0
-        && nextProps.filledRequests.length > 0
-        && nextProps.impressions.length > 0
-        && nextProps.clicks.length > 0
-        && nextProps.revenue.length > 0
-      ) {
-        this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(nextProps.requests),
-        });
-      }
+    if (nextProps.all !== this.props.all && nextProps.all.length > 0) {
+      console.log('nextProps.all', nextProps.all);
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(nextProps.all),
+      });
     }
   }
 
@@ -239,7 +228,7 @@ class OverviewView extends Component {
   // }
 
   renderInsights() {
-    const { requests, filledRequests, impressions, clicks, revenue } = this.props;
+    const { requests, impressions, clicks, revenue } = this.props;
 
     return (
       <View>
@@ -281,24 +270,26 @@ class OverviewView extends Component {
               <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Clicks'}</Text></View>
+
               <View style={styles.cell}><Text style={styles.cellText}>{'Fill Rate'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'CTR'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
             </View>)}
-            renderRow={(item, sectionID, rowID) => (<View style={[styles.row, { padding: 0 }]}>
+            renderRow={item => (<View style={[styles.row, { padding: 0 }]}>
               <View style={[styles.cell, { flex: 1.6 }]}>
-                <Text style={styles.cellText}>{item.country || item.placement || moment(item.time).format('ddd MMM D, YYYY')}</Text>
+                <Text style={styles.cellText}>{item.country || item.placement || (item.requests && item.requests.value && moment(item.requests.time).format('ddd MMM D, YYYY HH:mm'))}</Text>
                 {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
               </View>
-              <View style={styles.cell}><Text style={styles.cellText}>{item.value}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(filledRequests && filledRequests[rowID] && filledRequests[rowID].value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(impressions && impressions[rowID] && impressions[rowID].value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(clicks && clicks[rowID] && clicks[rowID].value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(requests && filledRequests[rowID] && requests[rowID] && filledRequests[rowID] && `${((filledRequests[rowID].value / requests[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(clicks && impressions && clicks[rowID] && impressions[rowID] && `${((clicks[rowID].value / impressions[rowID].value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(impressions && revenue && impressions[rowID] && revenue[rowID] && `$${((revenue[rowID].value / impressions[rowID].value) * 1000).toFixed(2)}`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(revenue && revenue[rowID] && `$${(revenue[rowID].value * 1).toFixed(2)}`) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(item.requests && item.requests.value) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(item.filledRequests && item.filledRequests.value) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(item.impressions && item.impressions.value) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(item.clicks && item.clicks.value) || '*'}</Text></View>
+
+              <View style={styles.cell}><Text style={styles.cellText}>{(item.requests && item.requests.value && item.filledRequests && item.filledRequests.value && `${((item.filledRequests.value / item.requests.value) * 100).toFixed(2)}%`) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(item.clicks && item.impressions && item.clicks.value && item.impressions.value && `${((item.clicks.value / item.impressions.value) * 100).toFixed(2)}%`) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(item.impressions && item.revenue && item.impressions.value && item.revenue.value && `$${((item.revenue.value / item.impressions.value) * 1000).toFixed(2)}`) || '*'}</Text></View>
+              <View style={styles.cell}><Text style={styles.cellText}>{(item.revenue && item.revenue.value && `$${(item.revenue.value * 1).toFixed(2)}`) || '*'}</Text></View>
             </View>)}
           />
         </ScrollView>
@@ -353,6 +344,8 @@ OverviewView.propTypes = {
 
   isLoading: React.PropTypes.bool.isRequired,
 
+  all: React.PropTypes.array.isRequired,
+
   requests: React.PropTypes.arrayOf(React.PropTypes.shape({
     value: React.PropTypes.string.isRequired,
     time: React.PropTypes.string.isRequired,
@@ -385,6 +378,8 @@ const mapStateToProps = state => ({
   startDate: state.dateRange.startDate,
   endDate: state.dateRange.endDate,
   isLoading: state.insights.isLoading,
+
+  all: state.insights.all,
 
   requests: state.insights.requests,
   filledRequests: state.insights.filledRequests,

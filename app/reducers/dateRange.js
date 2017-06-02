@@ -18,11 +18,19 @@ function insight(state = initialDateRangeState, action) {
       return { ...state, endDate: action.date };
 
     case 'SET_PREVIOUS_DATE_RANGE':
-      if (['days', 'weeks', 'months'].indexOf(state.rangeType) !== -1) {
+      if (['days', 'weeks'].indexOf(state.rangeType) !== -1) {
         return {
           ...state,
           startDate: new Date(moment(state.startDate).subtract(1, state.rangeType)),
           endDate: new Date(moment(state.endDate).subtract(1, state.rangeType)),
+        };
+      }
+
+      if (state.rangeType === 'months') {
+        return {
+          ...state,
+          startDate: new Date(moment(state.startDate).subtract(1, state.rangeType).startOf('month')),
+          endDate: new Date(moment(state.endDate).subtract(1, state.rangeType).endOf('month')),
         };
       }
 
@@ -35,11 +43,19 @@ function insight(state = initialDateRangeState, action) {
       };
 
     case 'SET_NEXT_DATE_RANGE':
-      if (['days', 'weeks', 'months'].indexOf(state.rangeType) !== -1) {
+      if (['days', 'weeks'].indexOf(state.rangeType) !== -1) {
         return {
           ...state,
           startDate: new Date(moment(state.startDate).add(1, state.rangeType)),
           endDate: new Date(moment(state.endDate).add(1, state.rangeType)),
+        };
+      }
+
+      if (state.rangeType === 'months') {
+        return {
+          ...state,
+          startDate: new Date(moment(state.startDate).add(1, state.rangeType).startOf('month')),
+          endDate: new Date(moment(state.endDate).add(1, state.rangeType).endOf('month')),
         };
       }
 
