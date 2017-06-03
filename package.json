@@ -15,7 +15,7 @@
     "moment-timezone": "^0.5.13",
     "prop-types": "^15.5.10",
     "react": "16.0.0-alpha.6",
-    "react-native": "0.44.0",
+    "react-native": "0.44.2",
     "react-native-elements": "^0.12.2",
     "react-native-fbads": "^4.2.0",
     "react-native-fbsdk": "^0.6.0",
