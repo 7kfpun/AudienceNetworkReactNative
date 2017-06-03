@@ -12,9 +12,34 @@ moment.tz.setDefault('America/Los_Angeles');
 const window = Dimensions.get('window');
 
 const LineChart = (props) => {
-  const data = [props.data.map(item => ({
+  const length = props.data.length;
+
+  let endDate = moment(props.data[0].time);
+  const startDate = moment(props.data[length - 1].time);
+
+  const diffDays = endDate.diff(startDate, 'd', false);
+
+  let data = [];
+
+  if (diffDays + 1 !== length) {
+    let i = 0;
+    while (startDate <= endDate) {
+      if (props.data[i] && moment(props.data[i].time).format('LL') === endDate.format('LL')) {
+        data.push(props.data[i]);
+        i += 1;
+      } else {
+        data.push({ time: endDate.format(), value: 0 });
+      }
+
+      endDate = endDate.subtract(1, 'd');
+    }
+  } else {
+    data = [...props.data];
+  }
+
+  data = [data.map(item => ({
     x: moment(item.time),
-    y: parseInt(item.value, 10) == item.value ? parseInt(item.value, 10) : parseFloat(item.value).toFixed(2),  // eslint-disable-line eqeqeq
+    y: parseFloat(item.value),
   }))];
 
   const options = {

@@ -19,7 +19,7 @@ const initialInsightState = {
   revenueSum: 0,
 };
 
-Array.prototype.sum = function sum(prop) {
+Array.prototype.sum = function sum(prop) {  // eslint-disable-line no-extend-native
   let total = 0;
   for (let i = 0, len = this.length; i < len; i += 1) {
     if (parseInt(this[i][prop], 10) === this[i][prop]) {
