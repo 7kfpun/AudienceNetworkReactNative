@@ -3893,6 +3893,10 @@ react-native-elements@^0.12.2:
     react-native-side-menu "^0.20.1"
     react-native-tab-navigator "^0.3.3"
 
+react-native-fabric@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-fabric/-/react-native-fabric-0.4.1.tgz#5fcb604daf17d0dff70603ff3eeba9e3f3160ddd"
+
 react-native-fbads@^4.2.0:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/react-native-fbads/-/react-native-fbads-4.2.1.tgz#6c3ebb1db36c1ba3e04c31860903eaab8d994eac"
