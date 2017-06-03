@@ -4,8 +4,8 @@ import store from 'react-native-simple-store';
 moment.tz.setDefault('America/Los_Angeles');
 
 const initialDateRangeState = {
-  startDate: new Date(moment().subtract(1, 'months')),
-  endDate: new Date(),
+  // startDate: new Date(moment().subtract(1, 'months')),
+  // endDate: new Date(),
   rangeType: 'days',
   rangeTypeOrder: 0,
 };
@@ -14,9 +14,11 @@ function insight(state = initialDateRangeState, action) {
   let diff;
   switch (action.type) {
     case 'SET_START_DATE':
+      store.save('START_DATE', action.date);
       return { ...state, startDate: action.date };
 
     case 'SET_END_DATE':
+      store.save('END_DATE', action.date);
       return { ...state, endDate: action.date };
 
     case 'SET_PREVIOUS_DATE_RANGE':

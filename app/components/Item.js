@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
 });
 
-Array.prototype.sum = function sum(prop) {
+Array.prototype.sum = function sum(prop) {  // eslint-disable-line no-extend-native
   let total = 0;
   for (let i = 0, len = this.length; i < len; i += 1) {
     if (parseInt(this[i][prop], 10) === this[i][prop]) {
@@ -78,15 +78,17 @@ export default class Item extends Component {
   }
 
   loadRevenue(id, startDate, endDate) {
-    facebook.audienceNetwork(
-      id, 'fb_ad_network_revenue', 'SUM', null, startDate, endDate,
-      (error, result) => {
-        if (error) {
-          console.error(error);
-        } else {
-          this.setState({ revenue: result.data.sum('value') });
-        }
-      });
+    if (startDate && endDate) {
+      facebook.audienceNetwork(
+        id, 'fb_ad_network_revenue', 'SUM', null, startDate, endDate,
+        (error, result) => {
+          if (error) {
+            console.error(error);
+          } else {
+            this.setState({ revenue: result.data.sum('value') });
+          }
+        });
+    }
   }
 
   render() {
@@ -111,11 +113,16 @@ export default class Item extends Component {
   }
 }
 
+Item.defaultProps = {
+  startDate: null,
+  endDate: null,
+};
+
 Item.propTypes = {
   navigation: React.PropTypes.object.isRequired,
   item: React.PropTypes.shape({
     id: React.PropTypes.string.isRequired,
   }).isRequired,
-  startDate: React.PropTypes.object.isRequired,
-  endDate: React.PropTypes.object.isRequired,
+  startDate: React.PropTypes.object,
+  endDate: React.PropTypes.object,
 };

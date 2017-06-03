@@ -138,7 +138,6 @@ class OverviewView extends Component {
 
   state = {
     refreshing: false,
-    dataSource: dataSource.cloneWithRows([]),
     isChanged: false,
   };
 
@@ -159,13 +158,15 @@ class OverviewView extends Component {
   }
 
   onRequest(appId, startDate, endDate) {
-    const { fetchRequests, fetchFilledRequests, fetchImpressions, fetchClicks, fetchRevenue } = this.props;
+    if (startDate && endDate) {
+      const { fetchRequests, fetchFilledRequests, fetchImpressions, fetchClicks, fetchRevenue } = this.props;
 
-    fetchRequests(appId, startDate, endDate);
-    fetchFilledRequests(appId, startDate, endDate);
-    fetchImpressions(appId, startDate, endDate);
-    fetchClicks(appId, startDate, endDate);
-    fetchRevenue(appId, startDate, endDate);
+      fetchRequests(appId, startDate, endDate);
+      fetchFilledRequests(appId, startDate, endDate);
+      fetchImpressions(appId, startDate, endDate);
+      fetchClicks(appId, startDate, endDate);
+      fetchRevenue(appId, startDate, endDate);
+    }
   }
 
   checkPermissions() {
@@ -199,6 +200,7 @@ class OverviewView extends Component {
 
   renderInsights() {
     const { requests, impressions, clicks, revenue, all } = this.props;
+    const { startDate, endDate } = this.props;
 
     return (
       <View>
@@ -206,7 +208,7 @@ class OverviewView extends Component {
 
         <FbAds adsManager={adsManager} />
 
-        <IndicatorViewPager
+        {startDate && endDate && moment(startDate).format('L') !== moment(endDate).format('L') && <IndicatorViewPager
           style={{ height: 220, marginBottom: 5 }}
           indicator={<PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
         >
@@ -226,7 +228,7 @@ class OverviewView extends Component {
             {revenue.length > 1 && <LineChart data={revenue} />}
             <Text style={styles.cellText}>{'Estimated Revenue'}</Text>
           </View>
-        </IndicatorViewPager>
+        </IndicatorViewPager>}
 
         <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
           <FlatList
@@ -235,7 +237,7 @@ class OverviewView extends Component {
             scrollEnabled={false}
             data={all}
             ListHeaderComponent={() => (<View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.6 }]} />
+              <View style={[styles.cell, { flex: 1.5 }]} />
               <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
@@ -247,8 +249,8 @@ class OverviewView extends Component {
               <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
             </View>)}
             renderItem={({ item }) => (<View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.6 }]}>
-                <Text style={styles.cellText}>{item.requests && item.requests.time && moment(item.requests.time).format('ddd MMM D, YYYY')}</Text>
+              <View style={[styles.cell, { flex: 1.5 }]}>
+                <Text style={styles.cellText}>{item.requests && item.requests.time && moment(item.requests.time).format('ddd MMM DD, YYYY')}</Text>
                 {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
               </View>
               <View style={styles.cell}><Text style={styles.cellText}>{(item.requests && item.requests.value) || '*'}</Text></View>
@@ -305,10 +307,15 @@ class OverviewView extends Component {
   }
 }
 
+OverviewView.defaultProps = {
+  startDate: null,
+  endDate: null,
+};
+
 OverviewView.propTypes = {
   navigation: React.PropTypes.object.isRequired,
-  startDate: React.PropTypes.object.isRequired,
-  endDate: React.PropTypes.object.isRequired,
+  startDate: React.PropTypes.object,
+  endDate: React.PropTypes.object,
 
   isLoading: React.PropTypes.bool.isRequired,
 

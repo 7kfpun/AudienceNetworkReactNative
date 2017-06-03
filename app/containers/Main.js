@@ -95,7 +95,7 @@ class MainView extends Component {
   };
 
   componentDidMount() {
-    const { fetchDateRange, navigation } = this.props;
+    const { fetchFbapps, fetchDateRange, navigation } = this.props;
 
     AccessToken.getCurrentAccessToken().then(
       (data) => {
@@ -109,13 +109,20 @@ class MainView extends Component {
       },
     );
 
-    this.props.fetchFbapps();
+    fetchFbapps();
     fetchDateRange();
   }
 
   componentWillReceiveProps(nextProps) {
+    const { fetchFbapps, fetchDateRange } = this.props;
+
     if (nextProps.isLoggedIn !== this.props.isLoggedIn) {
       this.props.navigation.setParams({ isLoggedIn: nextProps.isLoggedIn });
+    }
+
+    if (nextProps.fbapps.length !== this.props.fbapps.length) {
+      fetchFbapps();
+      fetchDateRange();
     }
   }
 
@@ -217,6 +224,11 @@ class MainView extends Component {
   }
 }
 
+MainView.defaultProps = {
+  startDate: null,
+  endDate: null,
+};
+
 MainView.propTypes = {
   navigation: React.PropTypes.object.isRequired,
   isLoggedIn: React.PropTypes.bool.isRequired,
@@ -224,8 +236,8 @@ MainView.propTypes = {
   fetchFbapps: React.PropTypes.func.isRequired,
   deleteFbapp: React.PropTypes.func.isRequired,
   fetchDateRange: React.PropTypes.func.isRequired,
-  startDate: React.PropTypes.object.isRequired,
-  endDate: React.PropTypes.object.isRequired,
+  startDate: React.PropTypes.object,
+  endDate: React.PropTypes.object,
 };
 
 const mapStateToProps = state => ({

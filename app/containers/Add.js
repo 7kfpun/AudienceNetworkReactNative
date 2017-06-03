@@ -85,7 +85,9 @@ class AddView extends Component {
   }
 
   addApp(app) {
-    this.props.addFbapp(app);
+    const { addFbapp } = this.props;
+    addFbapp(app);
+
     AppEventsLogger.logEvent('add-a-new-app');
     this.props.navigation.goBack();
   }

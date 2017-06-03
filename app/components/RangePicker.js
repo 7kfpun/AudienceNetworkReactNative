@@ -45,24 +45,26 @@ const styles = StyleSheet.create({
 });
 
 const RangePicker = (props) => {
-  const { startDate, endDate, rangeType, setPreviousDateRange, setNextDateRange, navigation } = props;
+  const { startDate, endDate, setPreviousDateRange, setNextDateRange, navigation } = props;
 
-  let startYearShowAs = `, ${moment(startDate).year()}`;
-  let endYearShowAs = `, ${moment(endDate).year()}`;
   let rangeShowAs;
+  if (startDate && endDate) {
+    let startYearShowAs = `, ${moment(startDate).year()}`;
+    let endYearShowAs = `, ${moment(endDate).year()}`;
 
-  if (moment(startDate).year() === moment().year() || moment(startDate).year() === moment(endDate).year()) {
-    startYearShowAs = '';
-  }
+    if (moment(startDate).year() === moment().year() || moment(startDate).year() === moment(endDate).year()) {
+      startYearShowAs = '';
+    }
 
-  if (moment(endDate).year() === moment().year()) {
-    endYearShowAs = '';
-  }
+    if (moment(endDate).year() === moment().year()) {
+      endYearShowAs = '';
+    }
 
-  if (moment(startDate).format('MMM DD YYYY') === moment(endDate).format('MMM DD YYYY')) {
-    rangeShowAs = `${moment(endDate).format('dddd, MMM DD')}${endYearShowAs}`;
-  } else {
-    rangeShowAs = `${moment(startDate).format('MMM DD')}${startYearShowAs} - ${moment(endDate).format('MMM DD')}${endYearShowAs}`;
+    if (moment(startDate).format('L') === moment(endDate).format('L')) {
+      rangeShowAs = `${moment(endDate).format('ddd, MMM DD')}${endYearShowAs}`;
+    } else {
+      rangeShowAs = `${moment(startDate).format('MMM DD')}${startYearShowAs} - ${moment(endDate).format('MMM DD')}${endYearShowAs}`;
+    }
   }
 
   return (<View style={styles.container}>
@@ -99,10 +101,14 @@ const RangePicker = (props) => {
   </View>);
 };
 
+RangePicker.defaultProps = {
+  startDate: null,
+  endDate: null,
+};
+
 RangePicker.propTypes = {
-  startDate: React.PropTypes.object.isRequired,
-  endDate: React.PropTypes.object.isRequired,
-  rangeType: React.PropTypes.string.isRequired,
+  startDate: React.PropTypes.object,
+  endDate: React.PropTypes.object,
   setPreviousDateRange: React.PropTypes.func.isRequired,
   setNextDateRange: React.PropTypes.func.isRequired,
   navigation: React.PropTypes.object.isRequired,

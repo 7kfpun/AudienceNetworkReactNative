@@ -162,19 +162,19 @@ class DateSettingsView extends Component {
     try {
       const { action, year, month, day } = await DatePickerAndroid.open({ date });
       if (action !== DatePickerAndroid.dismissedAction) {
-        const date = new Date(Date.UTC(year, month, day, 8));
+        const tempDate = new Date(year, month, day);
         if (startOrEnd === 'START') {
           this.setState({
-            startDate: date,
+            startDate: tempDate,
             isChanged: true,
           });
-          AppEventsLogger.logEvent('change-start-date', 0, { startDate: date.toString() });
+          AppEventsLogger.logEvent('change-start-date', 0, { startDate: tempDate.toString() });
         } else {
           this.setState({
-            endDate: date,
+            endDate: tempDate,
             isChanged: true,
           });
-          AppEventsLogger.logEvent('change-end-date', 0, { endDate: date.toString() });
+          AppEventsLogger.logEvent('change-end-date', 0, { endDate: tempDate.toString() });
         }
       }
     } catch ({ code, message }) {

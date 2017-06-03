@@ -65,6 +65,26 @@ export function fetchDateRange() {
               }
             })
             .catch(err => console.log(err));
+        } else {
+          store.get('START_DATE')
+            .then((date) => {
+              if (date) {
+                dispatch(setStartDate(new Date(date)));
+              } else {
+                dispatch(setStartDate(new Date(moment().subtract(1, 'months'))));
+              }
+            })
+            .catch(err => console.log(err));
+
+          store.get('END_DATE')
+            .then((date) => {
+              if (date) {
+                dispatch(setEndDate(new Date(date)));
+              } else {
+                dispatch(setEndDate(new Date()));
+              }
+            })
+            .catch(err => console.log(err));
         }
       })
       .catch(err => console.log(err));
