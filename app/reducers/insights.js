@@ -1,3 +1,5 @@
+import shortid from 'shortid';
+
 const initialInsightState = {
   setAppID: null,
   isLoading: false,
@@ -54,7 +56,10 @@ function insights(state = initialInsightState, action) {
       return { ...state, revenue: action.data.slice().reverse(), revenueSum: action.data.sum('value') };
     case 'RECEIVE_ALL_INSIGHTS':
       for (let i = 0; i < state.requests.length; i += 1) {
-        row = { requests: state.requests[i] };
+        row = {
+          key: shortid.generate(),
+          requests: state.requests[i],
+        };
         if (state.filledRequests && state.filledRequests.length && state.filledRequests[filledRequestsCount] && state.filledRequests[filledRequestsCount].time === state.requests[i].time) {
           row.filledRequests = state.filledRequests[filledRequestsCount];
           filledRequestsCount += 1;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  ListView,
+  FlatList,
   Platform,
   RefreshControl,
   ScrollView,
@@ -116,8 +116,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const dataSource = new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 });
-
 class OverviewView extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: `${navigation.state.params.appName} (${navigation.state.params.appId})`,
@@ -130,13 +128,6 @@ class OverviewView extends Component {
     >
       <Text style={{ marginLeft: 6, fontSize: 16, color: '#0076FF' }}>Back</Text>
     </TouchableOpacity>,
-    // rightButton={{
-    //   title: this.state.isChanged ? 'Apply' : '',
-    //   tintColor: 'red',
-    //   handler: () => {
-    //     this.onRequest();
-    //   },
-    // }}
     headerStyle: {
       backgroundColor: 'white',
     },
@@ -164,13 +155,6 @@ class OverviewView extends Component {
 
     if (nextProps.startDate !== this.props.startDate || nextProps.endDate !== this.props.endDate) {
       this.onRequest(appId, nextProps.startDate, nextProps.endDate);
-    }
-
-    if (nextProps.all !== this.props.all && nextProps.all && nextProps.all.length > 0) {
-      console.log('nextProps.all', nextProps.all);
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(nextProps.all),
-      });
     }
   }
 
@@ -200,6 +184,8 @@ class OverviewView extends Component {
             (result) => {
               if (result.isCancelled) {
                 alert('You cannot this app without read_audience_network_insights permissions.');
+              } else {
+                this.onRequest(appId, nextProps.startDate, nextProps.endDate);
               }
             },
             (error) => {
@@ -211,26 +197,8 @@ class OverviewView extends Component {
     );
   }
 
-  // aggregateData(data, breakdown) {
-  //   let out = [];
-  //   if (breakdown === 'Country') {
-  //     const groups = _(data).groupBy('country');
-  //     out = _(groups).map((g, key) => {
-  //       return { country: key, value: _(g).reduce((m, x) => m + parseInt(x.value, 10), 0) };
-  //     });
-  //   } else if (breakdown === 'Placement') {
-  //     const groups = _(data).groupBy('placement');
-  //     out = _(groups).map((g, key) => {
-  //       return { placement: key, value: _(g).reduce((m, x) => m + parseInt(x.value, 10), 0) };
-  //     });
-  //   }
-  //
-  //   console.log(out);
-  //   return out;
-  // }
-
   renderInsights() {
-    const { requests, impressions, clicks, revenue } = this.props;
+    const { requests, impressions, clicks, revenue, all } = this.props;
 
     return (
       <View>
@@ -261,12 +229,12 @@ class OverviewView extends Component {
         </IndicatorViewPager>
 
         <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
-          <ListView
+          <FlatList
             style={{ marginBottom: 10 }}
             enableEmptySections={true}
             scrollEnabled={false}
-            dataSource={this.state.dataSource}
-            renderHeader={() => (<View style={[styles.row, { padding: 0 }]}>
+            data={all}
+            ListHeaderComponent={() => (<View style={[styles.row, { padding: 0 }]}>
               <View style={[styles.cell, { flex: 1.6 }]} />
               <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
@@ -278,7 +246,7 @@ class OverviewView extends Component {
               <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
               <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
             </View>)}
-            renderRow={item => (<View style={[styles.row, { padding: 0 }]}>
+            renderItem={({ item }) => (<View style={[styles.row, { padding: 0 }]}>
               <View style={[styles.cell, { flex: 1.6 }]}>
                 <Text style={styles.cellText}>{item.requests && item.requests.time && moment(item.requests.time).format('ddd MMM D, YYYY')}</Text>
                 {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
@@ -300,12 +268,10 @@ class OverviewView extends Component {
   }
 
   render() {
-    const { navigation } = this.props;
+    const { startDate, endDate, isLoading, all, navigation } = this.props;
     const { appId } = this.props.navigation.state.params;
-    const { startDate, endDate } = this.props;
-    const { isLoading, requests, filledRequests, impressions, clicks, revenue } = this.props;
 
-    if (!isLoading && requests.length === 0 && filledRequests.length === 0 && impressions.length === 0 && clicks.length === 0 && revenue.length === 0) {
+    if (!isLoading && all.length === 0) {
       return (<View style={styles.container}>
         <RangePicker navigation={navigation} />
 
@@ -352,10 +318,10 @@ OverviewView.propTypes = {
     value: React.PropTypes.string.isRequired,
     time: React.PropTypes.string.isRequired,
   }).isRequired).isRequired,
-  filledRequests: React.PropTypes.arrayOf(React.PropTypes.shape({
-    value: React.PropTypes.string.isRequired,
-    time: React.PropTypes.string.isRequired,
-  }).isRequired).isRequired,
+  // filledRequests: React.PropTypes.arrayOf(React.PropTypes.shape({
+  //   value: React.PropTypes.string.isRequired,
+  //   time: React.PropTypes.string.isRequired,
+  // }).isRequired).isRequired,
   impressions: React.PropTypes.arrayOf(React.PropTypes.shape({
     value: React.PropTypes.string.isRequired,
     time: React.PropTypes.string.isRequired,

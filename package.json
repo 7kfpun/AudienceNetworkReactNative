@@ -31,7 +31,8 @@
     "redux": "^3.6.0",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
-    "rn-viewpager": "^1.1.4"
+    "rn-viewpager": "^1.1.4",
+    "shortid": "^2.2.8"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
