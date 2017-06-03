@@ -25,8 +25,10 @@ const fbapp = (state, action) => {
           tempApps = [];
         }
 
-        tempApps.push(app);
-        store.save('APPS', tempApps);
+        if (!apps.find(item => item.id === app.id)) {
+          tempApps.push(app);
+          store.save('APPS', tempApps);
+        }
       });
       return app;
     case 'DELETE_FBAPP':
