@@ -1,4 +1,5 @@
 import * as facebook from '../utils/facebook';
+import tracker from '../utils/tracker';
 
 export const showLoading = () => ({
   type: 'SHOW_LOADING',
@@ -48,8 +49,10 @@ function fetchData(appId, startDate, endDate, dataType, name, aggregation) {
       (error, result) => {
         if (error) {
           console.log('Error insights:', error);
+          tracker.logEvent('request-error', { category: 'api-event', component: 'item', log: 'error', value: dataType });
         } else {
           console.log('Success insights:', result);
+          tracker.logEvent('request-success', { category: 'api-event', component: 'item', log: 'info', value: dataType });
           switch (dataType) {
             case 'REQUESTS':
               dispatch(receiveRequests(result.data), getState);

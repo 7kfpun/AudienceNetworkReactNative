@@ -7,13 +7,14 @@ import {
   View,
 } from 'react-native';
 
-import { AppEventsLogger } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment-timezone';
 
 import * as dateRangeActions from '../actions/dateRange';
+
+import tracker from '../utils/tracker';
 
 moment.tz.setDefault('America/Los_Angeles');
 
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
 });
 
 const RangePicker = (props) => {
-  const { startDate, endDate, setPreviousDateRange, setNextDateRange, navigation } = props;
+  const { startDate, endDate, rangeType, setPreviousDateRange, setNextDateRange, navigation } = props;
 
   let rangeShowAs;
   if (startDate && endDate) {
@@ -72,6 +73,7 @@ const RangePicker = (props) => {
       style={styles.displayBlock}
       onPress={() => {
         navigation.navigate('DateSettings');
+        tracker.logEvent('view-date-settings', { category: 'user-event', component: 'range-picker' });
       }}
     >
       <View style={styles.display}>
@@ -83,7 +85,7 @@ const RangePicker = (props) => {
       style={styles.icon}
       onPress={() => {
         setPreviousDateRange();
-        AppEventsLogger.logEvent('press-previous-date-range-button');
+        tracker.logEvent('go-previous-date-range', { category: 'user-event', component: 'range-picker', value: rangeType });
       }}
     >
       <Icon name="chevron-left" size={20} color="gray" />
@@ -93,7 +95,7 @@ const RangePicker = (props) => {
       style={styles.icon}
       onPress={() => {
         setNextDateRange();
-        AppEventsLogger.logEvent('press-next-date-range-button');
+        tracker.logEvent('go-next-date-range', { category: 'user-event', component: 'range-picker', value: rangeType });
       }}
     >
       <Icon name="chevron-right" size={20} color="gray" />
@@ -109,6 +111,7 @@ RangePicker.defaultProps = {
 RangePicker.propTypes = {
   startDate: React.PropTypes.object,
   endDate: React.PropTypes.object,
+  rangeType: React.PropTypes.string.isRequired,
   setPreviousDateRange: React.PropTypes.func.isRequired,
   setNextDateRange: React.PropTypes.func.isRequired,
   navigation: React.PropTypes.object.isRequired,

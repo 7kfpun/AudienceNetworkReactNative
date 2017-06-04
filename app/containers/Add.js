@@ -10,7 +10,6 @@ import {
   View,
 } from 'react-native';
 
-import { AppEventsLogger } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
 import { Button, FormInput } from 'react-native-elements';
 import { connect } from 'react-redux';
@@ -20,8 +19,14 @@ import SafariView from 'react-native-safari-view';
 import * as fbappActions from '../actions/fbapp';
 
 import * as Facebook from '../utils/facebook';
+import tracker from '../utils/tracker';
 
 const styles = StyleSheet.create({
+  headerLeftText: {
+    marginLeft: 6,
+    fontSize: 16,
+    color: '#0076FF',
+  },
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
@@ -62,10 +67,10 @@ class AddView extends Component {
       underlayColor="white"
       onPress={() => {
         navigation.goBack();
-        AppEventsLogger.logEvent('press-logout-button');
+        tracker.logEvent('view-logout', { category: 'user-event', view: 'add' });
       }}
     >
-      <Text style={{ marginLeft: 6, fontSize: 16, color: '#0076FF' }}>Cancel</Text>
+      <Text style={styles.headerLeftText}>Cancel</Text>
     </TouchableOpacity>,
     headerStyle: {
       backgroundColor: 'white',
@@ -77,18 +82,17 @@ class AddView extends Component {
     dataSource: dataSource.cloneWithRows([]),
   };
 
-  onRequest() {
-    console.log('onRequest accounts');
+  onSearchRequest() {
     this.setState({ isLoading: true });
     Facebook.checkAppId(this.state.text, (error, result) => this.responseInfoCallback(error, result));
-    AppEventsLogger.logEvent('search-app');
+    tracker.logEvent('search-app', { category: 'user-event', view: 'add' });
   }
 
   addApp(app) {
     const { addFbapp } = this.props;
     addFbapp(app);
 
-    AppEventsLogger.logEvent('add-a-new-app');
+    tracker.logEvent('add-a-new-app', { category: 'user-event', view: 'add' });
     this.props.navigation.goBack();
   }
 
@@ -99,14 +103,14 @@ class AddView extends Component {
         isLoading: false,
         isInvalid: true,
       });
-      AppEventsLogger.logEvent('search-app-fail');
+      tracker.logEvent('search-app-error', { category: 'user-event', view: 'add' });
     } else {
       console.log('Success checking app id:', result);
       this.setState({
         result,
         isLoading: false,
       });
-      AppEventsLogger.logEvent('search-app-success');
+      tracker.logEvent('search-app-success', { category: 'user-event', view: 'add' });
     }
   }
 
@@ -123,7 +127,7 @@ class AddView extends Component {
   //
   //       Actions.pop();
   //       Actions.refresh({});
-  //       AppEventsLogger.logEvent('add-a-new-app');
+  //       tracker.logEvent('add-a-new-app', { category: 'user-event', view: 'add' });
   //     });
   //   };
   //
@@ -146,59 +150,58 @@ class AddView extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View>
-          <View style={{ marginVertical: 10 }}>
-            <FormInput
-              placeholder={'Facebook App ID'}
-              keyboardType={'numeric'}
-              onChangeText={text => this.setState({ text, result: null, isInvalid: false })}
-            />
-          </View>
-          <Button
-            raised
-            title={!this.state.isLoading ? 'SEARCH' : ''}
-            icon={!this.state.isLoading ? { name: 'search' } : null}
-            loading={this.state.isLoading}
-            disabled={!(this.state.text && this.state.text.length > 8 && !isNaN(this.state.text)) || this.state.isLoading}
-            onPress={() => this.onRequest()}
+        <View style={{ marginVertical: 10 }}>
+          <FormInput
+            placeholder={'Facebook App ID'}
+            keyboardType={'numeric'}
+            onChangeText={text => this.setState({ text, result: null, isInvalid: false })}
           />
+        </View>
+        <Button
+          raised
+          title={!this.state.isLoading ? 'SEARCH' : ''}
+          icon={!this.state.isLoading ? { name: 'search' } : null}
+          loading={this.state.isLoading}
+          disabled={!(this.state.text && this.state.text.length > 8 && !isNaN(this.state.text)) || this.state.isLoading}
+          onPress={() => this.onSearchRequest()}
+        />
 
-          {this.state.result && this.state.result.name && <View style={styles.appBlock}>
-            <Image style={styles.image} source={{ uri: this.state.result.logo_url }} />
-            <View style={{ paddingLeft: 10 }}>
-              <Text>{this.state.result.name} <Text style={{ fontSize: 12, color: 'gray' }}>{this.state.result.id}</Text></Text>
-              {this.state.result.category && <Text>{this.state.result.category}</Text>}
-            </View>
-            <TouchableOpacity
-              underlayColor="white"
-              onPress={() => this.addApp(this.state.result)}
-            >
-              <Icon name="add-circle-outline" size={30} color="gray" />
-            </TouchableOpacity>
-          </View>}
-
-          {this.state.isInvalid && <View style={{ alignItems: 'center', paddingTop: 30 }}>
-            <Text style={[styles.text, { color: 'red' }]}>{'Invalid Facebook App ID'}</Text>
-          </View>}
-
-          <View style={{ alignItems: 'center', paddingTop: 30 }}>
-            <Text style={styles.text}>You can find your Facebook App IDs at</Text>
-            <TouchableOpacity
-              onPress={() => {
-                const url = 'https://developers.facebook.com/apps/';
-                if (Platform.OS === 'ios') {
-                  SafariView.isAvailable()
-                    .then(SafariView.show({ url }))
-                    .catch(error => console.log(error));
-                } else {
-                  Linking.openURL(url);
-                }
-                AppEventsLogger.logEvent('open-fb-apps-link');
-              }}
-            >
-              <Text style={[styles.text, { color: '#0076FF' }]}>{'https://developers.facebook.com/apps/'}</Text>
-            </TouchableOpacity>
+        {this.state.result && this.state.result.name && <View style={styles.appBlock}>
+          <Image style={styles.image} source={{ uri: this.state.result.logo_url }} />
+          {/* <Image style={styles.image} source={require('./../../assets/app.png')} /> */}
+          <View style={{ paddingLeft: 10 }}>
+            <Text>{this.state.result.name} <Text style={{ fontSize: 12, color: 'gray' }}>{this.state.result.id}</Text></Text>
+            {this.state.result.category && <Text>{this.state.result.category}</Text>}
           </View>
+          <TouchableOpacity
+            underlayColor="white"
+            onPress={() => this.addApp(this.state.result)}
+          >
+            <Icon name="add-circle-outline" size={30} color="gray" />
+          </TouchableOpacity>
+        </View>}
+
+        {this.state.isInvalid && <View style={{ alignItems: 'center', paddingTop: 30 }}>
+          <Text style={[styles.text, { color: 'red' }]}>{'Invalid Facebook App ID'}</Text>
+        </View>}
+
+        <View style={{ alignItems: 'center', paddingTop: 30 }}>
+          <Text style={styles.text}>You can find your Facebook App IDs at</Text>
+          <TouchableOpacity
+            onPress={() => {
+              const url = 'https://developers.facebook.com/apps/';
+              if (Platform.OS === 'ios') {
+                SafariView.isAvailable()
+                  .then(() => SafariView.show({ url }))
+                  .catch(error => console.log(error));
+              } else {
+                Linking.openURL(url);
+              }
+              tracker.logEvent('open-fb-developers-link', { category: 'user-event', view: 'add' });
+            }}
+          >
+            <Text style={[styles.text, { color: '#0076FF' }]}>{'https://developers.facebook.com/apps/'}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );

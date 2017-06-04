@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 
-import { AppEventsLogger } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { TabViewAnimated, TabBar } from 'react-native-tab-view';
@@ -20,6 +19,7 @@ import moment from 'moment-timezone';
 import * as dateRangeActions from '../actions/dateRange';
 
 import dateRangeOptions from '../utils/dateRangeOptions';
+import tracker from '../utils/tracker';
 
 moment.tz.setDefault('America/Los_Angeles');
 
@@ -28,6 +28,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECEFF1',
     padding: 8,
+  },
+  headerRightText: {
+    marginRight: 6,
+    fontSize: 16,
+    color: '#0076FF',
   },
   row: {
     flexDirection: 'row',
@@ -56,7 +61,7 @@ class DateSettingsView extends Component {
       underlayColor="white"
       onPress={() => {
         navigation.goBack();
-        AppEventsLogger.logEvent('press-close-button');
+        tracker.logEvent('close-date-settings', { category: 'user-event', view: 'date-settings' });
       }}
     >
       <Icon name="clear" size={30} color="#0076FF" />
@@ -72,28 +77,29 @@ class DateSettingsView extends Component {
           setStartDate(dateRangeOptions.days[checkDay].startDate);
           setEndDate(dateRangeOptions.days[checkDay].endDate);
           setRangeTypeOrder(checkDay);
+          tracker.logEvent('save-date-range', { category: 'user-event', view: 'date-settings', value: 'days', rangeTypeOrder: checkDay });
         } else if (index === 1) {
           setRangeType('weeks');
           setStartDate(dateRangeOptions.weeks[checkWeek].startDate);
           setEndDate(dateRangeOptions.weeks[checkWeek].endDate);
           setRangeTypeOrder(checkWeek);
+          tracker.logEvent('save-date-range', { category: 'user-event', view: 'date-settings', value: 'weeks', rangeTypeOrder: checkWeek });
         } else if (index === 2) {
           setRangeType('months');
           setStartDate(dateRangeOptions.months[checkMonth].startDate);
           setEndDate(dateRangeOptions.months[checkMonth].endDate);
           setRangeTypeOrder(checkMonth);
+          tracker.logEvent('save-date-range', { category: 'user-event', view: 'date-settings', value: 'months', rangeTypeOrder: checkMonth });
+          value = 'months';
         } else if (index === 3) {
           setRangeType('custom');
+          tracker.logEvent('save-date-range', { category: 'user-event', view: 'date-settings', value: 'custom' });
         }
 
-        // setStartDate(startDate);
-        // setEndDate(endDate);
-
         navigation.goBack();
-        AppEventsLogger.logEvent('press-save-date-range-button');
       }}
     >
-      <Text style={{ marginRight: 6, fontSize: 16, color: '#0076FF' }}>Save</Text>
+      <Text style={styles.headerRightText}>{'Save'}</Text>
     </TouchableOpacity>,
     headerStyle: {
       backgroundColor: 'white',
@@ -156,6 +162,8 @@ class DateSettingsView extends Component {
   handleChangeTab = (index) => {
     this.setState({ index });
     this.props.navigation.setParams({ index });
+
+    tracker.logEvent(`view-tab-${this.state.routes[index].key}`, { category: 'user-event', view: 'date-settings' });
   };
 
   showDatePickerAndroid = async (date, startOrEnd = 'START') => {
@@ -168,17 +176,18 @@ class DateSettingsView extends Component {
             startDate: tempDate,
             isChanged: true,
           });
-          AppEventsLogger.logEvent('change-start-date', 0, { startDate: tempDate.toString() });
+          tracker.logEvent('change-start-date', { category: 'user-event', view: 'date-settings', value: tempDate.toString() });
         } else {
           this.setState({
             endDate: tempDate,
             isChanged: true,
           });
-          AppEventsLogger.logEvent('change-end-date', 0, { endDate: tempDate.toString() });
+          tracker.logEvent('change-end-date', { category: 'user-event', view: 'date-settings', value: tempDate.toString() });
         }
       }
     } catch ({ code, message }) {
       console.warn('Cannot open date picker', message);
+      tracker.logEvent('open-date-picker-error', { category: 'error', view: 'date-settings' });
     }
   }
 
@@ -190,10 +199,11 @@ class DateSettingsView extends Component {
         isStartDatePickerShow: !this.state.isStartDatePickerShow,
         isEndDatePickerShow: false,
       });
+      tracker.logEvent('open-start-date-settings', { category: 'user-event', view: 'date-settings', value: !this.state.isStartDatePickerShow });
     } else {
       this.showDatePickerAndroid(startDate, 'START');
+      tracker.logEvent('open-start-date-settings', { category: 'user-event', view: 'date-settings', value: true });
     }
-    AppEventsLogger.logEvent('press-change-start-date');
   }
 
   openEndDatePicker() {
@@ -204,10 +214,11 @@ class DateSettingsView extends Component {
         isEndDatePickerShow: !this.state.isEndDatePickerShow,
         isStartDatePickerShow: false,
       });
+      tracker.logEvent('open-end-date-settings', { category: 'user-event', view: 'date-settings', value: !this.state.isStartDatePickerShow });
     } else {
       this.showDatePickerAndroid(endDate, 'END');
+      tracker.logEvent('open-end-date-settings', { category: 'user-event', view: 'date-settings', value: true });
     }
-    AppEventsLogger.logEvent('press-change-end-date');
   }
 
   renderHeader = props => <TabBar {...props} labelStyle={{ fontSize: 10 }} />;
@@ -322,7 +333,7 @@ class DateSettingsView extends Component {
               const tempDate = new Date(moment([date.getFullYear(), date.getMonth(), date.getDate()]));
               this.setState({ startDate: tempDate, isChanged: true });
               setStartDate(tempDate);
-              AppEventsLogger.logEvent('change-start-date', 0, { startDate: tempDate.toString() });
+              tracker.logEvent('change-start-date', { category: 'user-event', view: 'date-settings', value: tempDate.toString() });
             }}
           />}
 
@@ -346,7 +357,7 @@ class DateSettingsView extends Component {
               const tempDate = new Date(moment([date.getFullYear(), date.getMonth(), date.getDate()]));
               this.setState({ endDate: tempDate, isChanged: true });
               setEndDate(tempDate);
-              AppEventsLogger.logEvent('change-end-date', 0, { endDate: tempDate.toString() });
+              tracker.logEvent('change-end-date', { category: 'user-event', view: 'date-settings', value: tempDate.toString() });
             }}
           />}
         </View>);

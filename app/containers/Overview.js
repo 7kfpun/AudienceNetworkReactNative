@@ -12,7 +12,7 @@ import {
 
 import moment from 'moment-timezone';
 
-import { AccessToken, AppEventsLogger, LoginManager } from 'react-native-fbsdk';
+import { AccessToken, LoginManager } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
@@ -20,12 +20,14 @@ import { NativeAdsManager } from 'react-native-fbads';
 
 import * as dateRangeActions from '../actions/dateRange';
 import * as insightActions from '../actions/insights';
-import AdBanner from '../components/fbadbanner';
 
+import AdBanner from '../components/fbadbanner';
 import FbAds from '../components/fbads';
 import LineChart from '../components/LineChart';
 import OverviewSummary from '../components/OverviewSummary';
 import RangePicker from '../components/RangePicker';
+
+import tracker from '../utils/tracker';
 
 import { config } from '../config';
 
@@ -37,6 +39,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
+  },
+  headerLeftText: {
+    marginLeft: 6,
+    fontSize: 16,
+    color: '#0076FF',
   },
   body: {
     paddingVertical: 6,
@@ -123,10 +130,9 @@ class OverviewView extends Component {
       underlayColor="white"
       onPress={() => {
         navigation.goBack();
-        AppEventsLogger.logEvent('press-apply-button');
       }}
     >
-      <Text style={{ marginLeft: 6, fontSize: 16, color: '#0076FF' }}>Back</Text>
+      <Text style={styles.headerLeftText}>Back</Text>
     </TouchableOpacity>,
     headerStyle: {
       backgroundColor: 'white',
@@ -185,12 +191,15 @@ class OverviewView extends Component {
             (result) => {
               if (result.isCancelled) {
                 alert('You cannot this app without read_audience_network_insights permissions.');
+                tracker.logEvent('cancel-read-audience-network-insights-permission', { category: 'auth-event', view: 'overview' });
               } else {
                 this.onRequest(appId, nextProps.startDate, nextProps.endDate);
+                tracker.logEvent('give-read-audience-network-insights-permission', { category: 'auth-event', view: 'overview' });
               }
             },
             (error) => {
               alert(`Login fail with error: ${error}`);
+              tracker.logEvent('login-failed', { category: 'auth-event', view: 'overview' });
             },
           );
         }
@@ -294,7 +303,7 @@ class OverviewView extends Component {
               refreshing={isLoading}
               onRefresh={() => {
                 this.onRequest(appId, startDate, endDate);
-                AppEventsLogger.logEvent('refresh-overview');
+                tracker.logEvent('refresh-overview', { category: 'user-event', view: 'overview' });
               }}
             />
           }

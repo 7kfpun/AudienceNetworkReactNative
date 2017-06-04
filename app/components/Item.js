@@ -7,9 +7,8 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import { AppEventsLogger } from 'react-native-fbsdk';
-
 import * as facebook from '../utils/facebook';
+import tracker from '../utils/tracker';
 
 const styles = StyleSheet.create({
   container: {
@@ -30,6 +29,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 10,
+  },
+  textBlock: {
+    flex: 4,
+    paddingLeft: 5,
+  },
+  revenueBlock: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   image: {
     width: 45,
@@ -84,6 +91,7 @@ export default class Item extends Component {
         (error, result) => {
           if (error) {
             console.error(error);
+            tracker.logEvent('request-revenue-error', { category: 'api-event', component: 'item', log: 'error' });
           } else {
             this.setState({ revenue: result.data.sum('value') });
           }
@@ -96,16 +104,16 @@ export default class Item extends Component {
     return (<TouchableHighlight
       onPress={() => {
         navigation.navigate('Overview', { appId: item.id, appName: item.name });
-        AppEventsLogger.logEvent('check-overview');
+        tracker.logEvent('view-app-insights', { category: 'user-event', component: 'item' });
       }}
     >
       <View style={styles.container}>
         <Image style={styles.image} source={{ uri: item.logo_url }} />
-        <View style={{ flex: 4, paddingLeft: 5 }}>
+        <View style={styles.textBlock}>
           <Text style={styles.titleText}>{item.name} <Text style={styles.idText}>{item.id}</Text></Text>
           {item.category && <Text style={styles.text}>{item.category}</Text>}
         </View>
-        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+        <View style={styles.revenueBlock}>
           <Text style={styles.text}>{(this.state.revenue && `$${this.state.revenue.toFixed(2)}`) || '-'}</Text>
         </View>
       </View>

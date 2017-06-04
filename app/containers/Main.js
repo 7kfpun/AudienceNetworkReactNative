@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-import { AccessToken, AppEventsLogger } from 'react-native-fbsdk';
+import { AccessToken } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -23,10 +23,17 @@ import AdBanner from '../components/fbadbanner';
 import RangePicker from '../components/RangePicker';
 import Item from '../components/Item';
 
+import tracker from '../utils/tracker';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
+  },
+  headerLeftText: {
+    marginLeft: 6,
+    fontSize: 16,
+    color: '#0076FF',
   },
   body: {
     paddingVertical: 6,
@@ -70,16 +77,16 @@ class MainView extends Component {
         underlayColor="white"
         onPress={() => {
           navigation.navigate('Login');
-          AppEventsLogger.logEvent('press-logout-button');
+          tracker.logEvent('view-logout', { category: 'user-event', view: 'main' });
         }}
       >
-        <Text style={{ marginLeft: 6, fontSize: 16, color: '#0076FF' }}>{isLoggedIn ? 'Logout' : 'Login'}</Text>
+        <Text style={styles.headerLeftText}>{isLoggedIn ? 'Logout' : 'Login'}</Text>
       </TouchableOpacity>,
       headerRight: isLoggedIn && <TouchableOpacity
         underlayColor="white"
         onPress={() => {
           navigation.navigate('Add');
-          AppEventsLogger.logEvent('press-add-button');
+          tracker.logEvent('view-add', { category: 'user-event', view: 'main' });
         }}
       >
         <Icon style={{ marginRight: 4 }} name="add" size={30} color="#0076FF" />
@@ -129,7 +136,7 @@ class MainView extends Component {
   onPressDelete(appId) {
     const deleteApp = (id) => {
       this.props.deleteFbapp(id);
-      AppEventsLogger.logEvent('delete-a-new-app');
+      tracker.logEvent('delete-a-app', { category: 'user-event', view: 'main' });
     };
 
     if (Platform.OS === 'ios') {
@@ -148,6 +155,8 @@ class MainView extends Component {
       (buttonIndex) => {
         if (buttonIndex === 0) {
           deleteApp(appId);
+        } else {
+          tracker.logEvent('delete-a-app-cancel', { category: 'user-event', view: 'main' });
         }
       });
     } else {
@@ -155,7 +164,7 @@ class MainView extends Component {
         'Do you want to delete this App?',
         null,
         [
-          { text: 'Cancel', onPress: () => console.log('Cancel Pressed!') },
+          { text: 'Cancel', onPress: () => tracker.logEvent('delete-a-app-cancel', { category: 'user-event', view: 'main' }) },
           { text: 'OK', onPress: () => deleteApp(appId) },
         ],
       );
@@ -191,7 +200,7 @@ class MainView extends Component {
               onRefresh={() => {
                 this.props.fetchFbapps();
                 this.setState({ random: Math.random() });
-                AppEventsLogger.logEvent('refresh-applist');
+                tracker.logEvent('refresh-applist', { category: 'user-event', view: 'main' });
               }}
             />
           }
@@ -205,7 +214,6 @@ class MainView extends Component {
               style={{ flex: 1 }}
               onPress={() => {
                 this.onPressDelete(item.id);
-                AppEventsLogger.logEvent('remove-an-app');
               }}
             >
               <View style={styles.removeButton}>

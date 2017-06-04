@@ -7,13 +7,20 @@ import {
   View,
 } from 'react-native';
 
-import { AccessToken, AppEventsLogger, LoginButton } from 'react-native-fbsdk';
+import { AccessToken, LoginButton } from 'react-native-fbsdk';
 import store from 'react-native-simple-store';
+
+import tracker from '../utils/tracker';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  headerLeftText: {
+    marginLeft: 6,
+    fontSize: 16,
+    color: '#0076FF',
   },
   loginBlock: {
     flex: 1,
@@ -40,6 +47,7 @@ const styles = StyleSheet.create({
     color: '#82B1FF',
   },
   informationText: {
+    fontSize: 11,
     textAlign: 'center',
     color: '#9E9E9E',
   },
@@ -53,10 +61,10 @@ class LoginView extends Component {
         underlayColor="white"
         onPress={() => {
           navigation.goBack();
-          AppEventsLogger.logEvent('press-cancel-logout-button');
+          tracker.logEvent('cancel-logout', { category: 'user-event', view: 'login-logout' });
         }}
       >
-        <Text style={{ marginLeft: 6, fontSize: 16, color: '#0076FF' }}>Cancel</Text>
+        <Text style={styles.headerLeftText}>{'Cancel'}</Text>
       </TouchableOpacity>,
       headerStyle: {
         backgroundColor: 'white',
@@ -106,15 +114,17 @@ class LoginView extends Component {
           (error, result) => {
             if (error) {
               alert(`Login has error: ${result.error}`);
+              tracker.logEvent('login-error', { category: 'user-event', view: 'login-logout' });
             } else if (result.isCancelled) {
               alert('Login is cancelled.');
+              tracker.logEvent('login-cancel', { category: 'user-event', view: 'login-logout' });
             } else {
               AccessToken.getCurrentAccessToken().then(
                 (data) => {
                   console.log('getCurrentAccessToken', data);
                   dispatch({ type: 'Login' });
                   goBack();
-                  AppEventsLogger.logEvent('login');
+                  tracker.logEvent('login-success', { category: 'user-event', view: 'login-logout' });
                 },
               );
             }
@@ -124,7 +134,7 @@ class LoginView extends Component {
           this.setState({ isLogged: false });
           dispatch({ type: 'Logout' });
           store.delete('APPS');
-          AppEventsLogger.logEvent('logout');
+          tracker.logEvent('logout', { category: 'user-event', view: 'login-logout' });
         }}
       />
     </View>);
@@ -137,11 +147,11 @@ class LoginView extends Component {
       <View style={styles.container}>
         <View style={styles.loginBlock}>
           {isLoggedIn && <View style={styles.textBlock}>
-            <Text style={styles.text}>Logout</Text>
+            <Text style={styles.text}>{'Logout'}</Text>
           </View>}
           {!isLoggedIn && <View style={styles.textBlock}>
             <Text style={styles.text}>{'Welcome to'}</Text>
-            <Text style={[styles.text, { fontSize: 50, lineHeight: 80 }]}>{'Ads Reports'}</Text>
+            <Text style={[styles.text, { fontSize: 50, lineHeight: 80 }]}>{'F.A.N Report'}</Text>
             <Text style={[styles.text, { fontSize: 16 }]}>{'Your Ads Performance Tool'}</Text>
           </View>}
           {this.renderFacebookButton()}
@@ -153,7 +163,7 @@ class LoginView extends Component {
           </View>}
           <View style={styles.informationBlock}>
             <Text style={styles.informationText}>{'Made with <3 by KF'}</Text>
-            <Text style={[styles.informationText, { fontSize: 11 }]}>{'The application is in no way affiliated with Facebook'}</Text>
+            <Text style={styles.informationText}>{'The application is in no way affiliated with Facebook'}</Text>
           </View>
         </View>
       </View>

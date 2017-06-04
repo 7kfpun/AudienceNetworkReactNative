@@ -25,7 +25,7 @@ const fbapp = (state, action) => {
           tempApps = [];
         }
 
-        if (!apps.find(item => item.id === app.id)) {
+        if (!tempApps.find(item => item.id === app.id)) {
           tempApps.push(app);
           store.save('APPS', tempApps);
         }

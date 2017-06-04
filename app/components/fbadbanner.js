@@ -3,8 +3,9 @@ import {
   Platform,
 } from 'react-native';
 
-import { AppEventsLogger } from 'react-native-fbsdk';
 import { BannerView, InterstitialAdManager } from 'react-native-fbads';
+
+import tracker from '../utils/tracker';
 
 import { config } from '../config';
 
@@ -15,14 +16,14 @@ export default class AdBanner extends React.Component {
         .then((didClick) => {
           console.log('Facebook Interstitial Ad', didClick);
           if (didClick) {
-            AppEventsLogger.logEvent('click-fb-interstitial-ad-ok');
+            tracker.logEvent('click-fb-interstitial-ad-ok', { category: 'user-event', component: 'ad-interstitial' });
           } else {
-            AppEventsLogger.logEvent('click-fb-interstitial-ad-cancel');
+            tracker.logEvent('click-fb-interstitial-ad-cancel', { category: 'user-event', component: 'ad-interstitial' });
           }
         })
         .catch((error) => {
           console.log('Facebook Interstitial Ad Failed', error);
-          AppEventsLogger.logEvent('load-fb-interstitial-ad-failed');
+          tracker.logEvent('load-fb-interstitial-ad-error', { category: 'user-event', component: 'ad-interstitial' });
         });
     }
   }
@@ -31,8 +32,8 @@ export default class AdBanner extends React.Component {
     return (<BannerView
       placementId={config.fbads[Platform.OS].banner}
       type="standard"
-      onClick={() => AppEventsLogger.logEvent('click-fb-banner-ad-ok')}
-      onError={() => AppEventsLogger.logEvent('load-fb-banner-ad-failed')}
+      onClick={() => tracker.logEvent('click-fb-banner-ad-ok', { category: 'user-event', component: 'ad-banner' })}
+      onError={() => tracker.logEvent('click-fb-banner-ad-error', { category: 'user-event', component: 'ad-banner' })}
     />);
   }
 }
