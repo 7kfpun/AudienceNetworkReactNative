@@ -11,4 +11,14 @@ exports.config = {
       banner: '',
     },
   },
+  admob: {
+    ios: {
+      interstitial: '',
+      banner: '',
+    },
+    android: {
+      interstitial: '',
+      banner: '',
+    },
+  },
 };

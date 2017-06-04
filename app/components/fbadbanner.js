@@ -3,6 +3,7 @@ import {
   Platform,
 } from 'react-native';
 
+import { AdMobBanner } from 'react-native-admob';
 import { BannerView, InterstitialAdManager } from 'react-native-fbads';
 
 import tracker from '../utils/tracker';
@@ -10,6 +11,10 @@ import tracker from '../utils/tracker';
 import { config } from '../config';
 
 export default class AdBanner extends React.Component {
+  state = {
+    adType: 'FBADS',
+  };
+
   componentDidMount() {
     if (this.props.withPopUp) {
       InterstitialAdManager.showAd(config.fbads[Platform.OS].interstitial)
@@ -29,19 +34,32 @@ export default class AdBanner extends React.Component {
   }
 
   render() {
+    if (this.state.adType === 'ADMOB') {
+      return (<AdMobBanner
+        bannerSize={this.props.bannerSize}
+        adUnitID={config.admob[Platform.OS].banner}
+        didFailToReceiveAdWithError={() => tracker.logEvent('click-admob-banner-ad-error', { category: 'user-event', component: 'ad-banner' })}
+      />);
+    }
+
     return (<BannerView
       placementId={config.fbads[Platform.OS].banner}
       type="standard"
       onClick={() => tracker.logEvent('click-fb-banner-ad-ok', { category: 'user-event', component: 'ad-banner' })}
-      // onError={() => tracker.logEvent('click-fb-banner-ad-error', { category: 'user-event', component: 'ad-banner' })}
+      onError={() => {
+        // tracker.logEvent('click-fb-banner-ad-error', { category: 'user-event', component: 'ad-banner' });
+        this.setState({ adType: 'ADMOB' });
+      }}
     />);
   }
 }
 
 AdBanner.defaultProps = {
   withPopUp: false,
+  bannerSize: 'smartBannerPortrait',
 };
 
 AdBanner.propTypes = {
   withPopUp: React.PropTypes.bool,
+  bannerSize: React.PropTypes.string,
 };

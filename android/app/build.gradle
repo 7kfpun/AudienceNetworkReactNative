@@ -144,6 +144,7 @@ android {
 dependencies {
     compile project(':react-native-device-info')
     compile project(':react-native-fabric')
+    compile project(':react-native-admob')
     compile project(':react-native-vector-icons')
     compile project(':react-native-svg')
     compile project(':react-native-fbsdk')
