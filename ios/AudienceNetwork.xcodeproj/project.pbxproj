@@ -1094,6 +1094,7 @@
 			fileType = archive.ar;
 			path = libSMXCrashlytics.a;
 			remoteRef = 9EC3E5301EE2D2CF00CD8BDF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		9EC3E5DA1EE404F500CD8BDF /* libRNAdMobManager.a */ = {
 			isa = PBXReferenceProxy;
