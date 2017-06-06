@@ -14,7 +14,7 @@ if (__DEV__) {
 
 const tracker = {
   logEvent: (event, parameters) => {
-    if (DeviceInfo.getDeviceName().includes('kf')) {
+    if (!DeviceInfo.getDeviceName().includes('kf')) {
       Answers.logCustom(event, parameters);
       AppEventsLogger.logEvent(event, parameters);
     }
