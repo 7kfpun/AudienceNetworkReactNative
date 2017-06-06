@@ -90,7 +90,7 @@ export default class Item extends Component {
         id, 'fb_ad_network_revenue', 'SUM', null, startDate, endDate,
         (error, result) => {
           if (error) {
-            console.error(error);
+            console.info(error);
             tracker.logEvent('request-revenue-error', { category: 'api-event', component: 'item', log: 'error' });
           } else {
             this.setState({ revenue: result.data.sum('value') });
