@@ -18,12 +18,12 @@ export default class AdBanner extends React.Component {
           if (didClick) {
             tracker.logEvent('click-fb-interstitial-ad-ok', { category: 'user-event', component: 'ad-interstitial' });
           } else {
-            tracker.logEvent('click-fb-interstitial-ad-cancel', { category: 'user-event', component: 'ad-interstitial' });
+            // tracker.logEvent('click-fb-interstitial-ad-cancel', { category: 'user-event', component: 'ad-interstitial' });
           }
         })
         .catch((error) => {
           console.log('Facebook Interstitial Ad Failed', error);
-          tracker.logEvent('load-fb-interstitial-ad-error', { category: 'user-event', component: 'ad-interstitial' });
+          // tracker.logEvent('load-fb-interstitial-ad-error', { category: 'user-event', component: 'ad-interstitial' });
         });
     }
   }
@@ -33,7 +33,7 @@ export default class AdBanner extends React.Component {
       placementId={config.fbads[Platform.OS].banner}
       type="standard"
       onClick={() => tracker.logEvent('click-fb-banner-ad-ok', { category: 'user-event', component: 'ad-banner' })}
-      onError={() => tracker.logEvent('click-fb-banner-ad-error', { category: 'user-event', component: 'ad-banner' })}
+      // onError={() => tracker.logEvent('click-fb-banner-ad-error', { category: 'user-event', component: 'ad-banner' })}
     />);
   }
 }

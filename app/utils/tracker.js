@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 
 import { AppEventsLogger } from 'react-native-fbsdk';
+import DeviceInfo from 'react-native-device-info';
 
 if (__DEV__) {
   AppEventsLogger.setFlushBehavior(Platform.OS === 'ios' ? 'explicit-only' : 'EXPLICIT_ONLY');
@@ -12,7 +13,9 @@ if (__DEV__) {
 
 const tracker = {
   logEvent: (event, parameters) => {
-    AppEventsLogger.logEvent(event, parameters);
+    if (DeviceInfo.getDeviceName().includes('kf')) {
+      AppEventsLogger.logEvent(event, parameters);
+    }
   },
 };
 
