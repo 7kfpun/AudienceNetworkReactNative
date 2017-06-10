@@ -23,9 +23,9 @@ import * as insightActions from '../actions/insights';
 
 import AdBanner from '../components/fbadbanner';
 import FbAds from '../components/fbads';
-import LineChart from '../components/LineChart';
 import OverviewSummary from '../components/OverviewSummary';
 import RangePicker from '../components/RangePicker';
+import VictoryChart from '../components/VictoryChart';
 
 import tracker from '../utils/tracker';
 
@@ -222,19 +222,19 @@ class OverviewView extends Component {
           indicator={<PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
         >
           <View style={styles.chartBlock}>
-            {requests.length > 1 && <LineChart data={requests} />}
+            {requests.length > 1 && <VictoryChart data={requests} />}
             <Text style={styles.cellText}>{'Requests'}</Text>
           </View>
           <View style={styles.chartBlock}>
-            {impressions.length > 1 && <LineChart data={impressions} />}
+            {impressions.length > 1 && <VictoryChart data={impressions} />}
             <Text style={styles.cellText}>{'Impressions'}</Text>
           </View>
           <View style={styles.chartBlock}>
-            {clicks.length > 1 && <LineChart data={clicks} />}
+            {clicks.length > 1 && <VictoryChart data={clicks} />}
             <Text style={styles.cellText}>{'Clicks'}</Text>
           </View>
           <View style={styles.chartBlock}>
-            {revenue.length > 1 && <LineChart data={revenue} />}
+            {revenue.length > 1 && <VictoryChart data={revenue} />}
             <Text style={styles.cellText}>{'Estimated Revenue'}</Text>
           </View>
         </IndicatorViewPager>}

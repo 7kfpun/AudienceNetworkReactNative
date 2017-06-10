@@ -32,7 +32,8 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.2.0",
     "rn-viewpager": "^1.1.4",
-    "shortid": "^2.2.8"
+    "shortid": "^2.2.8",
+    "victory-native": "^0.9.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
