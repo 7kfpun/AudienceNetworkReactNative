@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   icon: {
-    marginHorizontal: 4,
     height: 40,
     width: 40,
     borderRadius: 20,
@@ -99,6 +98,16 @@ const RangePicker = (props) => {
       }}
     >
       <Icon name="chevron-right" size={20} color="gray" />
+    </TouchableHighlight>
+    <TouchableHighlight
+      underlayColor="#EEEEEE"
+      style={styles.icon}
+      onPress={() => {
+        navigation.navigate('DateSettings');
+        tracker.logEvent('view-date-settings', { category: 'user-event', component: 'range-picker' });
+      }}
+    >
+      <Icon name="tune" size={20} color="gray" />
     </TouchableHighlight>
   </View>);
 };
