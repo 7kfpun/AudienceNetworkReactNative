@@ -12,9 +12,11 @@ if (__DEV__) {
   AppEventsLogger.setFlushBehavior(Platform.OS === 'ios' ? 'auto' : 'AUTO');
 }
 
+const isTracking = () => !DeviceInfo.getDeviceName().includes('kf') && DeviceInfo.getManufacturer() !== 'Genymotion';
+
 const tracker = {
   logEvent: (event, parameters) => {
-    if (!DeviceInfo.getDeviceName().includes('kf')) {
+    if (isTracking()) {
       Answers.logCustom(event, parameters);
       AppEventsLogger.logEvent(event, parameters);
     }

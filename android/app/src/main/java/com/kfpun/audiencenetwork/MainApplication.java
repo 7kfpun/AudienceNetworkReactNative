@@ -17,6 +17,9 @@ import com.facebook.soloader.SoLoader;
 import com.horcrux.svg.SvgPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import io.callstack.react.fbads.FBAdsPackage;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import io.fabric.sdk.android.Fabric;
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,5 +65,7 @@ public class MainApplication extends Application implements ReactApplication {
     FacebookSdk.sdkInitialize(getApplicationContext());
     // If you want to use AppEventsLogger to log events.
     AppEventsLogger.activateApp(this);
+
+    Fabric.with(this, new Crashlytics(), new Answers());
   }
 }

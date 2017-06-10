@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">F.A.N Report</string>
     <string name="facebook_app_id">317225312005677</string>
+    <string name="crashlytics_api_token">ba90a9cfaac47e081b32f911ff611a6722de57c8</string>
 </resources>
