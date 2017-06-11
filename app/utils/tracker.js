@@ -1,9 +1,13 @@
+import {
+  Platform,
+} from 'react-native';
+
 import { AppEventsLogger } from 'react-native-fbsdk';
 
 if (__DEV__) {
-  AppEventsLogger.setFlushBehavior('explicit-only');
+  AppEventsLogger.setFlushBehavior(Platform.OS === 'ios' ? 'explicit-only' : 'EXPLICIT_ONLY');
 } else {
-  AppEventsLogger.setFlushBehavior('auto');
+  AppEventsLogger.setFlushBehavior(Platform.OS === 'ios' ? 'auto' : 'AUTO');
 }
 
 const tracker = {

@@ -17,6 +17,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
 import { NativeAdsManager } from 'react-native-fbads';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import * as dateRangeActions from '../actions/dateRange';
 import * as insightActions from '../actions/insights';
@@ -44,6 +45,9 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 16,
     color: '#0076FF',
+  },
+  headerLeftIcon: {
+    marginLeft: 6,
   },
   body: {
     paddingVertical: 6,
@@ -132,7 +136,7 @@ class OverviewView extends Component {
         navigation.goBack();
       }}
     >
-      <Text style={styles.headerLeftText}>Back</Text>
+      {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{'Back'}</Text> : <Icon style={styles.headerLeftIcon} name="arrow-back" size={30} color="#0076FF" />}
     </TouchableOpacity>,
     headerStyle: {
       backgroundColor: 'white',
@@ -218,7 +222,7 @@ class OverviewView extends Component {
         <FbAds adsManager={adsManager} />
 
         {startDate && endDate && moment(startDate).format('L') !== moment(endDate).format('L') && <IndicatorViewPager
-          style={{ height: 220, marginBottom: 5 }}
+          style={{ height: 240, marginBottom: 5 }}
           indicator={<PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
         >
           <View style={styles.chartBlock}>

@@ -35,6 +35,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0076FF',
   },
+  headerLeftIcon: {
+    marginLeft: 6,
+  },
   body: {
     paddingVertical: 6,
   },
@@ -80,7 +83,7 @@ class MainView extends Component {
           tracker.logEvent('view-logout', { category: 'user-event', view: 'main' });
         }}
       >
-        <Text style={styles.headerLeftText}>{isLoggedIn ? 'Logout' : 'Login'}</Text>
+        {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{isLoggedIn ? 'Logout' : 'Login'}</Text> : <Icon style={styles.headerLeftIcon} name="power-settings-new" size={30} color="#0076FF" />}
       </TouchableOpacity>,
       headerRight: isLoggedIn && <TouchableOpacity
         underlayColor="white"
@@ -89,7 +92,7 @@ class MainView extends Component {
           tracker.logEvent('view-add', { category: 'user-event', view: 'main' });
         }}
       >
-        <Icon style={{ marginRight: 4 }} name="add" size={30} color="#0076FF" />
+        <Icon style={{ marginRight: 6 }} name="add" size={30} color="#0076FF" />
       </TouchableOpacity>,
       headerStyle: {
         backgroundColor: 'white',

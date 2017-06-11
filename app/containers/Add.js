@@ -27,6 +27,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0076FF',
   },
+  headerLeftIcon: {
+    marginLeft: 6,
+  },
   container: {
     flex: 1,
     backgroundColor: '#ECEFF1',
@@ -70,7 +73,7 @@ class AddView extends Component {
         tracker.logEvent('view-logout', { category: 'user-event', view: 'add' });
       }}
     >
-      <Text style={styles.headerLeftText}>Cancel</Text>
+      {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{'Cancel'}</Text> : <Icon style={styles.headerLeftIcon} name="close" size={30} color="#0076FF" />}
     </TouchableOpacity>,
     headerStyle: {
       backgroundColor: 'white',

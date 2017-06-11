@@ -34,6 +34,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0076FF',
   },
+  headerLeftIcon: {
+    marginLeft: 6,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -64,7 +67,7 @@ class DateSettingsView extends Component {
         tracker.logEvent('close-date-settings', { category: 'user-event', view: 'date-settings' });
       }}
     >
-      <Icon name="clear" size={30} color="#0076FF" />
+      <Icon style={styles.headerLeftIcon} name="clear" size={30} color="#0076FF" />
     </TouchableOpacity>,
     headerRight: <TouchableOpacity
       underlayColor="white"
@@ -167,21 +170,17 @@ class DateSettingsView extends Component {
   };
 
   showDatePickerAndroid = async (date, startOrEnd = 'START') => {
+    const { setStartDate, setEndDate } = this.props;
+
     try {
       const { action, year, month, day } = await DatePickerAndroid.open({ date });
       if (action !== DatePickerAndroid.dismissedAction) {
-        const tempDate = new Date(year, month, day);
+        const tempDate = new Date(moment([year, month, day]));
         if (startOrEnd === 'START') {
-          this.setState({
-            startDate: tempDate,
-            isChanged: true,
-          });
+          setStartDate(tempDate);
           tracker.logEvent('change-start-date', { category: 'user-event', view: 'date-settings', value: tempDate.toString() });
         } else {
-          this.setState({
-            endDate: tempDate,
-            isChanged: true,
-          });
+          setEndDate(tempDate);
           tracker.logEvent('change-end-date', { category: 'user-event', view: 'date-settings', value: tempDate.toString() });
         }
       }

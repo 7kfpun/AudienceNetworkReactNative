@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -8,6 +9,7 @@ import {
 } from 'react-native';
 
 import { AccessToken, LoginButton } from 'react-native-fbsdk';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import store from 'react-native-simple-store';
 
 import tracker from '../utils/tracker';
@@ -21,6 +23,9 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 16,
     color: '#0076FF',
+  },
+  headerLeftIcon: {
+    marginLeft: 6,
   },
   loginBlock: {
     flex: 1,
@@ -64,7 +69,7 @@ class LoginView extends Component {
           tracker.logEvent('cancel-logout', { category: 'user-event', view: 'login-logout' });
         }}
       >
-        <Text style={styles.headerLeftText}>{'Cancel'}</Text>
+        {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{'Cancel'}</Text> : <Icon style={styles.headerLeftIcon} name="close" size={30} color="#0076FF" />}
       </TouchableOpacity>,
       headerStyle: {
         backgroundColor: 'white',
