@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  BackHandler,
   Image,
   Linking,
   ListView,
@@ -84,6 +85,14 @@ class AddView extends Component {
     isLoading: false,
     dataSource: dataSource.cloneWithRows([]),
   };
+
+  componentDidMount() {
+    this.sub = BackHandler.addEventListener('backPress', () => this.props.navigation.goBack());
+  }
+
+  componentWillUnmount() {
+    this.sub.remove();
+  }
 
   onSearchRequest() {
     this.setState({ isLoading: true });

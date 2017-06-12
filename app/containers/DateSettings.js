@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  BackHandler,
   DatePickerAndroid,
   DatePickerIOS,
   Platform,
@@ -143,6 +144,12 @@ class DateSettingsView extends Component {
       checkWeek: this.state.checkWeek,
       checkMonth: this.state.checkMonth,
     });
+
+    this.sub = BackHandler.addEventListener('backPress', () => this.props.navigation.goBack());
+  }
+
+  componentWillUnmount() {
+    this.sub.remove();
   }
 
   setInitalTab() {

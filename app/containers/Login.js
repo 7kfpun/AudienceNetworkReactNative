@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
+  Alert,
+  BackHandler,
   Platform,
   StyleSheet,
   Text,
@@ -100,12 +102,18 @@ class LoginView extends Component {
         }
       },
     );
+
+    this.sub = BackHandler.addEventListener('backPress', () => this.props.navigation.goBack());
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.isLoggedIn !== this.props.isLoggedIn) {
       this.props.navigation.setParams({ isLoggedIn: nextProps.isLoggedIn });
     }
+  }
+
+  componentWillUnmount() {
+    this.sub.remove();
   }
 
   renderFacebookButton() {
@@ -118,10 +126,10 @@ class LoginView extends Component {
         onLoginFinished={
           (error, result) => {
             if (error) {
-              alert(`Login has error: ${result.error}`);
+              Alert.alert(`Login has error: ${result.error}`);
               tracker.logEvent('login-error', { category: 'user-event', view: 'login-logout' });
             } else if (result.isCancelled) {
-              alert('Login is cancelled.');
+              Alert.alert('Login is cancelled.');
               tracker.logEvent('login-cancel', { category: 'user-event', view: 'login-logout' });
             } else {
               AccessToken.getCurrentAccessToken().then(

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  BackHandler,
   FlatList,
   Platform,
   RefreshControl,
@@ -159,12 +160,20 @@ class OverviewView extends Component {
     this.onRequest(appId, startDate, endDate);
   }
 
+  componentDidMount() {
+    this.sub = BackHandler.addEventListener('backPress', () => this.props.navigation.goBack());
+  }
+
   componentWillReceiveProps(nextProps) {
     const { appId } = this.props.navigation.state.params;
 
     if (nextProps.startDate !== this.props.startDate || nextProps.endDate !== this.props.endDate) {
       this.onRequest(appId, nextProps.startDate, nextProps.endDate);
     }
+  }
+
+  componentWillUnmount() {
+    this.sub.remove();
   }
 
   onRequest(appId, startDate, endDate) {
