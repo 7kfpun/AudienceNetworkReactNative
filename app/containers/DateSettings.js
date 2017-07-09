@@ -5,7 +5,9 @@ import {
   DatePickerIOS,
   Platform,
   StyleSheet,
+  Switch,
   Text,
+  TouchableHighlight,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -30,13 +32,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ECEFF1',
     padding: 8,
   },
+  headerNav: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 6,
+  },
   headerRightText: {
-    marginRight: 6,
     fontSize: 16,
     color: '#0076FF',
-  },
-  headerLeftIcon: {
-    marginLeft: 6,
   },
   row: {
     flexDirection: 'row',
@@ -62,15 +65,17 @@ class DateSettingsView extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Date Settings',
     headerLeft: <TouchableOpacity
+      style={styles.headerNav}
       underlayColor="white"
       onPress={() => {
         navigation.goBack();
         tracker.logEvent('close-date-settings', { category: 'user-event', view: 'date-settings' });
       }}
     >
-      <Icon style={styles.headerLeftIcon} name="clear" size={30} color="#0076FF" />
+      <Icon name="clear" size={30} color="#0076FF" />
     </TouchableOpacity>,
     headerRight: <TouchableOpacity
+      style={styles.headerNav}
       underlayColor="white"
       onPress={() => {
         const { index, checkDay, checkWeek, checkMonth } = navigation.state.params;
@@ -201,11 +206,13 @@ class DateSettingsView extends Component {
     const { startDate } = this.props;
 
     if (Platform.OS === 'ios') {
-      this.setState({
-        isStartDatePickerShow: !this.state.isStartDatePickerShow,
-        isEndDatePickerShow: false,
+      this.setState((prevState) => {
+        tracker.logEvent('open-start-date-settings', { category: 'user-event', view: 'date-settings', value: !prevState.isStartDatePickerShow });
+        return {
+          isStartDatePickerShow: !prevState.isStartDatePickerShow,
+          isEndDatePickerShow: false,
+        };
       });
-      tracker.logEvent('open-start-date-settings', { category: 'user-event', view: 'date-settings', value: !this.state.isStartDatePickerShow });
     } else {
       this.showDatePickerAndroid(startDate, 'START');
       tracker.logEvent('open-start-date-settings', { category: 'user-event', view: 'date-settings', value: true });
@@ -216,11 +223,13 @@ class DateSettingsView extends Component {
     const { endDate } = this.props;
 
     if (Platform.OS === 'ios') {
-      this.setState({
-        isEndDatePickerShow: !this.state.isEndDatePickerShow,
-        isStartDatePickerShow: false,
+      this.setState((prevState) => {
+        tracker.logEvent('open-end-date-settings', { category: 'user-event', view: 'date-settings', value: !prevState.isEndDatePickerShow });
+        return {
+          isStartDatePickerShow: false,
+          isEndDatePickerShow: !prevState.isEndDatePickerShow,
+        };
       });
-      tracker.logEvent('open-end-date-settings', { category: 'user-event', view: 'date-settings', value: !this.state.isStartDatePickerShow });
     } else {
       this.showDatePickerAndroid(endDate, 'END');
       tracker.logEvent('open-end-date-settings', { category: 'user-event', view: 'date-settings', value: true });
@@ -236,7 +245,8 @@ class DateSettingsView extends Component {
     switch (route.key) {
       case 'days':
         return (<View style={styles.container}>
-          {dateRangeOptions.days.map(option => (<TouchableOpacity
+          {dateRangeOptions.days.map(option => (<TouchableHighlight
+            underlayColor="#EEEEEE"
             key={option.id}
             onPress={() => {
               that.props.navigation.setParams({
@@ -259,12 +269,32 @@ class DateSettingsView extends Component {
               </View>
               {that.state.checkDay === option.id && <Icon name="check" size={20} color="#0076FF" />}
             </View>
-          </TouchableOpacity>))}
+          </TouchableHighlight>))}
+
+          <TouchableHighlight
+            underlayColor="#EEEEEE"
+            onPress={() => this.setState(prevState => ({ falseSwitchIsOn: !prevState.falseSwitchIsOn }))}
+          >
+            <View style={styles.row}>
+              <Text>{'Compare to'}</Text>
+              <Switch
+                onValueChange={value => this.setState({ falseSwitchIsOn: value })}
+                value={this.state.falseSwitchIsOn}
+              />
+            </View>
+          </TouchableHighlight>
+          {this.state.falseSwitchIsOn && <View style={styles.row}>
+            <View>
+              <Text>{'Previous day'}</Text>
+              <Text style={styles.dateText}>{moment().format('dddd, DD MMMM')}</Text>
+            </View>
+          </View>}
         </View>);
 
       case 'weeks':
         return (<View style={styles.container}>
-          {dateRangeOptions.weeks.map(option => (<TouchableOpacity
+          {dateRangeOptions.weeks.map(option => (<TouchableHighlight
+            underlayColor="#EEEEEE"
             key={option.id}
             onPress={() => {
               that.props.navigation.setParams({
@@ -287,12 +317,13 @@ class DateSettingsView extends Component {
               </View>
               {that.state.checkWeek === option.id && <Icon name="check" size={20} color="#0076FF" />}
             </View>
-          </TouchableOpacity>))}
+          </TouchableHighlight>))}
         </View>);
 
       case 'months':
         return (<View style={styles.container}>
-          {dateRangeOptions.months.map(option => (<TouchableOpacity
+          {dateRangeOptions.months.map(option => (<TouchableHighlight
+            underlayColor="#EEEEEE"
             key={option.id}
             onPress={() => {
               that.props.navigation.setParams({
@@ -315,12 +346,13 @@ class DateSettingsView extends Component {
               </View>
               {that.state.checkMonth === option.id && <Icon name="check" size={20} color="#0076FF" />}
             </View>
-          </TouchableOpacity>))}
+          </TouchableHighlight>))}
         </View>);
 
       case 'custom':
         return (<View style={styles.container}>
-          <TouchableOpacity
+          <TouchableHighlight
+            underlayColor="#EEEEEE"
             onPress={() => this.openStartDatePicker()}
           >
             <View style={styles.row}>
@@ -329,7 +361,7 @@ class DateSettingsView extends Component {
                 <Text style={[styles.dateText, { color: this.state.isStartDatePickerShow ? 'red' : 'gray' }]}>{moment(startDate).format('MMM D, YYYY')}</Text>
               </View>
             </View>
-          </TouchableOpacity>
+          </TouchableHighlight>
           {this.state.isStartDatePickerShow && Platform.OS === 'ios' && <DatePickerIOS
             style={styles.datePicker}
             date={startDate}
@@ -343,8 +375,8 @@ class DateSettingsView extends Component {
             }}
           />}
 
-          <TouchableOpacity
-            underlayColor="#F4F4F4"
+          <TouchableHighlight
+            underlayColor="#EEEEEE"
             onPress={() => this.openEndDatePicker()}
           >
             <View style={styles.row}>
@@ -353,7 +385,7 @@ class DateSettingsView extends Component {
                 <Text style={[styles.dateText, { color: this.state.isEndDatePickerShow ? 'red' : 'gray' }]}>{moment(endDate).format('MMM D, YYYY')}</Text>
               </View>
             </View>
-          </TouchableOpacity>
+          </TouchableHighlight>
           {this.state.isEndDatePickerShow && Platform.OS === 'ios' && <DatePickerIOS
             style={styles.datePicker}
             date={endDate}

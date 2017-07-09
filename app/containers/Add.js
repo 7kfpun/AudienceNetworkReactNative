@@ -23,13 +23,14 @@ import * as Facebook from '../utils/facebook';
 import tracker from '../utils/tracker';
 
 const styles = StyleSheet.create({
+  headerNav: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 6,
+  },
   headerLeftText: {
-    marginLeft: 6,
     fontSize: 16,
     color: '#0076FF',
-  },
-  headerLeftIcon: {
-    marginLeft: 6,
   },
   container: {
     flex: 1,
@@ -68,13 +69,14 @@ class AddView extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Add',
     headerLeft: <TouchableOpacity
+      style={styles.headerNav}
       underlayColor="white"
       onPress={() => {
         navigation.goBack();
         tracker.logEvent('view-logout', { category: 'user-event', view: 'add' });
       }}
     >
-      {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{'Cancel'}</Text> : <Icon style={styles.headerLeftIcon} name="close" size={30} color="#0076FF" />}
+      {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{'Cancel'}</Text> : <Icon name="close" size={30} color="#0076FF" />}
     </TouchableOpacity>,
     headerStyle: {
       backgroundColor: 'white',

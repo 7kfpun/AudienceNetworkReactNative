@@ -30,10 +30,8 @@ const styles = StyleSheet.create({
   displayBlock: {
     flex: 6,
     flexDirection: 'row',
-  },
-  display: {
-    flexDirection: 'row',
     padding: 10,
+    alignItems: 'center',
   },
   icon: {
     height: 40,
@@ -75,9 +73,7 @@ const RangePicker = (props) => {
         tracker.logEvent('view-date-settings', { category: 'user-event', component: 'range-picker' });
       }}
     >
-      <View style={styles.display}>
-        <Text>{rangeShowAs}</Text>
-      </View>
+      <Text>{rangeShowAs}</Text>
     </TouchableOpacity>
     <TouchableHighlight
       underlayColor="#EEEEEE"
@@ -87,7 +83,7 @@ const RangePicker = (props) => {
         tracker.logEvent('go-previous-date-range', { category: 'user-event', component: 'range-picker', value: rangeType });
       }}
     >
-      <Icon name="chevron-left" size={20} color="gray" />
+      <Icon name="chevron-left" size={24} color="gray" />
     </TouchableHighlight>
     <TouchableHighlight
       underlayColor="#EEEEEE"
@@ -97,7 +93,7 @@ const RangePicker = (props) => {
         tracker.logEvent('go-next-date-range', { category: 'user-event', component: 'range-picker', value: rangeType });
       }}
     >
-      <Icon name="chevron-right" size={20} color="gray" />
+      <Icon name="chevron-right" size={24} color="gray" />
     </TouchableHighlight>
     <TouchableHighlight
       underlayColor="#EEEEEE"

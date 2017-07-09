@@ -17,11 +17,11 @@ import { connect } from 'react-redux';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import * as fbappActions from '../actions/fbapp';
 import * as dateRangeActions from '../actions/dateRange';
+import * as fbappActions from '../actions/fbapp';
 import AdBanner from '../components/fbadbanner';
-import RangePicker from '../components/RangePicker';
 import Item from '../components/Item';
+import RangePicker from '../components/RangePicker';
 
 import tracker from '../utils/tracker';
 
@@ -30,8 +30,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECEFF1',
   },
+  headerNav: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 6,
+  },
   headerLeftText: {
-    marginLeft: 6,
     fontSize: 16,
     color: '#0076FF',
   },
@@ -70,6 +74,14 @@ const styles = StyleSheet.create({
   },
 });
 
+const EmptyApp = () => (
+  <View style={styles.container}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'You have no Apps added yet.'}</Text>
+      <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'Tap the + to add one and get the performance.'}</Text>
+    </View>
+  </View>
+);
 
 class MainView extends Component {
   static navigationOptions = ({ navigation }) => {
@@ -77,6 +89,7 @@ class MainView extends Component {
     return {
       title: 'F.A.N Report',
       headerLeft: <TouchableOpacity
+        style={styles.headerNav}
         underlayColor="white"
         onPress={() => {
           navigation.navigate('Login');
@@ -86,13 +99,14 @@ class MainView extends Component {
         {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{isLoggedIn ? 'Logout' : 'Login'}</Text> : <Icon style={styles.headerLeftIcon} name="power-settings-new" size={30} color="#0076FF" />}
       </TouchableOpacity>,
       headerRight: isLoggedIn && <TouchableOpacity
+        style={styles.headerNav}
         underlayColor="white"
         onPress={() => {
           navigation.navigate('Add');
           tracker.logEvent('view-add', { category: 'user-event', view: 'main' });
         }}
       >
-        <Icon style={{ marginRight: 6 }} name="add" size={30} color="#0076FF" />
+        <Icon name="add" size={30} color="#0076FF" />
       </TouchableOpacity>,
       headerStyle: {
         backgroundColor: 'white',
@@ -181,14 +195,7 @@ class MainView extends Component {
     const dataSource = this.dataSource.cloneWithRows(fbapps);
 
     if (fbapps.length === 0) {
-      return (
-        <View style={styles.container}>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'You have no Apps added yet.'}</Text>
-            <Text style={[styles.text, { textAlign: 'center', lineHeight: 40 }]}>{'Tap the + to add one and get the performance.'}</Text>
-          </View>
-        </View>
-      );
+      return <EmptyApp />;
     }
 
     return (
@@ -229,6 +236,7 @@ class MainView extends Component {
           rightOpenValue={-75}
           disableRightSwipe={true}
         />
+
         <AdBanner withPopUp={false} />
       </View>
     );

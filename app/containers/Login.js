@@ -21,13 +21,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
+  headerNav: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 6,
+  },
   headerLeftText: {
-    marginLeft: 6,
     fontSize: 16,
     color: '#0076FF',
-  },
-  headerLeftIcon: {
-    marginLeft: 6,
   },
   loginBlock: {
     flex: 1,
@@ -65,13 +66,14 @@ class LoginView extends Component {
     const isLoggedIn = navigation.state && navigation.state.params && navigation.state.params.isLoggedIn;
     const options = {
       headerLeft: <TouchableOpacity
+        style={styles.headerNav}
         underlayColor="white"
         onPress={() => {
           navigation.goBack();
           tracker.logEvent('cancel-logout', { category: 'user-event', view: 'login-logout' });
         }}
       >
-        {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{'Cancel'}</Text> : <Icon style={styles.headerLeftIcon} name="close" size={30} color="#0076FF" />}
+        {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{'Cancel'}</Text> : <Icon name="close" size={30} color="#0076FF" />}
       </TouchableOpacity>,
       headerStyle: {
         backgroundColor: 'white',

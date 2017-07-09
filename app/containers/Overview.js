@@ -42,13 +42,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ECEFF1',
   },
+  headerNav: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 6,
+  },
   headerLeftText: {
-    marginLeft: 6,
     fontSize: 16,
     color: '#0076FF',
-  },
-  headerLeftIcon: {
-    marginLeft: 6,
   },
   body: {
     paddingVertical: 6,
@@ -132,6 +133,7 @@ class OverviewView extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: `${navigation.state.params.appName} (${navigation.state.params.appId})`,
     headerLeft: <TouchableOpacity
+      style={styles.headerNav}
       underlayColor="white"
       onPress={() => {
         navigation.goBack();
@@ -152,15 +154,13 @@ class OverviewView extends Component {
     isChanged: false,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     const { appId } = this.props.navigation.state.params;
     const { startDate, endDate } = this.props;
 
     this.checkPermissions();
     this.onRequest(appId, startDate, endDate);
-  }
 
-  componentDidMount() {
     this.sub = BackHandler.addEventListener('backPress', () => this.props.navigation.goBack());
   }
 
@@ -323,6 +323,7 @@ class OverviewView extends Component {
         >
           {this.renderInsights()}
         </ScrollView>
+
         <AdBanner withPopUp={false} />
       </View>
     );
