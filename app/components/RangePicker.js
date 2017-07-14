@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment-timezone';
 
+import { getCompareToStartDate, getCompareToEndDate } from '../utils/compareToDate';
 import * as dateRangeActions from '../actions/dateRange';
 
 import tracker from '../utils/tracker';
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
     height: 50,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#FAFAFA',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#E0E0E0',
   },
@@ -40,10 +41,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  text: {
+    fontSize: 14,
+  },
+  compareToText: {
+    fontSize: 12,
+    color: '#424242',
+  },
 });
 
 const RangePicker = (props) => {
-  const { startDate, endDate, rangeType, setPreviousDateRange, setNextDateRange, navigation } = props;
+  const { startDate, endDate, rangeType, isCompareTo, setPreviousDateRange, setNextDateRange, navigation } = props;
 
   let rangeShowAs;
   if (startDate && endDate) {
@@ -65,6 +73,29 @@ const RangePicker = (props) => {
     }
   }
 
+  let compareToRangeShowAs;
+  if (isCompareTo) {
+    const compareToStartDate = getCompareToStartDate(startDate, endDate, rangeType);
+    const compareToEndDate = getCompareToEndDate(startDate, endDate, rangeType);
+
+    let compareToStartYearShowAs = `, ${moment(startDate).year()}`;
+    let compareToEndYearShowAs = `, ${moment(endDate).year()}`;
+
+    if (moment(compareToStartDate).year() === moment().year() || moment(compareToStartDate).year() === moment(compareToEndDate).year()) {
+      compareToStartYearShowAs = '';
+    }
+
+    if (moment(compareToEndDate).year() === moment().year()) {
+      compareToEndYearShowAs = '';
+    }
+
+    if (moment(compareToStartDate).format('L') === moment(compareToEndDate).format('L')) {
+      compareToRangeShowAs = `${moment(compareToEndDate).format('ddd, MMM DD')}${compareToEndYearShowAs}`;
+    } else {
+      compareToRangeShowAs = `${moment(compareToStartDate).format('MMM DD')}${compareToStartYearShowAs} - ${moment(compareToEndDate).format('MMM DD')}${compareToEndYearShowAs}`;
+    }
+  }
+
   return (<View style={styles.container}>
     <TouchableOpacity
       style={styles.displayBlock}
@@ -73,7 +104,10 @@ const RangePicker = (props) => {
         tracker.logEvent('view-date-settings', { category: 'user-event', component: 'range-picker' });
       }}
     >
-      <Text>{rangeShowAs}</Text>
+      <View>
+        <Text style={styles.text}>{rangeShowAs}</Text>
+        {isCompareTo && <Text style={styles.compareToText}>vs. {compareToRangeShowAs}</Text>}
+      </View>
     </TouchableOpacity>
     <TouchableHighlight
       underlayColor="#EEEEEE"
@@ -111,12 +145,15 @@ const RangePicker = (props) => {
 RangePicker.defaultProps = {
   startDate: null,
   endDate: null,
+  isCompareTo: false,
 };
 
 RangePicker.propTypes = {
   startDate: React.PropTypes.object,
   endDate: React.PropTypes.object,
   rangeType: React.PropTypes.string.isRequired,
+  isCompareTo: React.PropTypes.bool,
+
   setPreviousDateRange: React.PropTypes.func.isRequired,
   setNextDateRange: React.PropTypes.func.isRequired,
   navigation: React.PropTypes.object.isRequired,
@@ -126,6 +163,7 @@ const mapStateToProps = state => ({
   startDate: state.dateRange.startDate,
   endDate: state.dateRange.endDate,
   rangeType: state.dateRange.rangeType,
+  isCompareTo: state.dateRange.isCompareTo,
 });
 
 export default connect(

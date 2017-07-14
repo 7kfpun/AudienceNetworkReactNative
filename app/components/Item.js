@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     alignItems: 'center',
-    backgroundColor: '#ff3b30',
+    backgroundColor: '#FF3B30',
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -102,6 +102,7 @@ export default class Item extends Component {
   render() {
     const { navigation, item } = this.props;
     return (<TouchableHighlight
+      underlayColor="#EEEEEE"
       onPress={() => {
         navigation.navigate('Overview', { appId: item.id, appName: item.name });
         tracker.logEvent('view-app-insights', { category: 'user-event', component: 'item' });

@@ -17,6 +17,12 @@ const initialInsightState = {
   impressionsSum: 0,
   clicksSum: 0,
   revenueSum: 0,
+
+  compareToRequestsSum: 0,
+  compareToFilledRequestsSum: 0,
+  compareToImpressionsSum: 0,
+  compareToClicksSum: 0,
+  compareToRevenueSum: 0,
 };
 
 Array.prototype.sum = function sum(prop) {  // eslint-disable-line no-extend-native
@@ -80,6 +86,18 @@ function insights(state = initialInsightState, action) {
       }
 
       return { ...state, all: data };
+
+    case 'RECEIVE_COMPARE_TO_REQUESTS':
+      return { ...state, compareToRequests: action.data.slice().reverse(), compareToRequestsSum: action.data.sum('value') };
+    case 'RECEIVE_COMPARE_TO_FILLED_REQUESTS':
+      return { ...state, compareToFilledRequests: action.data.slice().reverse(), compareToFilledRequestsSum: action.data.sum('value') };
+    case 'RECEIVE_COMPARE_TO_IMPRESSIONS':
+      return { ...state, compareToImpressions: action.data.slice().reverse(), compareToImpressionsSum: action.data.sum('value') };
+    case 'RECEIVE_COMPARE_TO_CLICKS':
+      return { ...state, compareToClicks: action.data.slice().reverse(), compareToClicksSum: action.data.sum('value') };
+    case 'RECEIVE_COMPARE_TO_REVENUE':
+      return { ...state, compareToRevenue: action.data.slice().reverse(), compareToRevenueSum: action.data.sum('value') };
+
     default:
       return state;
   }

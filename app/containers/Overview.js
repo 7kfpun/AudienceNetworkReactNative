@@ -156,10 +156,10 @@ class OverviewView extends Component {
 
   componentDidMount() {
     const { appId } = this.props.navigation.state.params;
-    const { startDate, endDate } = this.props;
+    const { startDate, endDate, rangeType, isCompareTo } = this.props;
 
     this.checkPermissions();
-    this.onRequest(appId, startDate, endDate);
+    this.onRequest(appId, startDate, endDate, rangeType, isCompareTo);
 
     this.sub = BackHandler.addEventListener('backPress', () => this.props.navigation.goBack());
   }
@@ -168,7 +168,7 @@ class OverviewView extends Component {
     const { appId } = this.props.navigation.state.params;
 
     if (nextProps.startDate !== this.props.startDate || nextProps.endDate !== this.props.endDate) {
-      this.onRequest(appId, nextProps.startDate, nextProps.endDate);
+      this.onRequest(appId, nextProps.startDate, nextProps.endDate, nextProps.rangeType, nextProps.isCompareTo);
     }
   }
 
@@ -176,15 +176,15 @@ class OverviewView extends Component {
     this.sub.remove();
   }
 
-  onRequest(appId, startDate, endDate) {
+  onRequest(appId, startDate, endDate, rangeType, isCompareTo) {
     if (startDate && endDate) {
       const { fetchRequests, fetchFilledRequests, fetchImpressions, fetchClicks, fetchRevenue } = this.props;
 
-      fetchRequests(appId, startDate, endDate);
-      fetchFilledRequests(appId, startDate, endDate);
-      fetchImpressions(appId, startDate, endDate);
-      fetchClicks(appId, startDate, endDate);
-      fetchRevenue(appId, startDate, endDate);
+      fetchRequests(appId, startDate, endDate, rangeType, isCompareTo);
+      fetchFilledRequests(appId, startDate, endDate, rangeType, isCompareTo);
+      fetchImpressions(appId, startDate, endDate, rangeType, isCompareTo);
+      fetchClicks(appId, startDate, endDate, rangeType, isCompareTo);
+      fetchRevenue(appId, startDate, endDate, rangeType, isCompareTo);
     }
   }
 
@@ -206,7 +206,7 @@ class OverviewView extends Component {
                 alert('You cannot this app without read_audience_network_insights permissions.');
                 tracker.logEvent('cancel-read-audience-network-insights-permission', { category: 'auth-event', view: 'overview' });
               } else {
-                this.onRequest(appId, nextProps.startDate, nextProps.endDate);
+                this.onRequest(appId, nextProps.startDate, nextProps.endDate, nextProps.rangeType, nextProps.isCompareTo);
                 tracker.logEvent('give-read-audience-network-insights-permission', { category: 'auth-event', view: 'overview' });
               }
             },
@@ -292,7 +292,7 @@ class OverviewView extends Component {
   }
 
   render() {
-    const { startDate, endDate, isLoading, all, navigation } = this.props;
+    const { startDate, endDate, rangeType, isCompareTo, isLoading, all, navigation } = this.props;
     const { appId } = this.props.navigation.state.params;
 
     if (!isLoading && all.length === 0) {
@@ -315,7 +315,7 @@ class OverviewView extends Component {
             <RefreshControl
               refreshing={isLoading}
               onRefresh={() => {
-                this.onRequest(appId, startDate, endDate);
+                this.onRequest(appId, startDate, endDate, rangeType, isCompareTo);
                 tracker.logEvent('refresh-overview', { category: 'user-event', view: 'overview' });
               }}
             />
@@ -333,12 +333,16 @@ class OverviewView extends Component {
 OverviewView.defaultProps = {
   startDate: null,
   endDate: null,
+  rangeType: 'days',
+  isCompareTo: false,
 };
 
 OverviewView.propTypes = {
   navigation: React.PropTypes.object.isRequired,
   startDate: React.PropTypes.object,
   endDate: React.PropTypes.object,
+  rangeType: React.PropTypes.string,
+  isCompareTo: React.PropTypes.bool,
 
   isLoading: React.PropTypes.bool.isRequired,
 
@@ -375,6 +379,8 @@ OverviewView.propTypes = {
 const mapStateToProps = state => ({
   startDate: state.dateRange.startDate,
   endDate: state.dateRange.endDate,
+  rangeType: state.dateRange.rangeType,
+  isCompareTo: state.dateRange.isCompareTo,
   isLoading: state.insights.isLoading,
 
   all: state.insights.all,

@@ -11,6 +11,10 @@ import AppWithNavigationState from './app/navigators/AppNavigator';
 
 moment.tz.setDefault('America/Los_Angeles');
 
+if (!__DEV__) {
+  console.log = () => {};
+}
+
 export default class App extends Component {
   store = createStore(
     AppReducer,

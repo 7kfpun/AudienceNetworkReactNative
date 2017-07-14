@@ -30,6 +30,21 @@ export const setRangeTypeOrder = rangeTypeOrder => ({
   rangeTypeOrder,
 });
 
+export const setIsCompareTo = isCompareTo => ({
+  type: 'SET_IS_COMPARE_TO',
+  isCompareTo,
+});
+
+export const setCompareToStartDate = date => ({
+  type: 'SET_COMPARE_TO_START_DATE',
+  date,
+});
+
+export const setCompareToEndDate = date => ({
+  type: 'SET_COMPARE_TO_END_DATE',
+  date,
+});
+
 export function fetchRangeType() {
   return function dp(dispatch) {
     return store.get('RANGE_TYPE')
@@ -55,11 +70,14 @@ export function fetchDateRange() {
     return store.get('RANGE_TYPE')
       .then((rangeType) => {
         dispatch(setRangeType(rangeType || 0));
-        if (['days', 'weeks', 'months'].indexOf(rangeType) !== -1) {
+        if (!['days', 'weeks', 'months'].indexOf(rangeType)) {  // Custom range
           store.get('RANGE_TYPE_ORDER')
             .then((rangeTypeOrder) => {
               dispatch(setRangeTypeOrder(rangeTypeOrder || 0));
-              if (dateRangeOptions[rangeType] && dateRangeOptions[rangeType][rangeTypeOrder].startDate && dateRangeOptions[rangeType][rangeTypeOrder].endDate) {
+              if (dateRangeOptions[rangeType]
+                  && dateRangeOptions[rangeType][rangeTypeOrder].startDate
+                  && dateRangeOptions[rangeType][rangeTypeOrder].endDate
+              ) {
                 dispatch(setStartDate(dateRangeOptions[rangeType][parseInt(rangeTypeOrder, 10)].startDate));
                 dispatch(setEndDate(dateRangeOptions[rangeType][parseInt(rangeTypeOrder, 10)].endDate));
               }
@@ -86,6 +104,12 @@ export function fetchDateRange() {
             })
             .catch(err => console.log(err));
         }
+
+        store.get('IS_COMPARE_TO')
+          .then((isCompareTo) => {
+            dispatch(setIsCompareTo(isCompareTo || false));
+          })
+          .catch(err => console.log(err));
       })
       .catch(err => console.log(err));
   };

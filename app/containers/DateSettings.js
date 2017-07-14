@@ -61,6 +61,13 @@ const styles = StyleSheet.create({
   },
 });
 
+const TYPE = {
+  days: 0,
+  weeks: 1,
+  months: 2,
+  custom: 3,
+};
+
 class DateSettingsView extends Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Date Settings',
@@ -78,8 +85,10 @@ class DateSettingsView extends Component {
       style={styles.headerNav}
       underlayColor="white"
       onPress={() => {
-        const { index, checkDay, checkWeek, checkMonth } = navigation.state.params;
-        const { setStartDate, setEndDate, setRangeType, setRangeTypeOrder } = navigation.state.params;
+        const {
+          index, checkDay, checkWeek, checkMonth, isCompareTo,
+          setStartDate, setEndDate, setRangeType, setRangeTypeOrder, setIsCompareTo,
+         } = navigation.state.params;
 
         if (index === 0) {
           setRangeType('days');
@@ -105,6 +114,9 @@ class DateSettingsView extends Component {
           tracker.logEvent('save-date-range', { category: 'user-event', view: 'date-settings', value: 'custom' });
         }
 
+        setIsCompareTo(isCompareTo);
+        tracker.logEvent('save-is-compare-to', { category: 'user-event', view: 'date-settings', value: isCompareTo.toString() });
+
         navigation.goBack();
       }}
     >
@@ -125,16 +137,13 @@ class DateSettingsView extends Component {
     ],
     startDate: new Date(moment()),
     endDate: new Date(moment().subtract(1, 'days')),
+    isCompareTo: false,
     checkDay: 0,
     checkWeek: 0,
     checkMonth: 0,
     isStartDatePickerShow: false,
     isEndDatePickerShow: false,
   };
-
-  componentWillMount() {
-    this.setInitalTab();
-  }
 
   componentDidMount() {
     this.props.navigation.setParams({
@@ -143,8 +152,10 @@ class DateSettingsView extends Component {
       setRangeTypeOrder: this.props.setRangeTypeOrder,
       setStartDate: this.props.setStartDate,
       setEndDate: this.props.setEndDate,
+      setIsCompareTo: this.props.setIsCompareTo,
       startDate: this.state.startDate,
       endDate: this.state.endDate,
+      isCompareTo: this.props.isCompareTo,
       checkDay: this.state.checkDay,
       checkWeek: this.state.checkWeek,
       checkMonth: this.state.checkMonth,
@@ -153,24 +164,23 @@ class DateSettingsView extends Component {
     this.sub = BackHandler.addEventListener('backPress', () => this.props.navigation.goBack());
   }
 
+  componentWillMount() {
+    this.setInitalTab();
+  }
+
   componentWillUnmount() {
     this.sub.remove();
   }
 
   setInitalTab() {
     const { rangeType, rangeTypeOrder } = this.props;
-    const TYPE = {
-      days: 0,
-      weeks: 1,
-      months: 2,
-      custom: 3,
-    };
 
     this.setState({
       checkDay: rangeType === 'days' ? rangeTypeOrder : 0,
       checkWeek: rangeType === 'weeks' ? rangeTypeOrder : 0,
       checkMonth: rangeType === 'months' ? rangeTypeOrder : 0,
       index: TYPE[rangeType],
+      isCompareTo: this.props.isCompareTo,
     });
   }
 
@@ -202,7 +212,7 @@ class DateSettingsView extends Component {
     }
   }
 
-  openStartDatePicker() {
+  openStartDatePicker = () => {
     const { startDate } = this.props;
 
     if (Platform.OS === 'ios') {
@@ -236,12 +246,25 @@ class DateSettingsView extends Component {
     }
   }
 
+  toggleIsCompareTo = () => {
+    const that = this;
+    this.setState((prevState) => {
+      that.props.navigation.setParams({
+        isCompareTo: !prevState.isCompareTo,
+      });
+
+      return { isCompareTo: !prevState.isCompareTo };
+    });
+  }
+
   renderHeader = props => <TabBar {...props} labelStyle={{ fontSize: 10 }} />;
 
   renderScene = ({ route }) => {
     const { startDate, endDate, setStartDate, setEndDate } = this.props;
 
     const that = this;
+    const diff = moment(endDate).diff(moment(startDate), 'days');
+
     switch (route.key) {
       case 'days':
         return (<View style={styles.container}>
@@ -273,20 +296,20 @@ class DateSettingsView extends Component {
 
           <TouchableHighlight
             underlayColor="#EEEEEE"
-            onPress={() => this.setState(prevState => ({ falseSwitchIsOn: !prevState.falseSwitchIsOn }))}
+            onPress={this.toggleIsCompareTo}
           >
             <View style={styles.row}>
               <Text>{'Compare to'}</Text>
               <Switch
-                onValueChange={value => this.setState({ falseSwitchIsOn: value })}
-                value={this.state.falseSwitchIsOn}
+                onValueChange={this.toggleIsCompareTo}
+                value={this.state.isCompareTo}
               />
             </View>
           </TouchableHighlight>
-          {this.state.falseSwitchIsOn && <View style={styles.row}>
+          {this.state.isCompareTo && <View style={styles.row}>
             <View>
               <Text>{'Previous day'}</Text>
-              <Text style={styles.dateText}>{moment().format('dddd, DD MMMM')}</Text>
+              <Text style={styles.dateText}>{moment(this.state.endDate).subtract(1, 'days').format('dddd, DD MMMM')}</Text>
             </View>
           </View>}
         </View>);
@@ -318,6 +341,25 @@ class DateSettingsView extends Component {
               {that.state.checkWeek === option.id && <Icon name="check" size={20} color="#0076FF" />}
             </View>
           </TouchableHighlight>))}
+
+          <TouchableHighlight
+            underlayColor="#EEEEEE"
+            onPress={this.toggleIsCompareTo}
+          >
+            <View style={styles.row}>
+              <Text>{'Compare to'}</Text>
+              <Switch
+                onValueChange={this.toggleIsCompareTo}
+                value={this.state.isCompareTo}
+              />
+            </View>
+          </TouchableHighlight>
+          {this.state.isCompareTo && <View style={styles.row}>
+            <View>
+              <Text>{'Previous week'}</Text>
+              <Text style={styles.dateText}>{`${moment(this.state.startDate).subtract(1, 'weeks').format('DD MMMM')} - ${moment(this.state.endDate).subtract(1, 'weeks').format('DD MMMM')}`}</Text>
+            </View>
+          </View>}
         </View>);
 
       case 'months':
@@ -347,13 +389,32 @@ class DateSettingsView extends Component {
               {that.state.checkMonth === option.id && <Icon name="check" size={20} color="#0076FF" />}
             </View>
           </TouchableHighlight>))}
+
+          <TouchableHighlight
+            underlayColor="#EEEEEE"
+            onPress={this.toggleIsCompareTo}
+          >
+            <View style={styles.row}>
+              <Text>{'Compare to'}</Text>
+              <Switch
+                onValueChange={this.toggleIsCompareTo}
+                value={this.state.isCompareTo}
+              />
+            </View>
+          </TouchableHighlight>
+          {this.state.isCompareTo && <View style={styles.row}>
+            <View>
+              <Text>{'Previous month'}</Text>
+              <Text style={styles.dateText}>{dateRangeOptions.months[this.state.checkMonth].compareDisplay}</Text>
+            </View>
+          </View>}
         </View>);
 
       case 'custom':
         return (<View style={styles.container}>
           <TouchableHighlight
             underlayColor="#EEEEEE"
-            onPress={() => this.openStartDatePicker()}
+            onPress={this.openStartDatePicker}
           >
             <View style={styles.row}>
               <View>
@@ -398,6 +459,25 @@ class DateSettingsView extends Component {
               tracker.logEvent('change-end-date', { category: 'user-event', view: 'date-settings', value: tempDate.toString() });
             }}
           />}
+
+          <TouchableHighlight
+            underlayColor="#EEEEEE"
+            onPress={this.toggleIsCompareTo}
+          >
+            <View style={styles.row}>
+              <Text>{'Compare to'}</Text>
+              <Switch
+                onValueChange={this.toggleIsCompareTo}
+                value={this.state.isCompareTo}
+              />
+            </View>
+          </TouchableHighlight>
+          {this.state.isCompareTo && <View style={styles.row}>
+            <View>
+              <Text>{'Previous period'}</Text>
+              <Text style={styles.dateText}>{`${moment(startDate).subtract(diff + 1, 'days').format('DD MMMM, YYYY')} - ${moment(endDate).subtract(diff + 1, 'days').format('DD MMMM, YYYY')}`}</Text>
+            </View>
+          </View>}
         </View>);
       default:
         return null;
@@ -405,10 +485,20 @@ class DateSettingsView extends Component {
   };
 
   render() {
+    const state = this.state || {
+      index: TYPE[rangeType],
+      routes: [
+        { key: 'days', title: 'DAY' },
+        { key: 'weeks', title: 'WEEK' },
+        { key: 'months', title: 'MONTH' },
+        { key: 'custom', title: 'CUSTOM' },
+      ],
+    };
+
     return (
       <TabViewAnimated
         props={this.props}
-        navigationState={this.state}
+        navigationState={state}
         renderScene={this.renderScene}
         renderHeader={this.renderHeader}
         onRequestChangeTab={this.handleChangeTab}
@@ -423,8 +513,10 @@ DateSettingsView.propTypes = {
   setRangeTypeOrder: React.PropTypes.func.isRequired,
   setStartDate: React.PropTypes.func.isRequired,
   setEndDate: React.PropTypes.func.isRequired,
+  setIsCompareTo: React.PropTypes.func.isRequired,
   startDate: React.PropTypes.object.isRequired,
   endDate: React.PropTypes.object.isRequired,
+  isCompareTo: React.PropTypes.bool.isRequired,
   rangeType: React.PropTypes.string.isRequired,
   rangeTypeOrder: React.PropTypes.number.isRequired,
 };
@@ -432,6 +524,7 @@ DateSettingsView.propTypes = {
 const mapStateToProps = state => ({
   startDate: state.dateRange.startDate,
   endDate: state.dateRange.endDate,
+  isCompareTo: state.dateRange.isCompareTo,
   rangeType: state.dateRange.rangeType,
   rangeTypeOrder: state.dateRange.rangeTypeOrder,
 });
