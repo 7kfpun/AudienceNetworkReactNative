@@ -8,13 +8,13 @@ export const getCompareToStartDate = (startDate, endDate, rangeType) => {
   if (['days', 'weeks'].includes(rangeType)) {
     compareToStartDate = new Date(moment(startDate).subtract(1, rangeType));
   } else if (rangeType === 'months'
-    && moment(startDate).days() === moment(startDate).startOf('month').days()
-    && moment(endDate).days() === moment(endDate).startOf('month').days()
+    && moment(startDate).get('date') === moment(startDate).startOf('month').get('date')
+    && moment(endDate).get('date') === moment(endDate).endOf('month').get('date')
   ) {
     compareToStartDate = new Date(moment(startDate).subtract(1, rangeType).startOf('month'));
   } else {
     const diff = moment(endDate).diff(moment(startDate), 'days');
-    compareToStartDate = new Date(moment(startDate).subtract(diff, 'days'));
+    compareToStartDate = new Date(moment(startDate).subtract(1 + diff, 'days'));
   }
 
   console.log('compareToStartDate', rangeType, compareToStartDate);
@@ -27,8 +27,8 @@ export const getCompareToEndDate = (startDate, endDate, rangeType) => {
   if (['days', 'weeks'].includes(rangeType)) {
     compareToEndDate = new Date(moment(startDate).subtract(1, 'days'));
   } else if (rangeType === 'months'
-    && moment(startDate).days() === moment(startDate).startOf('month').days()
-    && moment(endDate).days() === moment(endDate).startOf('month').days()
+    && moment(startDate).get('date') === moment(startDate).startOf('month').get('date')
+    && moment(endDate).get('date') === moment(endDate).endOf('month').get('date')
   ) {
     compareToEndDate = new Date(moment(startDate).subtract(1, rangeType).endOf('month'));
   } else {

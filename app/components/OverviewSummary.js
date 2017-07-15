@@ -35,11 +35,11 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
   text: {
-    fontSize: 16,
+    fontSize: 18,
     marginTop: 14,
   },
   compareToText: {
-    fontSize: 10,
+    fontSize: 12,
     marginTop: 6,
     fontWeight: '500',
   },

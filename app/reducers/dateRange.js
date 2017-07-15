@@ -32,8 +32,8 @@ function dateRange(state = initialDateRangeState, action) {
       }
 
       if (state.rangeType === 'months') {
-        if (moment(state.startDate).days() === moment(state.startDate).startOf('month').days()
-          && moment(state.endDate).days() === moment(state.endDate).endOf('month').days()) {
+        if (moment(state.startDate).get('date') === moment(state.startDate).startOf('month').get('date')
+          && moment(state.endDate).get('date') === moment(state.endDate).endOf('month').get('date')) {
           store.save('START_DATE', new Date(moment(state.startDate).subtract(1, state.rangeType).startOf('month')));
           store.save('END_DATE', new Date(moment(state.endDate).subtract(1, state.rangeType).endOf('month')));
           return {
@@ -66,8 +66,8 @@ function dateRange(state = initialDateRangeState, action) {
       }
 
       if (state.rangeType === 'months') {
-        if (moment(state.startDate).days() === moment(state.startDate).startOf('month').days()
-          && moment(state.endDate).days() === moment(state.endDate).endOf('month').days()) {
+        if (moment(state.startDate).get('day') === moment(state.startDate).startOf('month').get('day')
+          && moment(state.endDate).get('day') === moment(state.endDate).endOf('month').get('day')) {
           store.save('START_DATE', new Date(moment(state.startDate).add(1, state.rangeType).startOf('month')));
           store.save('END_DATE', new Date(moment(state.endDate).add(1, state.rangeType).endOf('month')));
           return {

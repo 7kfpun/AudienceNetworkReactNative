@@ -58,7 +58,7 @@ const LineChart = (props) => {
       onLoad: { duration: 500 },
       onEnter: { duration: 200, before: () => ({ y: 0 }) },
     }}
-    width={window.width - 10}
+    width={window.width}
     height={180}
     padding={10}
     data={data}
