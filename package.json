@@ -14,15 +14,15 @@
   "dependencies": {
     "moment-timezone": "^0.5.13",
     "prop-types": "^15.5.10",
-    "react": "16.0.0-alpha.6",
-    "react-native": "0.44.2",
+    "react": "16.0.0-alpha.12",
+    "react-native": "0.46.3",
     "react-native-elements": "^0.12.2",
     "react-native-fbads": "^4.2.0",
     "react-native-fbsdk": "^0.6.0",
-    "react-native-pathjs-charts": "0.0.28",
+    "react-native-pathjs-charts": "0.0.30",
     "react-native-safari-view": "^2.0.0",
     "react-native-simple-store": "^1.1.0",
-    "react-native-svg": "github:react-native-community/react-native-svg",
+    "react-native-svg": "5.3.0",
     "react-native-swipe-list-view": "^0.4.1",
     "react-native-tab-view": "^0.0.66",
     "react-native-vector-icons": "^4.0.0",
@@ -33,7 +33,7 @@
     "redux-thunk": "^2.2.0",
     "rn-viewpager": "^1.1.4",
     "shortid": "^2.2.8",
-    "victory-native": "^0.9.0"
+    "victory-native": "0.13.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
