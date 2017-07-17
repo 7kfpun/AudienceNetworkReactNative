@@ -126,7 +126,7 @@ const OverviewSummary = (props) => {
     <TouchableHighlight onPress={() => console.log('Est. Rev')} underlayColor="#EEEEEE">
       <View style={styles.cell}>
         <Text style={styles.titleText}>{'Est. Rev'}</Text>
-        <Text style={styles.text}>{(revenueSum && `$${revenueSum.toFixed(2)}`) || ''}</Text>
+        <Text style={styles.text}>{(revenueSum && `$${revenueSum.toFixed(2)}`) || 0}</Text>
         {isCompareTo && !!revenueSumChange && <Text style={getChangeColor(revenueSumChange)}>{`$${compareToRevenueSum.toFixed(2)}\n(${revenueSumChange}%)`}</Text>}
       </View>
     </TouchableHighlight>

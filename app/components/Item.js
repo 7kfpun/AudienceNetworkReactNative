@@ -91,8 +91,9 @@ export default class Item extends Component {
         (error, result) => {
           if (error) {
             console.info(error);
-            tracker.logEvent('request-revenue-error', { category: 'api-event', component: 'item', log: 'error' });
+            tracker.logEvent('request-revenue-error', { category: 'api-event', component: 'item', log: 'error', startDate, endDate });
           } else {
+            tracker.logEvent('request-revenue-success', { category: 'api-event', component: 'item', log: 'info', startDate, endDate });
             this.setState({ revenue: result.data.sum('value') });
           }
         });

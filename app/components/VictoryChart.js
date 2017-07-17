@@ -14,6 +14,10 @@ const window = Dimensions.get('window');
 const LineChart = (props) => {
   const length = props.data.length;
 
+  if (!length) {
+    return null;
+  }
+
   let endDate = moment(props.data[0].time);
   const startDate = moment(props.data[length - 1].time);
 
@@ -55,8 +59,6 @@ const LineChart = (props) => {
     }}
     animate={{
       duration: 1000,
-      onLoad: { duration: 500 },
-      onEnter: { duration: 200, before: () => ({ y: 0 }) },
     }}
     width={window.width}
     height={180}
