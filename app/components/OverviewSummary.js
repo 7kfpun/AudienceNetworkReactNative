@@ -37,10 +37,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
     marginTop: 14,
+    marginBottom: 4,
   },
   compareToText: {
     fontSize: 12,
-    marginTop: 6,
+    marginTop: 2,
     fontWeight: '500',
   },
   compareToTextGreen: {
@@ -55,12 +56,20 @@ const getChangePercentage = (current, previous) => {
   if (!current && !previous) {
     return '0';
   } else if (current && !previous) {
-    return '+100';
+    return '100';
   } else if (!current && previous) {
     return '-100';
   }
 
-  return `${current > previous ? '+' : ''}${(((current - previous) * 100) / previous).toFixed(2)}`;
+  return (((current - previous) * 100) / previous).toFixed(2).toString();
+};
+
+const getChangeSign = (current, previous) => {
+  if (current && (!previous || current > previous)) {
+    return '+';
+  }
+
+  return '';
 };
 
 const getChangeColor = (changePercentage) => {
@@ -83,17 +92,30 @@ const OverviewSummary = (props) => {
   } = props;
 
   const requestsSumChange = getChangePercentage(requestsSum, compareToRequestsSum);
+  const requestsSumSign = getChangeSign(requestsSum, compareToRequestsSum);
   const filledRequestsSumChange = getChangePercentage(requestsSum ? filledRequestsSum / requestsSum : 0, compareToRequestsSum ? compareToFilledRequestsSum / compareToRequestsSum : 0);
+  const filledRequestsSumSign = getChangeSign(requestsSum ? filledRequestsSum / requestsSum : 0, compareToRequestsSum ? compareToFilledRequestsSum / compareToRequestsSum : 0);
   const impressionsSumChange = getChangePercentage(impressionsSum, compareToImpressionsSum);
+  const impressionsSumSign = getChangeSign(impressionsSum, compareToImpressionsSum);
   const clicksSumChange = getChangePercentage(clicksSum, compareToClicksSum);
+  const clicksSumSign = getChangeSign(clicksSum, compareToClicksSum);
   const revenueSumChange = getChangePercentage(revenueSum, compareToRevenueSum);
+  const revenueSumSign = getChangeSign(revenueSum, compareToRevenueSum);
+
+  let filledRateSumChange = ((filledRequestsSum / requestsSum) - (compareToFilledRequestsSum / compareToRequestsSum)) * 100;
+  if (filledRateSumChange === Infinity || filledRateSumChange === -Infinity) {
+    filledRateSumChange = 100;
+  }
 
   return (<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.container}>
     <TouchableHighlight onPress={() => console.log('Requests')} underlayColor="#EEEEEE">
       <View style={styles.cell}>
         <Text style={styles.titleText}>{'Requests'}</Text>
         <Text style={styles.text}>{requestsSum}</Text>
-        {isCompareTo && !!requestsSumChange && <Text style={getChangeColor(requestsSumChange)}>{`${compareToRequestsSum}\n(${requestsSumChange}%)`}</Text>}
+        {isCompareTo && !!requestsSumChange && <View>
+          <Text style={getChangeColor(requestsSumChange)}>{`${requestsSumSign}${requestsSum - compareToRequestsSum}`}</Text>
+          <Text style={getChangeColor(requestsSumChange)}>{`(${requestsSumSign}${requestsSumChange}%)`}</Text>
+        </View>}
       </View>
     </TouchableHighlight>
 
@@ -101,9 +123,10 @@ const OverviewSummary = (props) => {
       <View style={styles.cell}>
         <Text style={styles.titleText}>{'Fill Rate'}</Text>
         <Text style={styles.text}>{(filledRequestsSum && requestsSum && `${((filledRequestsSum / requestsSum) * 100).toFixed(2)}%`) || '0'}</Text>
-        {isCompareTo && !!filledRequestsSumChange && <Text style={getChangeColor(filledRequestsSumChange)}>
-          {`${((compareToFilledRequestsSum / compareToRequestsSum) * 100 || 0).toFixed(2)}%\n(${filledRequestsSumChange}%)`}
-        </Text>}
+        {isCompareTo && !!filledRequestsSumChange && <View>
+          <Text style={getChangeColor(filledRequestsSumChange)}>{`${filledRequestsSumSign}${(filledRateSumChange || 0).toFixed(2)}%`}</Text>
+          <Text style={getChangeColor(filledRequestsSumChange)}>{`(${filledRequestsSumSign}${filledRequestsSumChange}%)`}</Text>
+        </View>}
       </View>
     </TouchableHighlight>
 
@@ -111,7 +134,10 @@ const OverviewSummary = (props) => {
       <View style={styles.cell}>
         <Text style={styles.titleText}>{'Impressions'}</Text>
         <Text style={styles.text}>{impressionsSum}</Text>
-        {isCompareTo && !!impressionsSumChange && <Text style={getChangeColor(impressionsSumChange)}>{`${compareToImpressionsSum}\n(${impressionsSumChange}%)`}</Text>}
+        {isCompareTo && !!impressionsSumChange && <View>
+          <Text style={getChangeColor(impressionsSumChange)}>{`${impressionsSumSign}${impressionsSum - compareToImpressionsSum}`}</Text>
+          <Text style={getChangeColor(impressionsSumChange)}>{`(${impressionsSumSign}${impressionsSumChange}%)`}</Text>
+        </View>}
       </View>
     </TouchableHighlight>
 
@@ -119,7 +145,10 @@ const OverviewSummary = (props) => {
       <View style={styles.cell}>
         <Text style={styles.titleText}>{'Clicks'}</Text>
         <Text style={styles.text}>{clicksSum}</Text>
-        {isCompareTo && !!clicksSumChange && <Text style={getChangeColor(clicksSumChange)}>{`${compareToClicksSum}\n(${clicksSumChange}%)`}</Text>}
+        {isCompareTo && !!clicksSumChange && <View>
+          <Text style={getChangeColor(clicksSumChange)}>{`${clicksSumSign}${clicksSum - compareToClicksSum}`}</Text>
+          <Text style={getChangeColor(clicksSumChange)}>{`(${clicksSumSign}${clicksSumChange}%)`}</Text>
+        </View>}
       </View>
     </TouchableHighlight>
 
@@ -127,7 +156,10 @@ const OverviewSummary = (props) => {
       <View style={styles.cell}>
         <Text style={styles.titleText}>{'Est. Rev'}</Text>
         <Text style={styles.text}>{(revenueSum && `$${revenueSum.toFixed(2)}`) || 0}</Text>
-        {isCompareTo && !!revenueSumChange && <Text style={getChangeColor(revenueSumChange)}>{`$${compareToRevenueSum.toFixed(2)}\n(${revenueSumChange}%)`}</Text>}
+        {isCompareTo && !!revenueSumChange && <View>
+          <Text style={getChangeColor(revenueSumChange)}>{`${revenueSumSign ? '+' : '-'}$${Math.abs(revenueSum - compareToRevenueSum).toFixed(2)}`}</Text>
+          <Text style={getChangeColor(revenueSumChange)}>{`(${revenueSumSign}${revenueSumChange}%)`}</Text>
+        </View>}
       </View>
     </TouchableHighlight>
   </ScrollView>);

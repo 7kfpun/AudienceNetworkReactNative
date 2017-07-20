@@ -14,7 +14,7 @@ const window = Dimensions.get('window');
 const LineChart = (props) => {
   const length = props.data.length;
 
-  if (!length) {
+  if (length < 2) {
     return null;
   }
 
