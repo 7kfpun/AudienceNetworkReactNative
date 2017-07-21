@@ -38,7 +38,10 @@ export default class AdBanner extends React.Component {
       return (<AdMobBanner
         bannerSize={this.props.bannerSize}
         adUnitID={config.admob[Platform.OS].banner}
-        didFailToReceiveAdWithError={() => tracker.logEvent('click-admob-banner-ad-error', { category: 'user-event', component: 'ad-banner' })}
+        didFailToReceiveAdWithError={(err) => {
+          console.log('AdMob Banner Ad Failed', err);
+          tracker.logEvent('click-admob-banner-ad-error', { category: 'user-event', component: 'ad-banner' });
+        }}
       />);
     }
 
@@ -46,7 +49,8 @@ export default class AdBanner extends React.Component {
       placementId={config.fbads[Platform.OS].banner}
       type="standard"
       onClick={() => tracker.logEvent('click-fb-banner-ad-ok', { category: 'user-event', component: 'ad-banner' })}
-      onError={() => {
+      onError={(err) => {
+        console.log('Facebook Banner Ad Failed', err);
         // tracker.logEvent('click-fb-banner-ad-error', { category: 'user-event', component: 'ad-banner' });
         this.setState({ adType: 'ADMOB' });
       }}
