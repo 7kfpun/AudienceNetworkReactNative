@@ -13,7 +13,7 @@ import {
 
 import moment from 'moment-timezone';
 
-import { AccessToken, LoginManager } from 'react-native-fbsdk';
+import { AccessToken } from 'react-native-fbsdk';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { IndicatorViewPager, PagerDotIndicator } from 'rn-viewpager';
@@ -25,6 +25,7 @@ import * as insightActions from '../actions/insights';
 
 import AdBanner from '../components/fbadbanner';
 import FbAds from '../components/fbads';
+import InsightItem from '../components/InsightBoxItem';
 import LineChart from '../components/LineChart';
 import OverviewSummary from '../components/OverviewSummary';
 import RangePicker from '../components/RangePicker';
@@ -105,14 +106,6 @@ const styles = StyleSheet.create({
   insightsBlock: {
     marginTop: 5,
     width: 960,
-  },
-  cell: {
-    flex: 1,
-    alignItems: 'flex-end',
-    borderLeftColor: '#EEEEEE',
-    borderLeftWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 6,
-    paddingVertical: 15,
   },
   text: {
     fontSize: 15,
@@ -200,23 +193,23 @@ class OverviewView extends Component {
           navigate('Login');
         }
 
-        if (data && data.permissions && data.permissions.indexOf('read_audience_network_insights') === -1) {
-          LoginManager.logInWithReadPermissions(['read_audience_network_insights']).then(
-            (result) => {
-              if (result.isCancelled) {
-                alert('You cannot this app without read_audience_network_insights permissions.');
-                tracker.logEvent('cancel-read-audience-network-insights-permission', { category: 'auth-event', view: 'overview' });
-              } else {
-                this.onRequest(appId, nextProps.startDate, nextProps.endDate, nextProps.rangeType, nextProps.isCompareTo);
-                tracker.logEvent('give-read-audience-network-insights-permission', { category: 'auth-event', view: 'overview' });
-              }
-            },
-            (error) => {
-              alert(`Login fail with error: ${error}`);
-              tracker.logEvent('login-failed', { category: 'auth-event', view: 'overview' });
-            },
-          );
-        }
+        // if (data && data.permissions && data.permissions.indexOf('read_audience_network_insights') === -1) {
+        //   LoginManager.logInWithReadPermissions(['read_audience_network_insights']).then(
+        //     (result) => {
+        //       if (result.isCancelled) {
+        //         alert('You cannot use this app without read_audience_network_insights permissions.');
+        //         tracker.logEvent('cancel-read-audience-network-insights-permission', { category: 'auth-event', view: 'overview' });
+        //       } else {
+        //         this.onRequest(appId, nextProps.startDate, nextProps.endDate, nextProps.rangeType, nextProps.isCompareTo);
+        //         tracker.logEvent('give-read-audience-network-insights-permission', { category: 'auth-event', view: 'overview' });
+        //       }
+        //     },
+        //     (error) => {
+        //       alert(`Login fail with error: ${error}`);
+        //       tracker.logEvent('login-failed', { category: 'auth-event', view: 'overview' });
+        //     },
+        //   );
+        // }
       },
     );
   }
@@ -232,7 +225,7 @@ class OverviewView extends Component {
         <FbAds adsManager={adsManager} />
 
         {startDate && endDate && moment(startDate).format('L') !== moment(endDate).format('L') && <IndicatorViewPager
-          style={{ height: 240, marginBottom: 5 }}
+          style={{ height: 280, marginBottom: 5 }}
           indicator={<PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
         >
           <View style={styles.chartBlock}>
@@ -253,39 +246,24 @@ class OverviewView extends Component {
           </View>
         </IndicatorViewPager>}
 
-        <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
+        {/* <ScrollView contentContainerStyle={styles.insightsBlock} horizontal showsHorizontalScrollIndicator={false}>
           <FlatList
             style={{ marginBottom: 10 }}
             enableEmptySections={true}
             scrollEnabled={false}
             data={all}
-            ListHeaderComponent={() => (<View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.5 }]} />
-              <View style={styles.cell}><Text style={styles.cellText}>{'Requests'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Filled'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Impressions'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Clicks'}</Text></View>
+            ListHeaderComponent={() => <InsightHeader />}
+            renderItem={({ item }) => <InsightItem item={item} />}
+          />
+        </ScrollView> */}
 
-              <View style={styles.cell}><Text style={styles.cellText}>{'Fill Rate'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'CTR'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'eCPM'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{'Est. Rev'}</Text></View>
-            </View>)}
-            renderItem={({ item }) => (<View style={[styles.row, { padding: 0 }]}>
-              <View style={[styles.cell, { flex: 1.5 }]}>
-                <Text style={styles.cellText}>{item.requests && item.requests.time && moment(item.requests.time).format('ddd MMM DD, YYYY')}</Text>
-                {item.breakdowns && <Text style={[styles.cellText, { fontSize: 11, color: 'gray' }]}>{item.breakdowns.country || item.breakdowns.placement}</Text>}
-              </View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(item.requests && item.requests.value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(item.filledRequests && item.filledRequests.value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(item.impressions && item.impressions.value) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(item.clicks && item.clicks.value) || '*'}</Text></View>
-
-              <View style={styles.cell}><Text style={styles.cellText}>{(item.requests && item.requests.value && item.filledRequests && item.filledRequests.value && `${((item.filledRequests.value / item.requests.value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(item.clicks && item.impressions && item.clicks.value && item.impressions.value && `${((item.clicks.value / item.impressions.value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(item.impressions && item.revenue && item.impressions.value && item.revenue.value && `$${((item.revenue.value / item.impressions.value) * 1000).toFixed(2)}`) || '*'}</Text></View>
-              <View style={styles.cell}><Text style={styles.cellText}>{(item.revenue && item.revenue.value && `$${(item.revenue.value * 1).toFixed(2)}`) || '*'}</Text></View>
-            </View>)}
+        <ScrollView contentContainerStyle={{ flex: 1, marginTop: 6 }}>
+          <FlatList
+            style={{ marginBottom: 10 }}
+            enableEmptySections={true}
+            scrollEnabled={false}
+            data={all}
+            renderItem={({ item }) => <InsightItem item={item} />}
           />
         </ScrollView>
       </View>
