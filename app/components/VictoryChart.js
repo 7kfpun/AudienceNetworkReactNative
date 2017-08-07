@@ -3,7 +3,12 @@ import {
   Dimensions,
 } from 'react-native';
 
-import { VictoryArea } from 'victory-native';
+import {
+  VictoryArea,
+  VictoryAxis,
+  VictoryChart,
+  VictoryTheme,
+} from 'victory-native';
 
 import moment from 'moment-timezone';
 
@@ -48,23 +53,36 @@ const LineChart = (props) => {
 
   data.reverse();
 
-  return (<VictoryArea
-    style={{
-      data: {
-        fill: '#ECEFF1',
-        stroke: '#252525',
-        width: window.width / (data.length * 3),
-      },
-      padding: 0,
-    }}
-    animate={{
-      duration: 1000,
-    }}
-    width={window.width}
-    height={180}
-    padding={10}
-    data={data}
-  />);
+  return (
+    <VictoryChart
+      width={window.width}
+      theme={VictoryTheme.material}
+      height={210}
+      padding={{
+        top: 0,
+        bottom: 0,
+        left: 45,
+        right: 20,
+      }}
+    >
+      <VictoryAxis
+        dependentAxis
+      />
+      <VictoryArea
+        style={{
+          data: {
+            fill: '#ECEFF1',
+            stroke: '#252525',
+            width: window.width / (data.length * 3),
+          },
+          padding: 0,
+        }}
+        animate={{
+          duration: 1000,
+        }}
+        data={data}
+      />
+    </VictoryChart>);
 };
 
 LineChart.propTypes = {

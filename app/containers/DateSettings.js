@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 12,
     color: 'gray',
+    marginTop: 10,
   },
   datePicker: {
     backgroundColor: 'white',
@@ -145,6 +146,10 @@ class DateSettingsView extends Component {
     isEndDatePickerShow: false,
   };
 
+  componentWillMount() {
+    this.setInitalTab();
+  }
+
   componentDidMount() {
     this.props.navigation.setParams({
       index: this.state.index,
@@ -162,10 +167,6 @@ class DateSettingsView extends Component {
     });
 
     this.sub = BackHandler.addEventListener('backPress', () => this.props.navigation.goBack());
-  }
-
-  componentWillMount() {
-    this.setInitalTab();
   }
 
   componentWillUnmount() {

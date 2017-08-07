@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Image,
+  Platform,
   StyleSheet,
   Text,
   View,
@@ -13,6 +14,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 10,
     marginHorizontal: 8,
+    marginBottom: Platform.OS === 'ios' ? 0 : 5,
     justifyContent: 'center',
     borderRightWidth: StyleSheet.hairlineWidth * 2,
     borderRightColor: '#CCCCCC',

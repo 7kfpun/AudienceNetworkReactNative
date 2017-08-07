@@ -11,70 +11,96 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#E0E0E0',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#E0E0E0',
-    padding: 10,
   },
-  block: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  cell: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+  datetimeBlock: {
+    paddingLeft: 15,
+    backgroundColor: '#F5F5F5',
   },
   datetimeText: {
-    fontSize: 13,
-    fontWeight: '300',
-    lineHeight: 24,
-  },
-  titleText: {
     fontSize: 11,
     fontWeight: '300',
     lineHeight: 24,
     color: 'grey',
   },
+  block: {
+    flex: 1,
+    flexDirection: 'row',
+    padding: 5,
+  },
+  cell: {
+    flex: 1,
+    flexDirection: 'column',
+    paddingHorizontal: 10,
+  },
+  borderLine: {
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderRightColor: '#E0E0E0',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  largeText: {
+    fontSize: 18,
+    lineHeight: 28,
+    textAlign: 'right',
+  },
+  titleText: {
+    fontSize: 10,
+    fontWeight: '300',
+    lineHeight: 18,
+    color: 'grey',
+  },
   text: {
-    fontSize: 13,
-    lineHeight: 24,
+    fontSize: 11,
+    lineHeight: 18,
   },
 });
 
 const InsightBoxItem = ({ item }) => (
   <View style={styles.container}>
-    <Text style={styles.datetimeText}>{item.requests && item.requests.time && moment(item.requests.time).format('ddd MMM DD, YYYY')}</Text>
-
-    <View style={styles.block}>
-      <View style={styles.cell}><Text style={styles.titleText}>{'Requests'}</Text></View>
-      <View style={styles.cell}><Text style={styles.titleText}>{'Filled'}</Text></View>
-      <View style={styles.cell}><Text style={styles.titleText}>{'Impressions'}</Text></View>
-      <View style={styles.cell}><Text style={styles.titleText}>{'Clicks'}</Text></View>
+    <View style={styles.datetimeBlock}>
+      <Text style={styles.datetimeText}>{item.requests && item.requests.time && moment(item.requests.time).format('ddd MMM DD, YYYY')}</Text>
     </View>
 
     <View style={styles.block}>
-      <View style={styles.cell}><Text style={styles.text}>{(item.requests && item.requests.value) || '*'}</Text></View>
-      <View style={styles.cell}><Text style={styles.text}>{(item.filledRequests && item.filledRequests.value) || '*'}</Text></View>
-      <View style={styles.cell}><Text style={styles.text}>{(item.impressions && item.impressions.value) || '*'}</Text></View>
-      <View style={styles.cell}><Text style={styles.text}>{(item.clicks && item.clicks.value) || '*'}</Text></View>
+      <View style={[styles.cell, styles.borderLine]}>
+        <Text style={styles.titleText}>{'Est. Rev'}</Text>
+        <Text style={styles.largeText}>{(item.revenue && item.revenue.value && `$${(item.revenue.value * 1).toFixed(2)}`) || '*'}</Text>
+        <View style={styles.row}>
+          <Text style={styles.titleText}>{'eCPM'}</Text>
+          <Text style={styles.text}>{(item.impressions && item.revenue && item.impressions.value && item.revenue.value && `$${((item.revenue.value / item.impressions.value) * 1000).toFixed(2)}`) || '*'}</Text>
+        </View>
+        <View />
+      </View>
+
+      <View style={[styles.cell, styles.borderLine]}>
+        <Text style={styles.titleText}>{'Clicks'}</Text>
+        <Text style={styles.largeText}>{(item.clicks && item.clicks.value) || '*'}</Text>
+        <View style={styles.row}>
+          <Text style={styles.titleText}>{'Impressions'}</Text>
+          <Text style={styles.text}>{(item.impressions && item.impressions.value) || '*'}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.titleText}>{'CTR'}</Text>
+          <Text style={styles.text}>{(item.clicks && item.impressions && item.clicks.value && item.impressions.value && `${((item.clicks.value / item.impressions.value) * 100).toFixed(2)}%`) || '*'}</Text>
+        </View>
+      </View>
+
+      <View style={styles.cell}>
+        <Text style={styles.titleText}>{'Fill Rate'}</Text>
+        <Text style={styles.largeText}>{(item.requests && item.requests.value && item.filledRequests && item.filledRequests.value && `${((item.filledRequests.value / item.requests.value) * 100).toFixed(2)}%`) || '*'}</Text>
+        <View style={styles.row}>
+          <Text style={styles.titleText}>{'Requests'}</Text>
+          <Text style={styles.text}>{(item.requests && item.requests.value) || '*'}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.titleText}>{'Filled'}</Text>
+          <Text style={styles.text}>{(item.filledRequests && item.filledRequests.value) || '*'}</Text>
+        </View>
+      </View>
     </View>
 
-    <View style={styles.block}>
-      <View style={styles.cell}><Text style={styles.titleText}>{'Fill Rate'}</Text></View>
-      <View style={styles.cell}><Text style={styles.titleText}>{'CTR'}</Text></View>
-      <View style={styles.cell}><Text style={styles.titleText}>{'eCPM'}</Text></View>
-      <View style={styles.cell}><Text style={styles.titleText}>{'Est. Rev'}</Text></View>
-    </View>
-
-    <View style={styles.block}>
-      <View style={styles.cell}><Text style={styles.text}>{(item.requests && item.requests.value && item.filledRequests && item.filledRequests.value && `${((item.filledRequests.value / item.requests.value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-      <View style={styles.cell}><Text style={styles.text}>{(item.clicks && item.impressions && item.clicks.value && item.impressions.value && `${((item.clicks.value / item.impressions.value) * 100).toFixed(2)}%`) || '*'}</Text></View>
-      <View style={styles.cell}><Text style={styles.text}>{(item.impressions && item.revenue && item.impressions.value && item.revenue.value && `$${((item.revenue.value / item.impressions.value) * 1000).toFixed(2)}`) || '*'}</Text></View>
-      <View style={styles.cell}><Text style={styles.text}>{(item.revenue && item.revenue.value && `$${(item.revenue.value * 1).toFixed(2)}`) || '*'}</Text></View>
-    </View>
   </View>
 );
 

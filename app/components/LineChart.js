@@ -48,7 +48,7 @@ const LineChart = (props) => {
 
   const options = {
     width: window.width - 30,
-    height: 150,
+    height: 180,
     color: '#00796B',
     margin: {
       top: 0,
