@@ -21,4 +21,5 @@ exports.config = {
       banner: '',
     },
   },
+  segment: ''
 };

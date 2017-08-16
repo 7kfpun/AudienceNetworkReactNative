@@ -274,6 +274,8 @@ class OverviewView extends Component {
     const { startDate, endDate, rangeType, isCompareTo, isLoading, all, navigation } = this.props;
     const { appId } = this.props.navigation.state.params;
 
+    tracker.view('overview', { appId, startDate, endDate, rangeType, isCompareTo });
+
     if (!isLoading && all.length === 0) {
       return (<View style={styles.container}>
         <RangePicker navigation={navigation} />

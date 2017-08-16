@@ -71,6 +71,13 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+analytics-react-native@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/analytics-react-native/-/analytics-react-native-1.1.0.tgz#9e8a2552146568de94190ad911616416259e219b"
+  dependencies:
+    base-64 "0.1.0"
+    type-of "2.0.1"
+
 ansi-escapes@^1.1.0, ansi-escapes@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-1.4.0.tgz#d3a8a83b319aa67793662b13e761c7911422306e"
@@ -914,6 +921,10 @@ babylon@^6.17.0, babylon@^6.17.2, babylon@^6.17.4:
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
+
+base-64@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/base-64/-/base-64-0.1.0.tgz#780a99c84e7d600260361511c4877613bf24f6bb"
 
 base64-js@0.0.8:
   version "0.0.8"
@@ -3863,13 +3874,13 @@ react-devtools-core@2.3.1:
     shell-quote "^1.6.1"
     ws "^2.0.3"
 
-react-native-device-info@^0.10.2:
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-0.10.2.tgz#350cd68ed43839022ddea0a3a423439f16fa4fba"
-
 react-native-admob@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/react-native-admob/-/react-native-admob-1.3.0.tgz#7f313c28a9b8bebeee410ba8fbab920315750b03"
+
+react-native-device-info@^0.10.2:
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-0.10.2.tgz#350cd68ed43839022ddea0a3a423439f16fa4fba"
 
 react-native-dismiss-keyboard@1.0.0:
   version "1.0.0"
@@ -3901,9 +3912,9 @@ react-native-fabric@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/react-native-fabric/-/react-native-fabric-0.4.1.tgz#5fcb604daf17d0dff70603ff3eeba9e3f3160ddd"
 
-react-native-fbads@^4.2.0:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-fbads/-/react-native-fbads-4.2.1.tgz#6c3ebb1db36c1ba3e04c31860903eaab8d994eac"
+react-native-fbads@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-fbads/-/react-native-fbads-4.2.0.tgz#16ca5c29083825aecef3ed7d9e9d881ff82b8b33"
   dependencies:
     eventemitter3 "^2.0.2"
 
@@ -4844,6 +4855,10 @@ type-is@~1.6.6:
   dependencies:
     media-typer "0.3.0"
     mime-types "~2.1.15"
+
+type-of@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/type-of/-/type-of-2.0.1.tgz#e72a1741896568e9f628378d816d6912f7f23972"
 
 typedarray@^0.0.6:
   version "0.0.6"

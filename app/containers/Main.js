@@ -194,6 +194,8 @@ class MainView extends Component {
     const { navigation, fbapps, startDate, endDate } = this.props;
     const dataSource = this.dataSource.cloneWithRows(fbapps);
 
+    tracker.view('main', { startDate, endDate, totalApps: fbapps.length });
+
     if (fbapps.length === 0) {
       return <EmptyApp />;
     }

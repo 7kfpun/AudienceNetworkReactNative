@@ -158,6 +158,8 @@ class LoginView extends Component {
   render() {
     const { isLoggedIn } = this.props;
 
+    tracker.view('login', { isLoggedIn });
+
     return (
       <View style={styles.container}>
         <View style={styles.loginBlock}>

@@ -486,6 +486,8 @@ class DateSettingsView extends Component {
   };
 
   render() {
+    tracker.view('date-settings');
+
     const state = this.state || {
       index: TYPE[rangeType],
       routes: [

@@ -73,7 +73,7 @@ class AddView extends Component {
       underlayColor="white"
       onPress={() => {
         navigation.goBack();
-        tracker.logEvent('view-logout', { category: 'user-event', view: 'add' });
+        tracker.logEvent('cancel-add-app', { category: 'user-event', view: 'add' });
       }}
     >
       {Platform.OS === 'ios' ? <Text style={styles.headerLeftText}>{'Cancel'}</Text> : <Icon name="close" size={30} color="#0076FF" />}
@@ -162,6 +162,8 @@ class AddView extends Component {
   // }
 
   render() {
+    tracker.view('add');
+
     return (
       <View style={styles.container}>
         <View style={{ marginVertical: 10 }}>
