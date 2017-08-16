@@ -116,8 +116,8 @@ android {
         applicationId "com.kfpun.audiencenetwork"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 3
-        versionName "1.0.0"
+        versionCode 7
+        versionName "1.0.3"
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
