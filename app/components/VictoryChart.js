@@ -57,9 +57,9 @@ const LineChart = (props) => {
     <VictoryChart
       width={window.width}
       theme={VictoryTheme.material}
-      height={210}
+      height={220}
       padding={{
-        top: 0,
+        top: 10,
         bottom: 0,
         left: 45,
         right: 20,
@@ -76,9 +76,6 @@ const LineChart = (props) => {
             width: window.width / (data.length * 3),
           },
           padding: 0,
-        }}
-        animate={{
-          duration: 1000,
         }}
         data={data}
       />

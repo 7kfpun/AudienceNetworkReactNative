@@ -14,12 +14,12 @@ const styles = StyleSheet.create({
   },
   datetimeBlock: {
     paddingLeft: 15,
+    paddingVertical: 5,
     backgroundColor: '#F5F5F5',
   },
   datetimeText: {
     fontSize: 11,
     fontWeight: '300',
-    lineHeight: 24,
     color: 'grey',
   },
   block: {
