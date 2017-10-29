@@ -225,7 +225,7 @@ class OverviewView extends Component {
         <FbAds adsManager={adsManager} />
 
         {startDate && endDate && moment(startDate).format('L') !== moment(endDate).format('L') && <IndicatorViewPager
-          style={{ height: 280, marginBottom: 5 }}
+          style={{ height: 290, marginBottom: 5 }}
           indicator={<PagerDotIndicator selectedDotStyle={{ backgroundColor: '#F4F4F4' }} pageCount={4} />}
         >
           <View style={styles.chartBlock}>

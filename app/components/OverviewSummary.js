@@ -15,7 +15,7 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     marginBottom: 5,
-    width: (width / 3) * 5,
+    width: (width / 3.2) * 5,
     flexDirection: 'row',
     alignItems: 'stretch',
     backgroundColor: 'white',
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E0E0E0',
   },
   cell: {
-    width: width / 3,
+    width: width / 3.2,
     padding: 12,
     justifyContent: 'space-between',
     alignItems: 'flex-start',
