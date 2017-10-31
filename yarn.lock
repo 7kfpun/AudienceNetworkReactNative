@@ -3912,9 +3912,9 @@ react-native-fabric@^0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/react-native-fabric/-/react-native-fabric-0.4.1.tgz#5fcb604daf17d0dff70603ff3eeba9e3f3160ddd"
 
-react-native-fbads@4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-fbads/-/react-native-fbads-4.2.0.tgz#16ca5c29083825aecef3ed7d9e9d881ff82b8b33"
+react-native-fbads@^4.2.0:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/react-native-fbads/-/react-native-fbads-4.2.2.tgz#d07ecd7dfa0b57b9a679ced35f6571a645ccc618"
   dependencies:
     eventemitter3 "^2.0.2"
 

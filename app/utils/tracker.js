@@ -1,4 +1,6 @@
 import {
+  Dimensions,
+  PixelRatio,
   Platform,
 } from 'react-native';
 
@@ -6,6 +8,8 @@ import { Answers } from 'react-native-fabric';
 import { AppEventsLogger } from 'react-native-fbsdk';
 import Analytics from 'analytics-react-native';
 import DeviceInfo from 'react-native-device-info';
+
+const { width, height } = Dimensions.get('window');
 
 import { config } from '../config';
 
@@ -24,49 +28,72 @@ const isTracking = !(
   || DeviceInfo.isEmulator()
 );
 
+const context = {
+  app: {
+    namespace: DeviceInfo.getBundleId(),
+    version: DeviceInfo.getBuildNumber(),
+    build: DeviceInfo.getReadableVersion(),
+  },
+  device: {
+    id: DeviceInfo.getUniqueID(),
+    manufacturer: DeviceInfo.getManufacturer(),
+    model: DeviceInfo.getModel(),
+    name: DeviceInfo.getDeviceId(),
+    type: DeviceInfo.getDeviceName(),
+    version: DeviceInfo.getBrand(),
+    brand: DeviceInfo.getBrand(),
+  },
+  locale: DeviceInfo.getDeviceLocale(),
+  location: {
+    country: DeviceInfo.getDeviceCountry(),
+  },
+  os: {
+    name: DeviceInfo.getSystemName(),
+    version: DeviceInfo.getSystemVersion(),
+  },
+  screen: {
+    width,
+    height,
+    density: PixelRatio.get(),
+  },
+  timezone: DeviceInfo.getTimezone(),
+  userAgent: DeviceInfo.getUserAgent(),
+
+  instanceid: DeviceInfo.getInstanceID(),
+  isEmulator: DeviceInfo.isEmulator(),
+  isTablet: DeviceInfo.isTablet(),
+  isEmulator: DeviceInfo.isEmulator(),
+};
+
 const tracker = {
-  identify: (userId, properties) => {
+  identify: () => {
     if (isTracking) {
-      analytics.identify({ userId, traits: properties });
+      analytics.identify({ userId, context });
     }
   },
   logEvent: (event, properties) => {
     if (isTracking) {
-      analytics.track({ userId, event, properties });
+      analytics.track({ userId, event, properties, context });
       Answers.logCustom(event, properties);
       AppEventsLogger.logEvent(event, properties);
     }
   },
   view: (name, properties) => {
     if (isTracking) {
-      analytics.screen({ userId, name, properties });
+      analytics.screen({ userId, name, properties, context });
     }
   },
 };
 
-tracker.identify(
-  userId,
-  {
-    manufacturer: DeviceInfo.getManufacturer(),
-    brand: DeviceInfo.getBrand(),
-    model: DeviceInfo.getModel(),
-    deviceid: DeviceInfo.getDeviceId(),
-    systemname: DeviceInfo.getSystemName(),
-    systemversion: DeviceInfo.getSystemVersion(),
-    bundleid: DeviceInfo.getBundleId(),
-    buildnumber: DeviceInfo.getBuildNumber(),
-    version: DeviceInfo.getVersion(),
-    readableversion: DeviceInfo.getReadableVersion(),
-    devicename: DeviceInfo.getDeviceName(),
-    useragent: DeviceInfo.getUserAgent(),
-    devicelocale: DeviceInfo.getDeviceLocale(),
-    devicecountry: DeviceInfo.getDeviceCountry(),
-    timezone: DeviceInfo.getTimezone(),
-    instanceid: DeviceInfo.getInstanceID(),
-    isEmulator: DeviceInfo.isEmulator(),
-    isTablet: DeviceInfo.isTablet(),
-    isEmulator: DeviceInfo.isEmulator(),
-  },
-);
+fetch('http://checkip.amazonaws.com/')
+  .then(res => res.text())
+  .then(ip => {
+    ip = ip.replace('\n', '');
+    if (ip) {
+      console.log('ip address', ip);
+      context.ip = ip;
+    }
+    tracker.identify();
+  });
 
 export default tracker;

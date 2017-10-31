@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
+	<string>ca-app-pub-3940256099942544/2934735716</string>
+	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
+	<string>ca-app-pub-3940256099942544/4411468910</string>
+	<key>CLIENT_ID</key>
+	<string>235462705857-74aphfr1oafjg14f8v45kubv7t123892.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.235462705857-74aphfr1oafjg14f8v45kubv7t123892</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>235462705857-t3jl1ahl5e1p7a96tkfrd4009qeocoa4.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAu7v5Fo5K5zPh4VkgjA3CQ6djpvqv8eHQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>235462705857</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kfpun.audiencenetwork</string>
+	<key>PROJECT_ID</key>
+	<string>kf-audiencenetwork</string>
+	<key>STORAGE_BUCKET</key>
+	<string>kf-audiencenetwork.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<true/>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false/>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true/>
+	<key>IS_GCM_ENABLED</key>
+	<true/>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true/>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:235462705857:ios:451947afcef713ca</string>
+	<key>DATABASE_URL</key>
+	<string>https://kf-audiencenetwork.firebaseio.com</string>
+</dict>
+</plist>

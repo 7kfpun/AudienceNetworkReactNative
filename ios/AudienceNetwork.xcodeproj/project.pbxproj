@@ -25,8 +25,8 @@
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		178250BDF7764D37BCE6AE04 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A1ACD8350A934FD080BF03ED /* SimpleLineIcons.ttf */; };
 		1FFD22D1B22D4DE089E5B8F8 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 54DF398830F843FDB3081DB4 /* Ionicons.ttf */; };
-		2DDA81889D804DEBA815856D /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02D377F983F34C1B95B09A2A /* libRNDeviceInfo.a */; };
 		2643D1910CA949B192C5AB79 /* libSMXCrashlytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7D95C6F9C1E408596FA9E15 /* libSMXCrashlytics.a */; };
+		2DDA81889D804DEBA815856D /* libRNDeviceInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 02D377F983F34C1B95B09A2A /* libRNDeviceInfo.a */; };
 		47D921CE1008453FAE0DC6D4 /* libSafariViewManager.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 899DA50CDFB2443590D6F0AF /* libSafariViewManager.a */; };
 		597366FBE54843D2A00E12CC /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 731E6CD9D69C4C85BF529FB1 /* libRNVectorIcons.a */; };
 		5BFAA02B592D40FF8291CB49 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CED9D7971FA14B07BDBA80D8 /* libRNSVG.a */; };
@@ -364,10 +364,10 @@
 		899DA50CDFB2443590D6F0AF /* libSafariViewManager.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSafariViewManager.a; sourceTree = "<group>"; };
 		8BAE7052A1244D03A4B43112 /* RCTFBSDK.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTFBSDK.xcodeproj; path = "../node_modules/react-native-fbsdk/ios/RCTFBSDK.xcodeproj"; sourceTree = "<group>"; };
 		948C5C02ED20422EACF76615 /* SMXCrashlytics.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = SMXCrashlytics.xcodeproj; path = "../node_modules/react-native-fabric/ios/SMXCrashlytics.xcodeproj"; sourceTree = "<group>"; };
-		9EC3E5331EE2D33C00CD8BDF /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
-		9EC3E5351EE2D39F00CD8BDF /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		9A21CC21ED8845729E419030 /* RNAdMobManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNAdMobManager.xcodeproj; path = "../node_modules/react-native-admob/ios/RNAdMobManager.xcodeproj"; sourceTree = "<group>"; };
 		9A5BB843D5AA4570B2A6A31F /* libRNAdMobManager.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNAdMobManager.a; sourceTree = "<group>"; };
+		9EC3E5331EE2D33C00CD8BDF /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		9EC3E5351EE2D39F00CD8BDF /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		9EC3E5DF1EE4051500CD8BDF /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 		9EEEA5CD1ED738200064BC3A /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
 		9EEEA5CE1ED738200064BC3A /* FBAudienceNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBAudienceNetwork.framework; sourceTree = "<group>"; };
@@ -624,6 +624,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				03AF663EC91A4016BDBD33D0 /* Resources */,
 				AABEEB591E32393C00AC98A6 /* Frameworks */,
+				9E31DADB1F737ACE00EF6751 /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -636,6 +637,21 @@
 				00E356EE1AD99517003FC87E /* AudienceNetworkTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		9E31DADB1F737ACE00EF6751 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				899DA50CDFB2443590D6F0AF /* libSafariViewManager.a */,
+				731E6CD9D69C4C85BF529FB1 /* libRNVectorIcons.a */,
+				6750A6A2B72C41EEA4EBF427 /* libRCTFBSDK.a */,
+				AFDE951BF3A74B958DD9EDCF /* librn-fbads.a */,
+				CED9D7971FA14B07BDBA80D8 /* libRNSVG.a */,
+				02D377F983F34C1B95B09A2A /* libRNDeviceInfo.a */,
+				E7D95C6F9C1E408596FA9E15 /* libSMXCrashlytics.a */,
+				9A5BB843D5AA4570B2A6A31F /* libRNAdMobManager.a */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		9E93030B1EE6D7620026C70D /* Products */ = {
@@ -846,12 +862,12 @@
 					ProjectRef = FADCFB874A7B45C997EA0D73 /* rn-fbads.xcodeproj */;
 				},
 				{
-					ProductGroup = 9E93030B1EE6D7620026C70D /* Products */;
-					ProjectRef = 5F4C38D13332491DAA99B281 /* RNDeviceInfo.xcodeproj */;
-				},
-				{
 					ProductGroup = 9EC3E5BB1EE404F500CD8BDF /* Products */;
 					ProjectRef = 9A21CC21ED8845729E419030 /* RNAdMobManager.xcodeproj */;
+				},
+				{
+					ProductGroup = 9E93030B1EE6D7620026C70D /* Products */;
+					ProjectRef = 5F4C38D13332491DAA99B281 /* RNDeviceInfo.xcodeproj */;
 				},
 				{
 					ProductGroup = AA8570F81E333EC7003F7304 /* Products */;
@@ -1258,15 +1274,7 @@
 				INFOPLIST_FILE = AudienceNetworkTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AudienceNetwork.app/AudienceNetwork";
@@ -1281,15 +1289,7 @@
 				INFOPLIST_FILE = AudienceNetworkTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AudienceNetwork.app/AudienceNetwork";
